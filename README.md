@@ -13,3 +13,11 @@ The core idea is to automate the fundamental and technical research that a human
 - **It writes reports:** When you look at a specific stock, Vestiq takes the technical data, recent news, and fundamental metrics, and uses Gemini to write a plain-English briefing on the stock.
 
 Ultimately, Vestiq is designed to save time researching individual stocks and to give a clearer, data-backed picture of what the market is actually doing on any given day.
+
+![Vestiq](./results/result1.png)
+![Vestiq](./results/result2.png)
+![Vestiq](./results/result3.png)
+![Vestiq](./results/result4.png)
+![Vestiq](./results/result5.png)
+![Vestiq](./results/result6.png)
+![Vestiq](./results/result7.png)
