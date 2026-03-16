@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <!-- Glass Card -->
+    <div class="card border-0 rounded-4 shadow-lg animate__animated animate__fadeInUp" 
+         style="max-width: 420px; width: 100%; background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1);">
+        
+        <div class="card-body p-5">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-3 shadow-lg p-3">
+                    <i class="bi bi-person-circle fs-1"></i>
+                </div>
+                <h2 class="fw-bold text-white mb-1">{% trans "Welcome Back" %}</h2>
+                <p class="text-gray-400">{% trans "Please login to continue" %}</p>
+            </div>
+
+            <!-- Form -->
+            <form method="post">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger bg-danger bg-opacity-10 border-danger border-opacity-25 text-danger py-2 px-3 small rounded-3 mb-4">
+                        <i class="bi bi-exclamation-circle me-2"></i>{{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <!-- Username -->
+                <div class="mb-4">
+                    <label for="id_username" class="form-label text-gray-300 small text-uppercase fw-bold" style="letter-spacing: 0.5px;">{% trans "Username" %}</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-slate-900 border-secondary border-opacity-50 text-gray-400">
+                            <i class="bi bi-person"></i>
+                        </span>
+                        {{ form.username|add_class:"form-control bg-slate-900 border-secondary border-opacity-50 text-white shadow-none ps-3"|attr:"placeholder:Enter your username" }}
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-5">
+                    <label for="id_password" class="form-label text-gray-300 small text-uppercase fw-bold" style="letter-spacing: 0.5px;">{% trans "Password" %}</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-slate-900 border-secondary border-opacity-50 text-gray-400">
+                            <i class="bi bi-lock"></i>
+                        </span>
+                        {{ form.password|add_class:"form-control bg-slate-900 border-secondary border-opacity-50 text-white shadow-none ps-3"|attr:"placeholder:••••••••" }}
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-lg text-uppercase" 
+                        style="letter-spacing: 1px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); border: none;">
+                    {% trans "Login" %} <i class="bi bi-arrow-right ms-2"></i>
+                </button>
+                
+                <!-- OR Divider -->
+                <div class="d-flex align-items-center my-4">
+                    <hr class="flex-grow-1 border-secondary border-opacity-25">
+                    <span class="text-gray-400 px-3 small">OR</span>
+                    <hr class="flex-grow-1 border-secondary border-opacity-25">
+                </div>
+                
+                <!-- Kakao Login Button -->
+                <a href="{% url 'kakao_login' %}" class="btn w-100 py-3 rounded-pill fw-bold shadow-lg text-uppercase d-flex align-items-center justify-content-center"
+                   style="letter-spacing: 1px; background: linear-gradient(135deg, #FEE500 0%, #FDD835 100%); color: #3C1E1E; border: none;">
+                    <i class="bi bi-chat-fill me-2"></i> 카카오 로그인
+                </a>
+            </form>
+
+            <!-- Footer -->
+            <div class="text-center mt-5 pt-3 border-top border-secondary border-opacity-25">
+                <p class="text-gray-400 mb-0">{% trans "Don't have an account?" %} 
+                    <a href="{% url 'signup' %}" class="text-primary text-decoration-none fw-bold ms-1 hover-opacity">
+                        {% trans "Sign Up" %}
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom Input Styles override */
+    .form-control:focus {
+        background-color: #0f172a !important; /* Slate 900 */
+        border-color: #6366f1 !important;
+        color: white !important;
+    }
+    
+    /* Placeholder Color */
+    .form-control::placeholder {
+        color: #64748b;
+    }
+
+    /* Hover Effect for Links */
+    .hover-opacity:hover {
+        opacity: 0.8;
+        text-decoration: underline !important;
+    }
+    
+    /* Background Utilities based on Tailwind colors if strictly needed, 
+       but here using style or standard classes defined in base */
+    .bg-slate-900 { background-color: #0f172a !important; }
+    .text-gray-300 { color: #cbd5e1 !important; }
+    .text-gray-400 { color: #94a3b8 !important; }
+</style>
+{% endblock %}

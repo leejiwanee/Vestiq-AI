@@ -1,0 +1,172 @@
+{
+  "en": {
+    "title": "Markets Edge Up Amidst Discount Deals & Tariff Headwinds: EV Reality Check",
+    "summary": "Equities painted green today, with major U.S. indices seeing modest gains while volatility cooled. Bond yields offered some relief, pulling back from recent highs. The economic narrative is a mixed bag, highlighting retailers' efforts to entice consumers with discounts, ongoing inflation from tariffs, and a dose of 'realism' hitting the once-hyped EV market.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6932.05 (+0.32%)",
+        "comment": "A steady climb for the broader market."
+      },
+      {
+        "label": "Nasdaq",
+        "value": "23613.31 (+0.22%)",
+        "comment": "Tech-heavy index also found modest footing."
+      },
+      {
+        "label": "Russell 2000",
+        "value": "2548.08 (+0.27%)",
+        "comment": "Small caps joined the party, reflecting broader sentiment."
+      },
+      {
+        "label": "Bitcoin",
+        "value": "87810.68 (+0.23%)",
+        "comment": "Crypto's flagship maintained its upward momentum."
+      }
+    ],
+    "macro": {
+      "title": "Macro Vibes",
+      "points": [
+        "<b>Supply Chain Snags & Tariffs</b>: Leather prices are jumping due to tariffs, signaling ongoing inflationary pressures on consumer goods and potentially impacting retail margins for 'boots, bags, and more.' Relief, unfortunately, could be years away.",
+        "<b>Holiday Discounts Ahead</b>: Retailers are 'discounting to meet the consumer' this holiday season, as per Tanger CEO, suggesting a competitive environment and potentially softer consumer demand requiring margin sacrifices.",
+        "<b>Bond Yields Ease</b>: Major Treasury yields (10-year, 30-year) are pulling back, offering some relief from recent market pressures, though short-term rates saw a slight uptick.",
+        "<b>EV Market Cools</b>: 'EV realism is here,' with automakers facing a more challenging environment. This signals a shift from unbridled optimism to strategic adaptation, with 2026 being a telling year for how companies react."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "Media & Entertainment (Streaming)",
+        "change": "Positive Momentum",
+        "comment": "Free streaming services like Tubi are rivaling major players, suggesting a robust ad-supported segment."
+      },
+      {
+        "name": "Industrials (ex-Airlines)",
+        "change": "Broadly Steady",
+        "comment": "The Dow's solid performance and copper's rise hint at resilience across several industrial segments."
+      },
+      {
+        "name": "Commodities (Silver & Copper)",
+        "change": "Uptick",
+        "comment": "Silver and copper posted gains, indicating potential strength in certain industrial and precious metals."
+      },
+      {
+        "name": "Consumer Discretionary (Apparel/Luxury)",
+        "change": "Headwinds Ahead",
+        "comment": "Tariffs are driving up costs for leather goods, potentially squeezing margins for fashion and luxury brands."
+      },
+      {
+        "name": "Automotive (EV Segment)",
+        "change": "Reality Check",
+        "comment": "'EV realism' signals cooling demand and a need for strategic rethinking by electric vehicle manufacturers."
+      },
+      {
+        "name": "Airlines",
+        "change": "Profit Pressures",
+        "comment": "Southwest's 42% profit drop, despite its top stock ranking, highlights ongoing challenges within the airline sector."
+      }
+    ],
+    "themes": [
+      {
+        "name": "Discount Diplomacy in Retail",
+        "change": "Value-Driven",
+        "comment": "Retailers are leaning on discounts to entice holiday shoppers, pointing to a more cautious, value-seeking consumer."
+      },
+      {
+        "name": "Tariff Troubles Linger",
+        "change": "Cost Increases",
+        "comment": "Rising leather prices due to tariffs point to persistent supply chain and inflationary woes affecting consumer goods."
+      },
+      {
+        "name": "Streaming's New Frontier",
+        "change": "Ad-Supported Ascendant",
+        "comment": "Free, ad-supported streaming services are muscling in on major players, shaking up the entertainment landscape."
+      }
+    ]
+  },
+  "ko": {
+    "title": "할인 경쟁과 관세 역풍 속 시장 상승세: 전기차 현실 점검",
+    "summary": "오늘 주식 시장은 전반적으로 상승세를 보였고, 주요 미국 지수들은 완만한 오름세를 기록하며 변동성은 진정되었습니다. 채권 수익률은 최근 고점 대비 하락하며 다소 안도감을 주었습니다. 전반적인 경제 상황은 소매업체들의 할인 경쟁, 관세로 인한 지속적인 인플레이션, 그리고 한때 열풍이 불었던 전기차 시장에 불어닥친 '현실주의' 등 복합적인 이야기로 전개되고 있습니다.",
+    "snapshot": [
+      {
+        "label": "S&P 500 지수",
+        "value": "6932.05 (+0.32%)",
+        "comment": "광범위한 시장의 꾸준한 상승세."
+      },
+      {
+        "label": "나스닥 지수",
+        "value": "23613.31 (+0.22%)",
+        "comment": "기술주 중심 지수도 완만한 상승세를 보였습니다."
+      },
+      {
+        "label": "러셀 2000 지수",
+        "value": "2548.08 (+0.27%)",
+        "comment": "소형주도 시장 분위기에 동참하며 상승했습니다."
+      },
+      {
+        "label": "비트코인",
+        "value": "87810.68 (+0.23%)",
+        "comment": "암호화폐 대장주도 상승 모멘텀을 유지했습니다."
+      }
+    ],
+    "macro": {
+      "title": "매크로 경제",
+      "points": [
+        "<b>공급망 문제 및 관세</b>: 관세로 인해 가죽 가격이 상승하고 있으며, 이는 소비재에 대한 지속적인 인플레이션 압력과 '부츠, 가방 등' 소매 마진에 영향을 미칠 수 있음을 시사합니다. 안타깝게도 이러한 압박은 몇 년간 지속될 수 있습니다.",
+        "<b>홀리데이 시즌 할인 경쟁</b>: 탠저 CEO에 따르면 소매업체들은 이번 홀리데이 시즌에 '소비자들을 만나기 위해 할인'을 진행하고 있으며, 이는 경쟁적인 환경과 마진 희생을 요구하는 잠재적으로 약화된 소비자 수요를 시사합니다.",
+        "<b>채권 수익률 완화</b>: 주요 국채 수익률(10년물, 30년물)이 하락하며 최근 시장 압력으로부터 일부 안도감을 주었지만, 단기 금리는 소폭 상승했습니다.",
+        "<b>전기차 시장 냉각</b>: '전기차 현실주의'가 도래했으며, 자동차 제조사들은 더욱 도전적인 환경에 직면하고 있습니다. 이는 무한한 낙관론에서 전략적 적응으로의 전환을 의미하며, 2026년은 기업들이 어떻게 반응할지 보여주는 중요한 해가 될 것입니다."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "미디어 및 엔터테인먼트 (스트리밍)",
+        "change": "긍정적 모멘텀",
+        "comment": "투비(Tubi)와 같은 무료 스트리밍 서비스가 주요 업체들과 경쟁하며 광고 지원 모델의 강세를 시사합니다."
+      },
+      {
+        "name": "산업재 (항공 제외)",
+        "change": "전반적 안정세",
+        "comment": "다우 지수의 견조한 성과와 구리 가격 상승은 여러 산업 부문의 회복력을 암시합니다."
+      },
+      {
+        "name": "상품 (은 및 구리)",
+        "change": "상승세",
+        "comment": "은과 구리가 상승세를 기록하며 특정 산업 금속 및 귀금속의 잠재적 강세를 나타냈습니다."
+      },
+      {
+        "name": "임의소비재 (의류/명품)",
+        "change": "역풍 직면",
+        "comment": "관세로 인해 가죽 제품 비용이 상승하여 패션 및 명품 브랜드의 마진을 압박할 수 있습니다."
+      },
+      {
+        "name": "자동차 (전기차 부문)",
+        "change": "현실 점검",
+        "comment": "'전기차 현실주의'는 수요 둔화와 전기차 제조사들의 전략적 재고 필요성을 시사합니다."
+      },
+      {
+        "name": "항공",
+        "change": "수익 압박",
+        "comment": "사우스웨스트 항공의 42% 이익 감소는 최고 주가 순위에도 불구하고 항공 부문의 지속적인 도전을 부각합니다."
+      }
+    ],
+    "themes": [
+      {
+        "name": "소매업의 할인 외교",
+        "change": "가치 중심",
+        "comment": "소매업체들은 홀리데이 쇼핑객을 유치하기 위해 할인에 의존하며, 더욱 신중하고 가치를 추구하는 소비자를 시사합니다."
+      },
+      {
+        "name": "관세 문제의 지속",
+        "change": "비용 증가",
+        "comment": "관세로 인한 가죽 가격 상승은 소비재에 영향을 미치는 지속적인 공급망 및 인플레이션 문제를 지적합니다."
+      },
+      {
+        "name": "스트리밍의 새로운 개척지",
+        "change": "광고 지원 모델 부상",
+        "comment": "무료 광고 지원 스트리밍 서비스가 주요 업체들을 압박하며 엔터테인먼트 환경을 변화시키고 있습니다."
+      }
+    ]
+  },
+  "last_updated": "2025-12-25 03:31 PM EST",
+  "last_updated_ts": "2025-12-25T15:31:36.596686-05:00"
+}

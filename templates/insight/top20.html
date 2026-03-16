@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}S&P 500 Leaders{% endblock %}
+
+{% block content %}
+<style>
+    /* Dark Theme Overrides */
+    .page-header { 
+        background: transparent; 
+        border-bottom: 1px solid rgba(255,255,255,0.1); 
+        padding: 24px 0; 
+        margin-bottom: 24px; 
+    }
+    .leader-card { 
+        background: rgba(30, 41, 59, 0.7); 
+        backdrop-filter: blur(10px);
+        border-radius: 12px; 
+        border: 1px solid rgba(255, 255, 255, 0.1); 
+        overflow: hidden; 
+    }
+    .table-leaders thead th { 
+        background-color: rgba(15, 23, 42, 0.5); 
+        color: #94a3b8; 
+        font-size: 0.75rem; 
+        font-weight: 700; 
+        text-transform: uppercase; 
+        letter-spacing: 0.05em; 
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+        padding: 12px 16px; 
+    }
+    .table-leaders tbody td { 
+        padding: 16px; 
+        vertical-align: middle; 
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+        font-size: 0.95rem; 
+        color: #e2e8f0; 
+    }
+    .rank-badge { 
+        width: 28px; height: 28px; 
+        display: flex; align-items: center; justify-content: center; 
+        border-radius: 6px; 
+        font-weight: 700; font-size: 13px; 
+        background: rgba(255,255,255,0.1); 
+        color: #94a3b8; 
+    }
+    .rank-1 { background: rgba(217, 119, 6, 0.2); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); }
+    .rank-2 { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; border: 1px solid rgba(203, 213, 225, 0.3); }
+    .rank-3 { background: rgba(194, 65, 12, 0.2); color: #fdba74; border: 1px solid rgba(253, 186, 116, 0.3); }
+    
+    /* Force Transparent Table for Dark Theme */
+    .table-leaders {
+        --bs-table-bg: transparent;
+        --bs-table-accent-bg: transparent;
+        --bs-table-striped-bg: transparent;
+        --bs-table-hover-bg: rgba(255, 255, 255, 0.03);
+        color: #f8fafc;
+    }
+    .table-leaders > :not(caption) > * > * {
+        background-color: transparent !important;
+        box-shadow: none !important;
+    }
+    .table-leaders tbody tr {
+        transition: background-color 0.2s;
+    }
+    .table-leaders tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+    }
+    
+    .ticker-symbol { font-weight: 700; color: #60a5fa; transition: color 0.2s; }
+    .ticker-symbol:hover { color: #93c5fd; }
+    
+    .sector-badge { 
+        display: inline-block; padding: 2px 8px; 
+        border-radius: 999px; 
+        background: rgba(255, 255, 255, 0.08); 
+        color: #e2e8f0; 
+        font-size: 0.75rem; font-weight: 500; 
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+    .text-up { color: #4ade80; font-weight: 600; }
+    .text-down { color: #f87171; font-weight: 600; }
+    .chart-container { position: relative; height: 160px; width: 100%; }
+</style>
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="fw-bold mb-1 text-white">🇺🇸 S&P 500 Market Leaders</h3>
+                <p class="text-gray-400 mb-0 small">Top 20 Companies by Market Cap</p>
+            </div>
+            <div>
+                <span class="badge bg-primary bg-opacity-25 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill">Top 20</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container pb-5">
+    <!-- Chart Card -->
+    <div class="leader-card mb-4 p-4">
+        <h6 class="fw-bold text-gray-400 mb-3 small text-uppercase tracking-wider">Market Cap Distribution</h6>
+        <div class="chart-container"><canvas id="marketCapChart"></canvas></div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="leader-card">
+        <div class="table-responsive">
+            <table class="table table-leaders mb-0">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 80px;">Rank</th>
+                        <th>Symbol</th>
+                        <th>Company Name</th>
+                        <th>Sector</th>
+                        <th class="text-end">Market Cap</th>
+                        <th class="text-end">Change</th>
+                        <th class="text-center">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in top20_rows %}
+                    <tr>
+                        <td class="text-center">
+                            <div class="d-flex align-items-center justify-content-center gap-2">
+                                <div class="rank-badge rank-{{ forloop.counter }}">{{ forloop.counter }}</div>
+                                {% if row.is_new %}
+                                    <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-20" style="font-size: 0.65rem;">NEW</span>
+                                {% elif row.rank_change > 0 %}
+                                    <small class="text-success fw-bold" style="font-size: 0.75rem;">▲ {{ row.rank_change }}</small>
+                                {% elif row.rank_change < 0 %}
+                                    <small class="text-danger fw-bold" style="font-size: 0.75rem;">▼ {{ row.rank_change|stringformat:"d"|slice:"1:" }}</small>
+                                {% else %}
+                                    <small class="text-secondary" style="font-size: 0.75rem;">-</small>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                             <!-- Link to global chart modal if desired, or external -->
+                             <span class="ticker-symbol cursor-pointer" onclick="openGlobalChartModal('{{ row.symbol }}', '{{ row.name }}')">{{ row.symbol }}</span>
+                        </td>
+                        <td class="fw-medium text-white">{{ row.name }}</td>
+                        <td><span class="sector-badge">{{ row.sector }}</span></td>
+
+                        <td class="text-end font-monospace text-white">
+                            <strong>{{ row.market_cap_display }}</strong>
+                        </td>
+                        <td class="text-end">
+                            {% if row.change_pct > 0 %}
+                                <span class="text-up">+{{ row.change_pct|floatformat:2 }}%</span>
+                            {% elif row.change_pct < 0 %}
+                                <span class="text-down">{{ row.change_pct|floatformat:2 }}%</span>
+                            {% else %}
+                                <span class="text-gray-500">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if row.is_new %}
+                                <span class="text-xs text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 rounded">Fresh Entry</span>
+                            {% else %}
+                                <span class="text-gray-600 small"> - </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="7" class="text-center py-5 text-gray-500">데이터가 없습니다. (Data updating...)</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById("marketCapChart").getContext('2d');
+const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+gradient.addColorStop(0, 'rgba(59, 130, 246, 0.8)'); // Blue-500
+gradient.addColorStop(1, 'rgba(59, 130, 246, 0.1)'); 
+
+new Chart(ctx, {
+  type: "bar",
+  data: {
+    labels: {{ labels|safe }},
+    datasets: [{
+      label: "Market Cap",
+      data: {{ values|safe }},
+      backgroundColor: gradient,
+      borderRadius: 4,
+      barPercentage: 0.6,
+      borderColor: 'rgba(59, 130, 246, 1)',
+      borderWidth: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { 
+        legend: { display: false },
+        tooltip: {
+            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+            titleColor: '#f1f5f9',
+            bodyColor: '#e2e8f0',
+            padding: 12,
+            borderColor: 'rgba(255,255,255,0.1)',
+            borderWidth: 1,
+            callbacks: {
+                label: function(context) {
+                    let value = context.raw;
+                    if (value >= 1e12) return '$ ' + (value / 1e12).toFixed(2) + ' T';
+                    if (value >= 1e9) return '$ ' + (value / 1e9).toFixed(2) + ' B';
+                    if (value >= 1e6) return '$ ' + (value / 1e6).toFixed(2) + ' M';
+                    return '$ ' + value.toLocaleString();
+                }
+            }
+        }
+    },
+    scales: {
+      y: { 
+          display: false, 
+          beginAtZero: true 
+      },
+      x: { 
+          grid: { display: false }, 
+          ticks: { 
+              color: '#64748b',
+              font: { size: 11 }, 
+              autoSkip: false, 
+              maxRotation: 45, 
+              minRotation: 45 
+          } 
+      }
+    }
+  }
+});
+</script>
+{% endblock %}

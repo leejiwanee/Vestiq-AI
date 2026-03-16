@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% load static humanize i18n %}
+
+{% block title %}{% trans "News Search" %}{% endblock %}
+
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+    body {
+        background-color: #f1f5f9;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .search-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: white;
+        padding: 32px;
+        border-radius: 16px;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-box {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        margin-bottom: 24px;
+    }
+
+    .search-input {
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 12px 20px;
+        font-size: 16px;
+        transition: all 0.2s;
+    }
+
+    .search-input:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .search-btn {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        border: none;
+        padding: 12px 32px;
+        border-radius: 10px;
+        color: white;
+        font-weight: 600;
+        transition: transform 0.2s;
+    }
+
+    .search-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+
+    .result-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+        border: 1px solid #e2e8f0;
+        transition: all 0.2s;
+    }
+
+    .result-card:hover {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .result-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 8px;
+        text-decoration: none;
+        display: block;
+    }
+
+    .result-title:hover {
+        color: #3b82f6;
+    }
+
+    .result-meta {
+        font-size: 13px;
+        color: #64748b;
+        display: flex;
+        gap: 16px;
+        align-items: center;
+    }
+
+    .impact-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 12px;
+        color: white;
+    }
+
+    .score-high { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .score-med { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .score-low { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+
+    mark {
+        background-color: #fef3c7;
+        padding: 2px 4px;
+        border-radius: 3px;
+    }
+</style>
+
+<div class="container-fluid max-w-7xl mx-auto px-4 py-5">
+    <!-- Header -->
+    <div class="search-header">
+        <h2 class="fw-bold mb-1">
+            <i class="bi bi-search me-2"></i>{% trans "News Search" %}
+        </h2>
+        <p class="mb-0 opacity-75">{% trans "Search through market news with advanced filters" %}</p>
+    </div>
+
+    <!-- Search Box -->
+    <div class="search-box">
+        <form method="get" action="{% url 'news:search' %}">
+            <div class="row g-3">
+                <div class="col-md-12">
+                    <input type="text" 
+                           name="q" 
+                           class="form-control search-input" 
+                           placeholder="{% trans 'Search keywords...' %}"
+                           value="{{ query }}">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small text-muted">{% trans "From Date" %}</label>
+                    <input type="date" 
+                           name="from" 
+                           class="form-control search-input"
+                           value="{{ date_from }}">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small text-muted">{% trans "To Date" %}</label>
+                    <input type="date" 
+                           name="to" 
+                           class="form-control search-input"
+                           value="{{ date_to }}">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn search-btn w-100">
+                        <i class="bi bi-search me-2"></i>{% trans "Search" %}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results -->
+    {% if query or date_from or date_to %}
+        <div class="mb-3">
+            <h5 class="text-muted">
+                {% blocktrans count counter=total_count %}
+                    {{ counter }} result found
+                {% plural %}
+                    {{ counter }} results found
+                {% endblocktrans %}
+            </h5>
+        </div>
+
+        {% if results %}
+            {% for article in results %}
+            <div class="result-card">
+                <div class="d-flex gap-3">
+                    {% if article.impact_score %}
+                    <div class="impact-badge {% if article.impact_score >= 80 %}score-high{% elif article.impact_score >= 50 %}score-med{% else %}score-low{% endif %}">
+                        {{ article.impact_score }}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="flex-grow-1">
+                        <a href="{{ article.url }}" target="_blank" class="result-title">
+                            {{ article.title }}
+                        </a>
+                        
+                        {% if article.description %}
+                        <p class="text-muted mb-2">{{ article.description|truncatewords:30 }}</p>
+                        {% endif %}
+                        
+                        <div class="result-meta">
+                            <span><i class="bi bi-building me-1"></i>{{ article.source }}</span>
+                            <span><i class="bi bi-clock me-1"></i>{{ article.published_at|naturaltime }}</span>
+                            {% if article.sentiment_score %}
+                            <span>
+                                {% if article.sentiment_score > 0.2 %}
+                                    <i class="bi bi-arrow-up-circle-fill text-success me-1"></i>
+                                    <span class="text-success">{% trans "Positive" %}</span>
+                                {% elif article.sentiment_score < -0.2 %}
+                                    <i class="bi bi-arrow-down-circle-fill text-danger me-1"></i>
+                                    <span class="text-danger">{% trans "Negative" %}</span>
+                                {% else %}
+                                    <i class="bi bi-dash-circle-fill text-warning me-1"></i>
+                                    <span class="text-warning">{% trans "Neutral" %}</span>
+                                {% endif %}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-inbox" style="font-size: 48px; color: #cbd5e1;"></i>
+                <p class="text-muted mt-3">{% trans "No results found" %}</p>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-search" style="font-size: 48px; color: #cbd5e1;"></i>
+            <p class="text-muted mt-3">{% trans "Enter keywords to start searching" %}</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

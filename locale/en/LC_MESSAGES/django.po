@@ -1,0 +1,2431 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-28 17:32-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ai_advisor/forms.py:13
+msgid "e.g. 10000"
+msgstr ""
+
+#: ai_advisor/forms.py:14
+msgid "e.g. 500 (0 if none)"
+msgstr ""
+
+#: ai_advisor/forms.py:16
+msgid "Months (e.g. 36)"
+msgstr ""
+
+#: ai_advisor/forms.py:17
+msgid "e.g. 10 (10% per year)"
+msgstr ""
+
+#: ai_advisor/forms.py:21
+msgid "Initial Investment ($)"
+msgstr ""
+
+#: ai_advisor/forms.py:22
+msgid "Monthly Contribution ($)"
+msgstr ""
+
+#: ai_advisor/forms.py:23
+msgid "Risk Tolerance"
+msgstr ""
+
+#: ai_advisor/forms.py:24
+msgid "Investment Duration (Months)"
+msgstr ""
+
+#: ai_advisor/forms.py:25
+msgid "Target Annual Return (%)"
+msgstr ""
+
+#: ai_advisor/forms.py:26 templates/ai_advisor/portfolio.html:243
+msgid "Investment Goal"
+msgstr ""
+
+#: ai_advisor/models.py:9
+msgid "Low (Stable - Principal Protection)"
+msgstr ""
+
+#: ai_advisor/models.py:10
+msgid "Medium (Balanced)"
+msgstr ""
+
+#: ai_advisor/models.py:11
+msgid "High (Aggressive - High Return)"
+msgstr ""
+
+#: ai_advisor/models.py:15
+msgid "Retirement Fund"
+msgstr ""
+
+#: ai_advisor/models.py:16
+msgid "House Purchase"
+msgstr ""
+
+#: ai_advisor/models.py:17
+msgid "Wealth Accumulation"
+msgstr ""
+
+#: ai_advisor/models.py:18
+msgid "Short-term Lump Sum (Travel/Wedding)"
+msgstr ""
+
+#: scanner/views.py:197 templates/base.html:168
+msgid "Scanner (Long-term)"
+msgstr ""
+
+#: scanner/views.py:208 templates/base.html:163
+msgid "Scanner (Day/Swing)"
+msgstr ""
+
+#: scanner/views.py:235
+msgid "Volume"
+msgstr ""
+
+#: scanner/views.py:236
+msgid "Volatility"
+msgstr ""
+
+#: scanner/views.py:237
+msgid "Trend"
+msgstr ""
+
+#: scanner/views.py:238
+msgid "Pattern"
+msgstr ""
+
+#: scanner/views.py:239
+msgid "Momentum"
+msgstr ""
+
+#: scanner/views.py:240
+msgid "Value"
+msgstr ""
+
+#: scanner/views.py:241
+msgid "Oversold"
+msgstr ""
+
+#: scanner/views.py:246
+msgid "All"
+msgstr ""
+
+#: scanner/views.py:293
+msgid "Filter Distribution"
+msgstr ""
+
+#: scanner/views.py:306
+msgid "Cross Filter Analysis"
+msgstr ""
+
+#: templates/ai_advisor/inspector.html:157
+msgid ""
+"An aggressive AI trader analyzes your stocks. Separate multiple stocks with "
+"commas (,)."
+msgstr ""
+
+#: templates/ai_advisor/inspector.html:160
+msgid "Enter Ticker (e.g., AAPL, TSLA, NVDA)..."
+msgstr ""
+
+#: templates/ai_advisor/inspector.html:220
+#, python-format
+msgid "Analyzing %(symbol)s..."
+msgstr ""
+
+#: templates/ai_advisor/inspector.html:224
+msgid "AI is collecting market data and formulating a strategy..."
+msgstr ""
+
+#: templates/ai_advisor/inspector.html:252
+msgid "Error Analyzing"
+msgstr ""
+
+#: templates/ai_advisor/inspector.html:266
+msgid "Error"
+msgstr ""
+
+#: templates/ai_advisor/inspector.html:267
+msgid "Failed to connect to server."
+msgstr ""
+
+#: templates/ai_advisor/inspector.html:290
+msgid "Risk"
+msgstr ""
+
+#: templates/ai_advisor/inspector.html:324
+msgid "Entry"
+msgstr ""
+
+#: templates/ai_advisor/inspector.html:328
+msgid "Target"
+msgstr ""
+
+#: templates/ai_advisor/inspector.html:332
+msgid "Stop"
+msgstr ""
+
+#: templates/ai_advisor/long_term.html:4 templates/base.html:227
+msgid "AI Long-Term Picks"
+msgstr ""
+
+#: templates/ai_advisor/long_term.html:69
+msgid "AI Long-Term Vision"
+msgstr ""
+
+#: templates/ai_advisor/long_term.html:71
+#, python-format
+msgid ""
+"Key companies selected by Gemini AI to lead structural growth in %(year)s-"
+"%(next_year)s"
+msgstr ""
+
+#: templates/ai_advisor/long_term.html:81 templates/news/dashboard.html:51
+#: templates/news/dashboard.html:72
+msgid "Loading..."
+msgstr ""
+
+#: templates/ai_advisor/long_term.html:83
+msgid "AI is analyzing global market data..."
+msgstr ""
+
+#: templates/ai_advisor/long_term.html:84
+msgid ""
+"Evaluating company fundamentals, economic moats, and long-term growth "
+"potential."
+msgstr ""
+
+#: templates/ai_advisor/long_term.html:84
+msgid "This takes about 10 seconds."
+msgstr ""
+
+#: templates/ai_advisor/long_term.html:92
+msgid "AI Market Outlook"
+msgstr ""
+
+#: templates/ai_advisor/long_term.html:98
+msgid "Top 20 High-Conviction Picks"
+msgstr ""
+
+#: templates/ai_advisor/long_term.html:106
+msgid "Get New Recommendations"
+msgstr ""
+
+#: templates/ai_advisor/long_term.html:129
+#: templates/ai_advisor/recommendations.html:796
+msgid "Error:"
+msgstr ""
+
+#: templates/ai_advisor/long_term.html:136
+msgid "An error occurred during analysis."
+msgstr ""
+
+#: templates/ai_advisor/long_term.html:145
+msgid "Unable to load market outlook data."
+msgstr ""
+
+#: templates/ai_advisor/long_term.html:170
+msgid "Investment Thesis"
+msgstr ""
+
+#: templates/ai_advisor/long_term.html:176
+msgid "Potential Return"
+msgstr ""
+
+#: templates/ai_advisor/long_term.html:181
+msgid "Risk:"
+msgstr ""
+
+#: templates/ai_advisor/portfolio.html:4
+msgid "AI Portfolio Advisor"
+msgstr ""
+
+#: templates/ai_advisor/portfolio.html:195
+msgid "AI Wealth Architect"
+msgstr ""
+
+#: templates/ai_advisor/portfolio.html:198
+msgid "Design the optimal portfolio tailored to your goals."
+msgstr ""
+
+#: templates/ai_advisor/portfolio.html:209
+msgid "Capital Setup"
+msgstr ""
+
+#: templates/ai_advisor/portfolio.html:213
+msgid "Total Investment"
+msgstr ""
+
+#: templates/ai_advisor/portfolio.html:218
+msgid "Total assets currently available"
+msgstr ""
+
+#: templates/ai_advisor/portfolio.html:221
+msgid "Monthly Contribution"
+msgstr ""
+
+#: templates/ai_advisor/portfolio.html:226
+msgid "Amount to invest monthly"
+msgstr ""
+
+#: templates/ai_advisor/portfolio.html:234
+msgid "Investment Strategy"
+msgstr ""
+
+#: templates/ai_advisor/portfolio.html:238
+msgid "Risk Profile"
+msgstr ""
+
+#: templates/ai_advisor/portfolio.html:240
+msgid "Principal Protection vs High Return"
+msgstr ""
+
+#: templates/ai_advisor/portfolio.html:245
+msgid "Primary purpose of investment"
+msgstr ""
+
+#: templates/ai_advisor/portfolio.html:253
+msgid "Duration & Target"
+msgstr ""
+
+#: templates/ai_advisor/portfolio.html:257
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1868
+msgid "Duration"
+msgstr ""
+
+#: templates/ai_advisor/portfolio.html:260 templates/ai_advisor/result.html:301
+msgid "Months"
+msgstr ""
+
+#: templates/ai_advisor/portfolio.html:264
+msgid "Target Annual Return"
+msgstr ""
+
+#: templates/ai_advisor/portfolio.html:275
+msgid "Generate AI Portfolio"
+msgstr ""
+
+#: templates/ai_advisor/portfolio.html:281
+msgid ""
+"Gemini Pro analyzes real-time market data to derive the optimal allocation."
+msgstr ""
+
+#: templates/ai_advisor/portfolio.html:299
+msgid "Analyzing the market and formulating a strategy..."
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:542
+msgid "Back"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:547
+msgid "AI Trading Recommendations"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:548
+msgid "Trading recommendations based on Scanner + News + Gemini AI"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:549
+msgid "For Day/Swing Trading"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:556
+msgid "Market Status"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:558
+msgid "Market"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:558
+msgid "Score"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:579
+msgid "Already Generated"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:579
+#: templates/ai_advisor/recommendations.html:798
+msgid "Generate Recommendations"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:582
+msgid "Recommendations for today have already been generated"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:592
+msgid "Trading Hold Recommended:"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:592
+msgid ""
+"The market is currently extremely bearish. It is recommended to refrain from "
+"trading due to the risk of rapid losses."
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:600
+msgid "BUY Recommendations"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:613
+msgid "Tech Score"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:626
+msgid "BUY"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:634
+msgid "Entry Price"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:636
+msgid "Current Price:"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:641
+msgid "Stop Loss"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:653
+msgid "Take Profit"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:662
+msgid "Position Size"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:701
+msgid "AI Analysis"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:721
+msgid "Cash Holding Recommended"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:722
+msgid ""
+"There are currently no suitable stocks to buy. Please hold cash and wait "
+"until market conditions improve."
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:723
+msgid "Analyzed stocks have been rated as HOLD or AVOID."
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:729
+msgid "Recommendations have not been generated yet"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:730
+msgid "Click the \\"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:738
+msgid "Other Analyzed Stocks (HOLD/AVOID)"
+msgstr ""
+
+#: templates/ai_advisor/recommendations.html:779
+msgid "Generating..."
+msgstr ""
+
+#: templates/ai_advisor/result.html:100
+msgid "Return to input screen"
+msgstr ""
+
+#: templates/ai_advisor/result.html:105
+msgid "AI Personalized Strategy"
+msgstr ""
+
+#: templates/ai_advisor/result.html:118
+#, python-format
+msgid "%(months)s Month Goal"
+msgstr ""
+
+#: templates/ai_advisor/result.html:139
+msgid "Email Report..."
+msgstr ""
+
+#: templates/ai_advisor/result.html:144
+msgid "Send"
+msgstr ""
+
+#: templates/ai_advisor/result.html:151
+msgid "Total Investment Asset"
+msgstr ""
+
+#: templates/ai_advisor/result.html:156
+msgid "month"
+msgstr ""
+
+#: templates/ai_advisor/result.html:166
+msgid "Asset Allocation"
+msgstr ""
+
+#: templates/ai_advisor/result.html:177
+msgid "Projected Asset Growth (Projection)"
+msgstr ""
+
+#: templates/ai_advisor/result.html:178
+msgid "Target:"
+msgstr ""
+
+#: templates/ai_advisor/result.html:178
+msgid "yr"
+msgstr ""
+
+#: templates/ai_advisor/result.html:184
+msgid "Simulation assuming compound interest"
+msgstr ""
+
+#: templates/ai_advisor/result.html:192
+msgid "Strategy Analysis (Rationale)"
+msgstr ""
+
+#: templates/ai_advisor/result.html:203
+msgid "Portfolio Holdings"
+msgstr ""
+
+#: templates/ai_advisor/result.html:209
+msgid "Asset Class"
+msgstr ""
+
+#: templates/ai_advisor/result.html:210
+msgid "Ticker"
+msgstr ""
+
+#: templates/ai_advisor/result.html:211
+msgid "Name / Reason"
+msgstr ""
+
+#: templates/ai_advisor/result.html:212
+msgid "Weight"
+msgstr ""
+
+#: templates/ai_advisor/result.html:213
+msgid "Est. Amount"
+msgstr ""
+
+#: templates/ai_advisor/result.html:244
+msgid "No data available."
+msgstr ""
+
+#: templates/ai_advisor/result.html:318
+msgid "Projected Asset Value ($)"
+msgstr ""
+
+#: templates/ai_advisor/result.html:365
+msgid "Sending..."
+msgstr ""
+
+#: templates/ai_advisor/result.html:380
+msgid "Sent successfully!"
+msgstr ""
+
+#: templates/ai_advisor/result.html:383
+msgid "Failed"
+msgstr ""
+
+#: templates/ai_advisor/result.html:387
+msgid "Error occurred"
+msgstr ""
+
+#: templates/base.html:152
+msgid "Home"
+msgstr ""
+
+#: templates/base.html:158
+msgid "Scanner"
+msgstr ""
+
+#: templates/base.html:178
+msgid "Insight / Data"
+msgstr ""
+
+#: templates/base.html:184 templates/base.html:253
+msgid "Dashboard"
+msgstr ""
+
+#: templates/base.html:189
+msgid "Market Cap TOP 20 Charts"
+msgstr ""
+
+#: templates/base.html:194
+msgid "Wall Street Bets (Reddit)"
+msgstr ""
+
+#: templates/base.html:199
+msgid "13F"
+msgstr ""
+
+#: templates/base.html:211
+msgid "AI"
+msgstr ""
+
+#: templates/base.html:217
+msgid "AI Portfolio"
+msgstr ""
+
+#: templates/base.html:222
+msgid "AI Recommendation (Day/Swing)"
+msgstr ""
+
+#: templates/base.html:232
+msgid "AI Stock Inspector"
+msgstr ""
+
+#: templates/base.html:237
+msgid "AI Earnings"
+msgstr ""
+
+#: templates/base.html:247
+msgid "News"
+msgstr ""
+
+#: templates/base.html:259 templates/news/search.html:4
+#: templates/news/search.html:122
+msgid "News Search"
+msgstr ""
+
+#: templates/base.html:272
+msgid "Update Stock Data"
+msgstr ""
+
+#: templates/base.html:313
+msgid ""
+"Vestiq is an all-in-one data analysis and AI advisor platform for individual "
+"investors. It\n"
+"          integrates scattered market data and provides investment insights "
+"through AI."
+msgstr ""
+
+#: templates/base.html:319
+msgid "Investment Notice and Disclaimer"
+msgstr ""
+
+#: templates/base.html:321
+msgid "Information Purpose:"
+msgstr ""
+
+#: templates/base.html:321
+msgid ""
+"All information provided on this site\n"
+"          (stock prices, financial data, AI reports, etc.) is for reference "
+"to assist investment decisions and is not\n"
+"          intended as investment advice or stock recommendations."
+msgstr ""
+
+#: templates/base.html:326
+msgid "Data Accuracy:"
+msgstr ""
+
+#: templates/base.html:326
+msgid ""
+"Market data is collected through Yahoo Finance\n"
+"          and other sources, which may not be real-time (delayed quotes) or "
+"may contain errors. Vestiq does not\n"
+"          guarantee data integrity."
+msgstr ""
+
+#: templates/base.html:331
+msgid "AI Prediction Limitations:"
+msgstr ""
+
+#: templates/base.html:331
+msgid ""
+"Portfolios and reports generated by\n"
+"          Gemini AI are estimates based on historical data and probabilistic "
+"models. AI may produce \"hallucination\"\n"
+"          errors and does not guarantee future returns. <strong>All "
+"investment decisions are the sole responsibility of\n"
+"            the investor.</strong>"
+msgstr ""
+
+#: templates/base.html:345
+msgid "Terms of Service"
+msgstr ""
+
+#: templates/base.html:347
+msgid "Privacy Policy"
+msgstr ""
+
+#: templates/home/index.html:3
+msgid "Market Dashboard"
+msgstr ""
+
+#: templates/home/index.html:83
+msgid "Today's Market Summary"
+msgstr ""
+
+#: templates/home/index.html:94
+msgid "Global Market Dashboard"
+msgstr ""
+
+#: templates/home/index.html:178
+msgid "YTD Trend Charts"
+msgstr ""
+
+#: templates/home/index.html:198
+msgid "Market Themes"
+msgstr ""
+
+#: templates/news/dashboard.html:4
+msgid "Market News Intelligence"
+msgstr ""
+
+#: templates/news/dashboard.html:20
+msgid "Market Intelligence"
+msgstr ""
+
+#: templates/news/dashboard.html:21
+msgid "AI-Powered News Analysis & Sentiment Tracking"
+msgstr ""
+
+#: templates/news/dashboard.html:31
+msgid "Real-time Impact Feed"
+msgstr ""
+
+#: templates/news/dashboard.html:33
+msgid "Impact Score (0-100): AI importance rating"
+msgstr ""
+
+#: templates/news/dashboard.html:45
+msgid "Market Mood (AI Analysis)"
+msgstr ""
+
+#: templates/news/dashboard.html:56
+msgid "Market Mood Comic"
+msgstr ""
+
+#: templates/news/dashboard.html:63
+msgid "AI Summary"
+msgstr ""
+
+#: templates/news/dashboard.html:65
+msgid "Analyzing market data..."
+msgstr ""
+
+#: templates/news/dashboard.html:70
+msgid "Key Factors"
+msgstr ""
+
+#: templates/news/dashboard.html:80
+msgid "Consulting Gemini AI..."
+msgstr ""
+
+#: templates/news/dashboard.html:111
+msgid "No summary available."
+msgstr ""
+
+#: templates/news/dashboard.html:117
+msgid "Mood"
+msgstr ""
+
+#: templates/news/dashboard.html:127
+msgid "Sentiment"
+msgstr ""
+
+#: templates/news/dashboard.html:136 templates/news/search.html:199
+msgid "Positive"
+msgstr ""
+
+#: templates/news/dashboard.html:136 templates/news/search.html:205
+msgid "Neutral"
+msgstr ""
+
+#: templates/news/dashboard.html:136 templates/news/search.html:202
+msgid "Negative"
+msgstr ""
+
+#: templates/news/dashboard.html:145
+msgid "No impactful news analyzed yet."
+msgstr ""
+
+#: templates/news/dashboard.html:155
+msgid "No keywords found"
+msgstr ""
+
+#: templates/news/search.html:124
+msgid "Search through market news with advanced filters"
+msgstr ""
+
+#: templates/news/search.html:135
+msgid "Search keywords..."
+msgstr ""
+
+#: templates/news/search.html:139
+msgid "From Date"
+msgstr ""
+
+#: templates/news/search.html:146
+msgid "To Date"
+msgstr ""
+
+#: templates/news/search.html:154
+msgid "Search"
+msgstr ""
+
+#: templates/news/search.html:165
+#, python-format
+msgid ""
+"\n"
+"                    %(counter)s result found\n"
+"                "
+msgid_plural ""
+"\n"
+"                    %(counter)s results found\n"
+"                "
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/news/search.html:217
+msgid "No results found"
+msgstr ""
+
+#: templates/news/search.html:223
+msgid "Enter keywords to start searching"
+msgstr ""
+
+#: templates/scanner/dashboard.html:4
+msgid "Scanner Dashboard"
+msgstr ""
+
+#: templates/scanner/dashboard.html:305
+msgid "Updated"
+msgstr ""
+
+#: templates/scanner/dashboard.html:305 templates/scanner/dashboard.html:394
+msgid "No Data"
+msgstr ""
+
+#: templates/scanner/dashboard.html:311
+msgid "Run Scan"
+msgstr ""
+
+#: templates/scanner/dashboard.html:319
+msgid "Filtered Tickers"
+msgstr ""
+
+#: templates/scanner/dashboard.html:321
+msgid "In current view"
+msgstr ""
+
+#: templates/scanner/dashboard.html:328
+msgid "Market Sentiment"
+msgstr ""
+
+#: templates/scanner/dashboard.html:336
+msgid "Up / Down"
+msgstr ""
+
+#: templates/scanner/dashboard.html:348
+msgid "Triggered"
+msgstr ""
+
+#: templates/scanner/dashboard.html:352
+msgid "Buy Opportunities"
+msgstr ""
+
+#: templates/scanner/dashboard.html:356
+msgid "Market Share"
+msgstr ""
+
+#: templates/scanner/dashboard.html:365
+msgid "Avg. Return"
+msgstr ""
+
+#: templates/scanner/dashboard.html:370
+msgid "Today's Performance"
+msgstr ""
+
+#: templates/scanner/dashboard.html:407 templates/scanner/dashboard.html:466
+msgid "🔥 Volume Filter"
+msgstr ""
+
+#: templates/scanner/dashboard.html:409 templates/scanner/dashboard.html:468
+msgid "Today's Volume ≥ <strong>1.5~2x</strong> 20-day Avg"
+msgstr ""
+
+#: templates/scanner/dashboard.html:410 templates/scanner/dashboard.html:469
+#, python-format
+msgid "Volume up <strong>+100%%</strong> vs Yesterday"
+msgstr ""
+
+#: templates/scanner/dashboard.html:414 templates/scanner/dashboard.html:475
+msgid "⚡ Volatility Filter (Breakout)"
+msgstr ""
+
+#: templates/scanner/dashboard.html:416 templates/scanner/dashboard.html:477
+#, python-format
+msgid "ATR%% & Intraday Range (High–Low) <strong>≥ 4%%</strong>"
+msgstr ""
+
+#: templates/scanner/dashboard.html:417
+msgid "Sufficient intraday volatility for day trading"
+msgstr ""
+
+#: templates/scanner/dashboard.html:421 templates/scanner/dashboard.html:484
+msgid "📈 Trend Reversal Filter"
+msgstr ""
+
+#: templates/scanner/dashboard.html:423
+msgid "RSI near <strong>40 → Breakout Up</strong>"
+msgstr ""
+
+#: templates/scanner/dashboard.html:424
+msgid "MACD Histogram turning positive"
+msgstr ""
+
+#: templates/scanner/dashboard.html:425
+msgid "Below MA20 → <strong>Breakout Up</strong>"
+msgstr ""
+
+#: templates/scanner/dashboard.html:429 templates/scanner/dashboard.html:494
+msgid "📊 Chart Pattern Filter (Breakout)"
+msgstr ""
+
+#: templates/scanner/dashboard.html:431
+#, python-format
+msgid "Within 3%% of 20-day High"
+msgstr ""
+
+#: templates/scanner/dashboard.html:432
+msgid "Consolidation with 3+ small candles (Bull flag / Triangle)"
+msgstr ""
+
+#: templates/scanner/dashboard.html:433
+msgid "Support/Consolidation above MA20"
+msgstr ""
+
+#: templates/scanner/dashboard.html:437 templates/scanner/dashboard.html:504
+msgid "💎 Momentum Filter (Strength)"
+msgstr ""
+
+#: templates/scanner/dashboard.html:439 templates/scanner/dashboard.html:506
+#, python-format
+msgid "Today's Return <strong>&gt; 3%%</strong>"
+msgstr ""
+
+#: templates/scanner/dashboard.html:440 templates/scanner/dashboard.html:507
+msgid "Positive 5D & 20D Returns"
+msgstr ""
+
+#: templates/scanner/dashboard.html:441
+msgid "Trading above VWAP"
+msgstr ""
+
+#: templates/scanner/dashboard.html:448 templates/scanner/dashboard.html:514
+msgid "💰 Value Filter"
+msgstr ""
+
+#: templates/scanner/dashboard.html:450 templates/scanner/dashboard.html:516
+msgid "P/E Ratio <strong>≤ 20</strong> (Undervalued)"
+msgstr ""
+
+#: templates/scanner/dashboard.html:451 templates/scanner/dashboard.html:517
+msgid "Also meets <strong>Volume Surge</strong> condition"
+msgstr ""
+
+#: templates/scanner/dashboard.html:455
+msgid "📉 Oversold Filter (BB+RSI)"
+msgstr ""
+
+#: templates/scanner/dashboard.html:457
+msgid "RSI <strong>≤ 30</strong> (Oversold)"
+msgstr ""
+
+#: templates/scanner/dashboard.html:458
+msgid "Price near <strong>Lower Bollinger Band</strong>"
+msgstr ""
+
+#: templates/scanner/dashboard.html:478
+msgid "Shows stocks with high intraday volatility"
+msgstr ""
+
+#: templates/scanner/dashboard.html:486
+msgid "RSI breaks <strong>above 40</strong>"
+msgstr ""
+
+#: templates/scanner/dashboard.html:487
+msgid "MACD Histogram turning up"
+msgstr ""
+
+#: templates/scanner/dashboard.html:488
+msgid "Crosses <strong>above MA20</strong>"
+msgstr ""
+
+#: templates/scanner/dashboard.html:496
+#, python-format
+msgid "Consolidating within 3%% of 20-day High"
+msgstr ""
+
+#: templates/scanner/dashboard.html:497
+msgid "3+ consecutive small candles (Bull flag / Triangle)"
+msgstr ""
+
+#: templates/scanner/dashboard.html:498
+msgid "Supported above MA20"
+msgstr ""
+
+#: templates/scanner/dashboard.html:508
+msgid "Strong momentum trading above VWAP"
+msgstr ""
+
+#: templates/scanner/dashboard.html:604
+msgid "VOL"
+msgstr ""
+
+#: templates/scanner/dashboard.html:605
+msgid "VOLA"
+msgstr ""
+
+#: templates/scanner/dashboard.html:606
+msgid "TRND"
+msgstr ""
+
+#: templates/scanner/dashboard.html:607
+msgid "PATT"
+msgstr ""
+
+#: templates/scanner/dashboard.html:608
+msgid "MOM"
+msgstr ""
+
+#: templates/scanner/dashboard.html:609
+msgid "VAL"
+msgstr ""
+
+#: templates/scanner/dashboard.html:610
+msgid "OVS"
+msgstr ""
+
+#: templates/scanner/report.html:23
+msgid "Failed to load AI Report."
+msgstr ""
+
+#: templates/scanner/report.html:77
+msgid "Scan time"
+msgstr ""
+
+#: templates/scanner/report.html:84
+msgid "Company Overview"
+msgstr ""
+
+#: templates/scanner/report.html:103
+msgid "Gemini Estimated Fair Value"
+msgstr ""
+
+#: templates/scanner/report.html:134
+msgid "vs Current"
+msgstr ""
+
+#: templates/scanner/report.html:139
+msgid "Cheap"
+msgstr ""
+
+#: templates/scanner/report.html:141
+msgid "Expensive"
+msgstr ""
+
+#: templates/scanner/report.html:143
+msgid "Fair"
+msgstr ""
+
+#: templates/scanner/report.html:149
+msgid "Fair Value Analysis:"
+msgstr ""
+
+#: templates/scanner/report.html:160 templates/scanner/report.html:258
+msgid "Financial Analysis"
+msgstr ""
+
+#: templates/scanner/report.html:197
+msgid "Earnings & Growth"
+msgstr ""
+
+#: templates/scanner/report.html:201
+msgid "Revenue:"
+msgstr ""
+
+#: templates/scanner/report.html:202
+msgid "Operating Income:"
+msgstr ""
+
+#: templates/scanner/report.html:205
+msgid "Recent Earnings:"
+msgstr ""
+
+#: templates/scanner/report.html:217
+msgid "Financial Health"
+msgstr ""
+
+#: templates/scanner/report.html:221
+msgid "Cash:"
+msgstr ""
+
+#: templates/scanner/report.html:222
+msgid "Debt to Equity:"
+msgstr ""
+
+#: templates/scanner/report.html:235
+msgid "Risk Factors"
+msgstr ""
+
+#: templates/scanner/report.html:247
+msgid "Wall St. Opinion"
+msgstr ""
+
+#: templates/scanner/report.html:248
+msgid "Consensus:"
+msgstr ""
+
+#: templates/scanner/report.html:249
+msgid "Target Price:"
+msgstr ""
+
+#: templates/scanner/report.html:260
+msgid "Financial analysis data is currently unavailable for this stock."
+msgstr ""
+
+#: templates/scanner/report.html:268
+msgid "Positive Points"
+msgstr ""
+
+#: templates/scanner/report.html:273
+msgid "No positive points to display."
+msgstr ""
+
+#: templates/scanner/report.html:277
+msgid "Negative Points"
+msgstr ""
+
+#: templates/scanner/report.html:282
+msgid "No negative points to display."
+msgstr ""
+
+#: templates/scanner/report.html:289
+msgid "Checklist"
+msgstr ""
+
+#: templates/scanner/report.html:294
+msgid "No checkpoints available."
+msgstr ""
+
+#: templates/scanner/report.html:298
+msgid "Technical Analysis"
+msgstr ""
+
+#: templates/scanner/report.html:303
+msgid "No technical comments available."
+msgstr ""
+
+#: templates/scanner/report.html:307
+msgid "Related News / Drivers"
+msgstr ""
+
+#: templates/scanner/report.html:309
+msgid ""
+"Based on actual news or Gemini estimates to explain price/volume changes."
+msgstr ""
+
+#: templates/scanner/report.html:310
+msgid "Always verify with official filings and actual news before investing."
+msgstr ""
+
+#: templates/scanner/report.html:329
+msgid "No news or drivers to display."
+msgstr ""
+
+#: templates/scanner/report.html:347
+msgid "Conclusion & Verdict"
+msgstr ""
+
+#: templates/scanner/report.html:364
+msgid "Chart Analysis"
+msgstr ""
+
+#: templates/scanner/report.html:370
+msgid "Moving Averages (Main Chart):"
+msgstr ""
+
+#: templates/scanner/report.html:372
+msgid "5-Day (Red)"
+msgstr ""
+
+#: templates/scanner/report.html:373
+msgid "20-Day (Orange)"
+msgstr ""
+
+#: templates/scanner/report.html:374
+msgid "60-Day (Green)"
+msgstr ""
+
+#: templates/scanner/report.html:376
+msgid "120-Day (Blue)"
+msgstr ""
+
+#: templates/scanner/report.html:378
+msgid "240-Day (Purple)"
+msgstr ""
+
+#: templates/scanner/report.html:382
+msgid "Technical Indicators:"
+msgstr ""
+
+#: templates/scanner/report.html:384
+msgid "RSI, MACD: Bottom Panel"
+msgstr ""
+
+#: templates/scanner/report.html:385
+msgid "Bollinger Bands: Displayed on Main Chart"
+msgstr ""
+
+#: templates/scanner/report.html:432
+msgid "Send this report via Email"
+msgstr ""
+
+#: templates/scanner/report.html:437
+msgid "Recipient Email"
+msgstr ""
+
+#: templates/scanner/report.html:440
+msgid "Send Email"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/contrib/messages/apps.py:16
+msgid "Messages"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/contrib/sitemaps/apps.py:8
+msgid "Site Maps"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/contrib/staticfiles/apps.py:9
+msgid "Static Files"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/contrib/syndication/apps.py:7
+msgid "Syndication"
+msgstr ""
+
+#. Translators: String used to replace omitted page numbers in elided page
+#. range generated by paginators, e.g. [1, 2, '…', 5, 6, 7, '…', 9, 10].
+#: venv/lib/python3.12/site-packages/django/core/paginator.py:30
+msgid "…"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/paginator.py:32
+msgid "That page number is not an integer"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/paginator.py:33
+msgid "That page number is less than 1"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/paginator.py:34
+msgid "That page contains no results"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:22
+msgid "Enter a valid value."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:70
+msgid "Enter a valid domain name."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:153
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:775
+msgid "Enter a valid URL."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:200
+msgid "Enter a valid integer."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:211
+msgid "Enter a valid email address."
+msgstr ""
+
+#. Translators: "letters" means latin letters: a-z and A-Z.
+#: venv/lib/python3.12/site-packages/django/core/validators.py:289
+msgid ""
+"Enter a valid “slug” consisting of letters, numbers, underscores or hyphens."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:297
+msgid ""
+"Enter a valid “slug” consisting of Unicode letters, numbers, underscores, or "
+"hyphens."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:309
+#: venv/lib/python3.12/site-packages/django/core/validators.py:318
+#: venv/lib/python3.12/site-packages/django/core/validators.py:332
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2220
+#, python-format
+msgid "Enter a valid %(protocol)s address."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:311
+msgid "IPv4"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:320
+#: venv/lib/python3.12/site-packages/django/utils/ipv6.py:43
+msgid "IPv6"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:334
+msgid "IPv4 or IPv6"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:375
+msgid "Enter only digits separated by commas."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:381
+#, python-format
+msgid "Ensure this value is %(limit_value)s (it is %(show_value)s)."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:416
+#, python-format
+msgid "Ensure this value is less than or equal to %(limit_value)s."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:425
+#, python-format
+msgid "Ensure this value is greater than or equal to %(limit_value)s."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:434
+#, python-format
+msgid "Ensure this value is a multiple of step size %(limit_value)s."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:441
+#, python-format
+msgid ""
+"Ensure this value is a multiple of step size %(limit_value)s, starting from "
+"%(offset)s, e.g. %(offset)s, %(valid_value1)s, %(valid_value2)s, and so on."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:473
+#, python-format
+msgid ""
+"Ensure this value has at least %(limit_value)d character (it has "
+"%(show_value)d)."
+msgid_plural ""
+"Ensure this value has at least %(limit_value)d characters (it has "
+"%(show_value)d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:491
+#, python-format
+msgid ""
+"Ensure this value has at most %(limit_value)d character (it has "
+"%(show_value)d)."
+msgid_plural ""
+"Ensure this value has at most %(limit_value)d characters (it has "
+"%(show_value)d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:514
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:366
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:405
+msgid "Enter a number."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:516
+#, python-format
+msgid "Ensure that there are no more than %(max)s digit in total."
+msgid_plural "Ensure that there are no more than %(max)s digits in total."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:521
+#, python-format
+msgid "Ensure that there are no more than %(max)s decimal place."
+msgid_plural "Ensure that there are no more than %(max)s decimal places."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:526
+#, python-format
+msgid ""
+"Ensure that there are no more than %(max)s digit before the decimal point."
+msgid_plural ""
+"Ensure that there are no more than %(max)s digits before the decimal point."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:597
+#, python-format
+msgid ""
+"File extension “%(extension)s” is not allowed. Allowed extensions are: "
+"%(allowed_extensions)s."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:659
+msgid "Null characters are not allowed."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/base.py:1600
+#: venv/lib/python3.12/site-packages/django/forms/models.py:908
+msgid "and"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/base.py:1602
+#, python-format
+msgid "%(model_name)s with this %(field_labels)s already exists."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/constraints.py:22
+#, python-format
+msgid "Constraint “%(name)s” is violated."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:134
+#, python-format
+msgid "Value %(value)r is not a valid choice."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:135
+msgid "This field cannot be null."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:136
+msgid "This field cannot be blank."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:137
+#, python-format
+msgid "%(model_name)s with this %(field_label)s already exists."
+msgstr ""
+
+#. Translators: The 'lookup_type' is one of 'date', 'year' or
+#. 'month'. Eg: "Title must be unique for pub_date year"
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:141
+#, python-format
+msgid ""
+"%(field_label)s must be unique for %(date_field_label)s %(lookup_type)s."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:180
+#, python-format
+msgid "Field of type: %(field_type)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1162
+#, python-format
+msgid "“%(value)s” value must be either True or False."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1163
+#, python-format
+msgid "“%(value)s” value must be either True, False, or None."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1165
+msgid "Boolean (Either True or False)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1215
+#, python-format
+msgid "String (up to %(max_length)s)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1217
+msgid "String (unlimited)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1326
+msgid "Comma-separated integers"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1427
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid date format. It must be in YYYY-MM-DD "
+"format."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1431
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1566
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (YYYY-MM-DD) but it is an invalid "
+"date."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1435
+msgid "Date (without time)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1562
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in YYYY-MM-DD "
+"HH:MM[:ss[.uuuuuu]][TZ] format."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1570
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (YYYY-MM-DD HH:MM[:ss[.uuuuuu]]"
+"[TZ]) but it is an invalid date/time."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1575
+msgid "Date (with time)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1702
+#, python-format
+msgid "“%(value)s” value must be a decimal number."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1704
+msgid "Decimal number"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1864
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in [DD] "
+"[[HH:]MM:]ss[.uuuuuu] format."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1920
+msgid "Email address"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1945
+msgid "File path"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2023
+#, python-format
+msgid "“%(value)s” value must be a float."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2025
+msgid "Floating point number"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2065
+#, python-format
+msgid "“%(value)s” value must be an integer."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2067
+msgid "Integer"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2163
+msgid "Big (8 byte) integer"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2180
+msgid "Small integer"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2188
+msgid "IPv4 address"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2219
+msgid "IP address"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2310
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2311
+#, python-format
+msgid "“%(value)s” value must be either None, True or False."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2313
+msgid "Boolean (Either True, False or None)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2364
+msgid "Positive big integer"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2379
+msgid "Positive integer"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2394
+msgid "Positive small integer"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2410
+#, python-format
+msgid "Slug (up to %(max_length)s)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2446
+msgid "Text"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2526
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in HH:MM[:ss[.uuuuuu]] "
+"format."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2530
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (HH:MM[:ss[.uuuuuu]]) but it is an "
+"invalid time."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2534
+msgid "Time"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2642
+msgid "URL"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2666
+msgid "Raw binary data"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2731
+#, python-format
+msgid "“%(value)s” is not a valid UUID."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2733
+msgid "Universally unique identifier"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/files.py:244
+msgid "File"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/files.py:420
+msgid "Image"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/json.py:24
+msgid "A JSON object"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/json.py:26
+msgid "Value must be valid JSON."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:979
+#, python-format
+msgid "%(model)s instance with %(field)s %(value)r is not a valid choice."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:982
+msgid "Foreign Key (type determined by related field)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1276
+msgid "One-to-one relationship"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1333
+#, python-format
+msgid "%(from)s-%(to)s relationship"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1335
+#, python-format
+msgid "%(from)s-%(to)s relationships"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1383
+msgid "Many-to-many relationship"
+msgstr ""
+
+#. Translators: If found as last label character, these punctuation
+#. characters will prevent the default label_suffix to be appended to the label
+#: venv/lib/python3.12/site-packages/django/forms/boundfield.py:185
+msgid ":?.!"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:95
+msgid "This field is required."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:315
+msgid "Enter a whole number."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:486
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1267
+msgid "Enter a valid date."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:509
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1268
+msgid "Enter a valid time."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:536
+msgid "Enter a valid date/time."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:570
+msgid "Enter a valid duration."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:571
+#, python-brace-format
+msgid "The number of days must be between {min_days} and {max_days}."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:640
+msgid "No file was submitted. Check the encoding type on the form."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:641
+msgid "No file was submitted."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:642
+msgid "The submitted file is empty."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:644
+#, python-format
+msgid "Ensure this filename has at most %(max)d character (it has %(length)d)."
+msgid_plural ""
+"Ensure this filename has at most %(max)d characters (it has %(length)d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:649
+msgid "Please either submit a file or check the clear checkbox, not both."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:717
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:889
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:975
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1592
+#, python-format
+msgid "Select a valid choice. %(value)s is not one of the available choices."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:977
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1096
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1590
+msgid "Enter a list of values."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1097
+msgid "Enter a complete value."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1339
+msgid "Enter a valid UUID."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1369
+msgid "Enter a valid JSON."
+msgstr ""
+
+#. Translators: This is the default suffix added to form field labels
+#: venv/lib/python3.12/site-packages/django/forms/forms.py:97
+msgid ":"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/forms.py:239
+#, python-format
+msgid "(Hidden field %(name)s) %(error)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:61
+#, python-format
+msgid ""
+"ManagementForm data is missing or has been tampered with. Missing fields: "
+"%(field_names)s. You may need to file a bug report if the issue persists."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:65
+#, python-format
+msgid "Please submit at most %(num)d form."
+msgid_plural "Please submit at most %(num)d forms."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:70
+#, python-format
+msgid "Please submit at least %(num)d form."
+msgid_plural "Please submit at least %(num)d forms."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:484
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:491
+msgid "Order"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:499
+msgid "Delete"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:901
+#, python-format
+msgid "Please correct the duplicate data for %(field)s."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:906
+#, python-format
+msgid "Please correct the duplicate data for %(field)s, which must be unique."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:913
+#, python-format
+msgid ""
+"Please correct the duplicate data for %(field_name)s which must be unique "
+"for the %(lookup)s in %(date_field)s."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:922
+msgid "Please correct the duplicate values below."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1359
+msgid "The inline value did not match the parent instance."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1450
+msgid "Select a valid choice. That choice is not one of the available choices."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1594
+#, python-format
+msgid "“%(pk)s” is not a valid value."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/utils.py:229
+#, python-format
+msgid ""
+"%(datetime)s couldn’t be interpreted in time zone %(current_timezone)s; it "
+"may be ambiguous or it may not exist."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:527
+msgid "Clear"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:528
+msgid "Currently"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:529
+msgid "Change"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:866
+msgid "Unknown"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:867
+msgid "Yes"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:868
+msgid "No"
+msgstr ""
+
+#. Translators: Please do not add spaces around commas.
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:873
+msgid "yes,no,maybe"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:903
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:920
+#, python-format
+msgid "%(size)d byte"
+msgid_plural "%(size)d bytes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:922
+#, python-format
+msgid "%s KB"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:924
+#, python-format
+msgid "%s MB"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:926
+#, python-format
+msgid "%s GB"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:928
+#, python-format
+msgid "%s TB"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:930
+#, python-format
+msgid "%s PB"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:74
+msgid "p.m."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:75
+msgid "a.m."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:80
+msgid "PM"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:81
+msgid "AM"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:153
+msgid "midnight"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:155
+msgid "noon"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:7
+msgid "Monday"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:8
+msgid "Tuesday"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:9
+msgid "Wednesday"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:10
+msgid "Thursday"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:11
+msgid "Friday"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:12
+msgid "Saturday"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:13
+msgid "Sunday"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:16
+msgid "Mon"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:17
+msgid "Tue"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:18
+msgid "Wed"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:19
+msgid "Thu"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:20
+msgid "Fri"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:21
+msgid "Sat"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:22
+msgid "Sun"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:25
+msgid "January"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:26
+msgid "February"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:27
+msgid "March"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:28
+msgid "April"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:29
+msgid "May"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:30
+msgid "June"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:31
+msgid "July"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:32
+msgid "August"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:33
+msgid "September"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:34
+msgid "October"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:35
+msgid "November"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:36
+msgid "December"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:39
+msgid "jan"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:40
+msgid "feb"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:41
+msgid "mar"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:42
+msgid "apr"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:43
+msgid "may"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:44
+msgid "jun"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:45
+msgid "jul"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:46
+msgid "aug"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:47
+msgid "sep"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:48
+msgid "oct"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:49
+msgid "nov"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:50
+msgid "dec"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:53
+msgctxt "abbrev. month"
+msgid "Jan."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:54
+msgctxt "abbrev. month"
+msgid "Feb."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:55
+msgctxt "abbrev. month"
+msgid "March"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:56
+msgctxt "abbrev. month"
+msgid "April"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:57
+msgctxt "abbrev. month"
+msgid "May"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:58
+msgctxt "abbrev. month"
+msgid "June"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:59
+msgctxt "abbrev. month"
+msgid "July"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:60
+msgctxt "abbrev. month"
+msgid "Aug."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:61
+msgctxt "abbrev. month"
+msgid "Sept."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:62
+msgctxt "abbrev. month"
+msgid "Oct."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:63
+msgctxt "abbrev. month"
+msgid "Nov."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:64
+msgctxt "abbrev. month"
+msgid "Dec."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:67
+msgctxt "alt. month"
+msgid "January"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:68
+msgctxt "alt. month"
+msgid "February"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:69
+msgctxt "alt. month"
+msgid "March"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:70
+msgctxt "alt. month"
+msgid "April"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:71
+msgctxt "alt. month"
+msgid "May"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:72
+msgctxt "alt. month"
+msgid "June"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:73
+msgctxt "alt. month"
+msgid "July"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:74
+msgctxt "alt. month"
+msgid "August"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:75
+msgctxt "alt. month"
+msgid "September"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:76
+msgctxt "alt. month"
+msgid "October"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:77
+msgctxt "alt. month"
+msgid "November"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:78
+msgctxt "alt. month"
+msgid "December"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/ipv6.py:20
+msgid "This is not a valid IPv6 address."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/text.py:76
+#, python-format
+msgctxt "String to return when truncating text"
+msgid "%(truncated_text)s…"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/text.py:287
+msgid "or"
+msgstr ""
+
+#. Translators: This string is used as a separator between list elements
+#: venv/lib/python3.12/site-packages/django/utils/text.py:306
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:135
+msgid ", "
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:8
+#, python-format
+msgid "%(num)d year"
+msgid_plural "%(num)d years"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:9
+#, python-format
+msgid "%(num)d month"
+msgid_plural "%(num)d months"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:10
+#, python-format
+msgid "%(num)d week"
+msgid_plural "%(num)d weeks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:11
+#, python-format
+msgid "%(num)d day"
+msgid_plural "%(num)d days"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:12
+#, python-format
+msgid "%(num)d hour"
+msgid_plural "%(num)d hours"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:13
+#, python-format
+msgid "%(num)d minute"
+msgid_plural "%(num)d minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:29
+msgid "Forbidden"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:30
+msgid "CSRF verification failed. Request aborted."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:34
+msgid ""
+"You are seeing this message because this HTTPS site requires a “Referer "
+"header” to be sent by your web browser, but none was sent. This header is "
+"required for security reasons, to ensure that your browser is not being "
+"hijacked by third parties."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:40
+msgid ""
+"If you have configured your browser to disable “Referer” headers, please re-"
+"enable them, at least for this site, or for HTTPS connections, or for “same-"
+"origin” requests."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:45
+msgid ""
+"If you are using the <meta name=\"referrer\" content=\"no-referrer\"> tag or "
+"including the “Referrer-Policy: no-referrer” header, please remove them. The "
+"CSRF protection requires the “Referer” header to do strict referer checking. "
+"If you’re concerned about privacy, use alternatives like <a "
+"rel=\"noreferrer\" …> for links to third-party sites."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:54
+msgid ""
+"You are seeing this message because this site requires a CSRF cookie when "
+"submitting forms. This cookie is required for security reasons, to ensure "
+"that your browser is not being hijacked by third parties."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:60
+msgid ""
+"If you have configured your browser to disable cookies, please re-enable "
+"them, at least for this site, or for “same-origin” requests."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:66
+msgid "More information is available with DEBUG=True."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:44
+msgid "No year specified"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:64
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:115
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:214
+msgid "Date out of range"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:94
+msgid "No month specified"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:147
+msgid "No day specified"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:194
+msgid "No week specified"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:353
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:384
+#, python-format
+msgid "No %(verbose_name_plural)s available"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:680
+#, python-format
+msgid ""
+"Future %(verbose_name_plural)s not available because "
+"%(class_name)s.allow_future is False."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:720
+#, python-format
+msgid "Invalid date string “%(datestr)s” given format “%(format)s”"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/detail.py:56
+#, python-format
+msgid "No %(verbose_name)s found matching the query"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/list.py:70
+msgid "Page is not “last”, nor can it be converted to an int."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/list.py:77
+#, python-format
+msgid "Invalid page (%(page_number)s): %(message)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/list.py:173
+#, python-format
+msgid "Empty list and “%(class_name)s.allow_empty” is False."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/static.py:49
+msgid "Directory indexes are not allowed here."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/static.py:51
+#, python-format
+msgid "“%(path)s” does not exist"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/static.py:68
+#: venv/lib/python3.12/site-packages/django/views/templates/directory_index.html:8
+#: venv/lib/python3.12/site-packages/django/views/templates/directory_index.html:11
+#, python-format
+msgid "Index of %(directory)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:7
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:204
+msgid "The install worked successfully! Congratulations!"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:206
+#, python-format
+msgid ""
+"View <a href=\"https://docs.djangoproject.com/en/%(version)s/releases/\" "
+"target=\"_blank\" rel=\"noopener\">release notes</a> for Django %(version)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:208
+#, python-format
+msgid ""
+"You are seeing this page because <a href=\"https://docs.djangoproject.com/en/"
+"%(version)s/ref/settings/#debug\" target=\"_blank\" "
+"rel=\"noopener\">DEBUG=True</a> is in your settings file and you have not "
+"configured any URLs."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:217
+msgid "Django Documentation"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:218
+msgid "Topics, references, &amp; how-to’s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:226
+msgid "Tutorial: A Polling App"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:227
+msgid "Get started with Django"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:235
+msgid "Django Community"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:236
+msgid "Connect, get help, or contribute"
+msgstr ""

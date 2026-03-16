@@ -1,0 +1,507 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Galaxy Market Lab{% endblock %}
+
+{% block content %}
+
+<h3 class="mb-2 d-flex align-items-center">
+  <img src="{% static 'img/galaxy-icon.png' %}" alt="" style="height:28px;" class="me-2">
+  Galaxy Market Lab
+</h3>
+
+<div class="d-flex align-items-center justify-content-between mb-2">
+  <p class="text-muted small mb-0">
+    {% if view_mode == "constellation" %}
+      🔍 {{ universe_label }} 스냅샷 기준 · 원의 크기 = 시가총액, 색상 = 당일 수익률, 섹터별로 자동 클러스터링됩니다.
+    {% elif view_mode == "sector" %}
+      🧊 {{ universe_label }} · 섹터별 합산 시가총액과 캡-가중 수익률을 Heatmap 스타일로 보여줍니다.
+    {% elif view_mode == "factor" %}
+      🧮 {{ universe_label }} · Large/Small × Up/Down 2×2 Factor Grid 로 종목 분포를 표시합니다.
+    {% elif view_mode == "risk" %}
+      ⚠️ {{ universe_label }} · 섹터별 일간 변동성(평균 절대 수익률)을 Radar 차트로 표현합니다.
+    {% else %}
+      🌊 {{ universe_label }} · 섹터별 상승/하락 시가총액의 순변화를 Flow Orbit 스타일로 보여줍니다.
+    {% endif %}
+    <span class="ms-2 text-muted">표본 종목 수: {{ snapshot_count }}</span>
+  </p>
+
+  <form id="galaxy-form" method="get" class="d-flex align-items-center gap-2">
+    <div class="d-flex align-items-center">
+      <span class="me-1 small text-muted">Universe</span>
+      <select name="u" class="form-select form-select-sm"
+              onchange="document.getElementById('galaxy-form').submit();">
+        {% for key, label in universe_choices %}
+          <option value="{{ key }}" {% if key == universe_key %}selected{% endif %}>
+            {{ label }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="d-flex align-items-center">
+      <span class="me-1 small text-muted">View</span>
+      <select name="v" class="form-select form-select-sm"
+              onchange="document.getElementById('galaxy-form').submit();">
+        {% for v_key, v_label in view_choices %}
+          <option value="{{ v_key }}" {% if v_key == view_mode %}selected{% endif %}>
+            {{ v_label }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+  </form>
+</div>
+
+<div class="card shadow-sm border-0">
+  <div class="card-body" style="height: 560px; background:#020617;">
+    <canvas id="galaxy-chart"></canvas>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<script>
+  // -----------------------------
+  // Django → JS 데이터
+  // -----------------------------
+  const VIEW_MODE = "{{ view_mode }}";
+
+  const CONSTELLATION_DATA = {{ constellation_json|safe }};
+  const SECTOR_STATS = {{ sector_stats_json|safe }};
+  const FACTOR_GRID = {{ factor_grid_json|safe }};
+  const RISK_RADAR = {{ risk_radar_json|safe }};
+  const FLOW_ORBIT = {{ flow_orbit_json|safe }};
+
+  let galaxyChart = null;
+
+  function pctColor(v) {
+    // -3% ~ +3% 범위로 색상 맵핑 (초록/빨강)
+    const x = Math.max(-3, Math.min(3, v));
+    const t = (x + 3) / 6; // 0~1
+    const r = Math.round(255 * (1 - t));
+    const g = Math.round(255 * t);
+    return `rgba(${r},${g},120,0.85)`;
+  }
+
+  function flowColor(v) {
+    if (v > 0) return "rgba(34,197,94,0.9)";      // 초록
+    if (v < 0) return "rgba(248,113,113,0.9)";    // 빨강
+    return "rgba(148,163,184,0.9)";               // 중립
+  }
+
+  function renderGalaxyChart() {
+    const canvas = document.getElementById("galaxy-chart");
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+
+    if (galaxyChart) {
+      galaxyChart.destroy();
+    }
+
+    // -----------------------------
+    // 1) Market Constellation
+    // -----------------------------
+    if (VIEW_MODE === "constellation") {
+  const ds = CONSTELLATION_DATA || [];
+  
+  // Create SVG instead of Chart.js
+  const container = document.getElementById('galaxy-chart').parentElement;
+  container.innerHTML = ''; // Clear canvas
+  container.style.height = '900px';
+  container.style.background = 'linear-gradient(180deg, #1a1a2e 0%, #0f0f1e 100%)';
+  
+  const width = container.offsetWidth || 1200;
+  const height = 900;
+  const centerX = width / 2;
+  const centerY = height;
+  
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("width", "100%");
+  svg.setAttribute("height", height);
+  svg.style.display = "block";
+  
+  // Group stocks by sector and performance
+  const sectors = {};
+  ds.forEach(d => {
+    const s = d.sector || "Other";
+    if (!sectors[s]) sectors[s] = [];
+    sectors[s].push(d);
+  });
+  
+  const sectorList = Object.keys(sectors).map(name => ({
+    name,
+    stocks: sectors[name],
+    avgChange: sectors[name].reduce((sum, s) => sum + (s.change_pct || 0), 0) / sectors[name].length
+  }));
+  
+  const positiveSectors = sectorList.filter(s => s.avgChange >= 0).sort((a, b) => b.avgChange - a.avgChange);
+  const negativeSectors = sectorList.filter(s => s.avgChange < 0).sort((a, b) => a.avgChange - b.avgChange);
+  
+  // Draw trunk
+  const trunk = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  trunk.setAttribute("x1", centerX);
+  trunk.setAttribute("y1", centerY);
+  trunk.setAttribute("x2", centerX);
+  trunk.setAttribute("y2", centerY - 200);
+  trunk.setAttribute("stroke", "#3e2723");
+  trunk.setAttribute("stroke-width", "20");
+  trunk.setAttribute("stroke-linecap", "round");
+  svg.appendChild(trunk);
+  
+  // Helper: Draw 5-petal sakura flower
+  function createSakuraFlower(cx, cy, size, color) {
+    const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    
+    // Draw 5 petals
+    for (let i = 0; i < 5; i++) {
+      const angle = (i * 72 - 90) * Math.PI / 180;
+      const petalX = cx + Math.cos(angle) * size * 0.4;
+      const petalY = cy + Math.sin(angle) * size * 0.4;
+      
+      const petal = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+      petal.setAttribute("cx", petalX);
+      petal.setAttribute("cy", petalY);
+      petal.setAttribute("rx", size * 0.6);
+      petal.setAttribute("ry", size * 0.4);
+      petal.setAttribute("fill", color);
+      petal.setAttribute("opacity", "0.85");
+      petal.setAttribute("transform", `rotate(${i * 72}, ${petalX}, ${petalY})`);
+      group.appendChild(petal);
+    }
+    
+    // Center
+    const center = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    center.setAttribute("cx", cx);
+    center.setAttribute("cy", cy);
+    center.setAttribute("r", size * 0.15);
+    center.setAttribute("fill", "#fff59d");
+    center.setAttribute("opacity", "0.9");
+    group.appendChild(center);
+    
+    return group;
+  }
+  
+  // Helper: Draw branch
+  function drawBranch(x1, y1, x2, y2, thickness) {
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    const midX = (x1 + x2) / 2 + (Math.random() - 0.5) * 30;
+    const midY = (y1 + y2) / 2;
+    path.setAttribute("d", `M ${x1} ${y1} Q ${midX} ${midY}, ${x2} ${y2}`);
+    path.setAttribute("stroke", "#4e342e");
+    path.setAttribute("stroke-width", thickness);
+    path.setAttribute("stroke-linecap", "round");
+    path.setAttribute("fill", "none");
+    path.setAttribute("opacity", "0.7");
+    svg.appendChild(path);
+  }
+  
+  // Draw upward branches (positive sectors)
+  const positiveCount = positiveSectors.length;
+  positiveSectors.forEach((sector, idx) => {
+    const spread = 140;
+    const startAngle = 180 + (180 - spread) / 2;
+    const angle = startAngle + (spread / (positiveCount + 1)) * (idx + 1);
+    const angleRad = angle * Math.PI / 180;
+    
+    const branchLen = 180 + Math.random() * 60;
+    const endX = centerX + Math.cos(angleRad) * branchLen;
+    const endY = centerY - 200 + Math.sin(angleRad) * branchLen;
+    
+    drawBranch(centerX, centerY - 200, endX, endY, 3);
+    
+    // Draw flowers on this branch
+    sector.stocks.forEach((stock, stockIdx) => {
+      const progress = (stockIdx + 1) / (sector.stocks.length + 1);
+      const flowerX = centerX + Math.cos(angleRad) * branchLen * progress + (Math.random() - 0.5) * 40;
+      const flowerY = centerY - 200 + Math.sin(angleRad) * branchLen * progress + (Math.random() - 0.5) * 40;
+      
+      const change = stock.change_pct || 0;
+      const mcap = stock.market_cap || 0;
+      
+      // Sakura pink color based on performance
+      let flowerColor;
+      if (change > 3) flowerColor = '#ffcdd2';
+      else if (change > 1) flowerColor = '#f8bbd0';
+      else if (change > 0) flowerColor = '#fce4ec';
+      else flowerColor = '#fff0f3';
+      
+      let flowerSize = 4;
+      if (mcap >= 1000e9) flowerSize = 8;
+      else if (mcap >= 500e9) flowerSize = 7;
+      else if (mcap >= 200e9) flowerSize = 6;
+      else if (mcap >= 100e9) flowerSize = 5;
+      
+      const flower = createSakuraFlower(flowerX, flowerY, flowerSize, flowerColor);
+      flower.style.cursor = "pointer";
+      flower.style.transition = "all 0.3s";
+      
+      flower.onmouseenter = function() {
+        this.setAttribute("transform", `scale(1.5) translate(${flowerX * -0.5}, ${flowerY * -0.5})`);
+        this.setAttribute("transform-origin", `${flowerX}px ${flowerY}px`);
+      };
+      flower.onmouseleave = function() {
+        this.setAttribute("transform", "scale(1)");
+      };
+      
+      const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+      title.textContent = `${stock.symbol} · ${stock.name}\n${change > 0 ? '+' : ''}${change.toFixed(2)}%\nMcap: ${stock.market_cap.toLocaleString()}`;
+      flower.appendChild(title);
+      
+      svg.appendChild(flower);
+    });
+  });
+  
+  // Draw downward branches (negative sectors)  
+  const negativeCount = negativeSectors.length;
+  negativeSectors.forEach((sector, idx) => {
+    const spread = 100;
+    const startAngle = (180 - spread) / 2;
+    const angle = startAngle + (spread / (negativeCount + 1)) * (idx + 1);
+    const angleRad = angle * Math.PI / 180;
+    
+    const branchLen = 120 + Math.random() * 40;
+    const endX = centerX + Math.cos(angleRad) * branchLen;
+    const endY = centerY - 200 + Math.sin(angleRad) * branchLen;
+    
+    drawBranch(centerX, centerY - 200, endX, endY, 2);
+    
+    // Draw flowers on this branch (fewer, lighter for negative)
+    const maxStocks = Math.min(sector.stocks.length, 8);
+    for (let stockIdx = 0; stockIdx < maxStocks; stockIdx++) {
+      const stock = sector.stocks[stockIdx];
+      const progress = (stockIdx + 1) / (maxStocks + 1);
+      const flowerX = centerX + Math.cos(angleRad) * branchLen * progress + (Math.random() - 0.5) * 30;
+      const flowerY = centerY - 200 + Math.sin(angleRad) * branchLen * progress + (Math.random() - 0.5) * 30;
+      
+      const change = stock.change_pct || 0;
+      const mcap = stock.market_cap || 0;
+      
+      // Pale colors for negative
+      let flowerColor = '#fff9fa';
+      
+      let flowerSize = 3;
+      if (mcap >= 1000e9) flowerSize = 6;
+      else if (mcap >= 500e9) flowerSize = 5;
+      else if (mcap >= 200e9) flowerSize = 4;
+      
+      const flower = createSakuraFlower(flowerX, flowerY, flowerSize, flowerColor);
+      flower.style.cursor = "pointer";
+      
+      const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+      title.textContent = `${stock.symbol} · ${stock.name}\n${change.toFixed(2)}%\nMcap: ${stock.market_cap.toLocaleString()}`;
+      flower.appendChild(title);
+      
+      svg.appendChild(flower);
+    }
+  });
+  
+  container.appendChild(svg);
+  
+  return;
+}
+
+
+
+    // -----------------------------
+    // 2) Sector Heatmap (bar)
+    // -----------------------------
+    if (VIEW_MODE === "sector") {
+      const rows = SECTOR_STATS || [];
+      const labels = rows.map(r => r.sector);
+      const mcap = rows.map(r => r.total_mcap);
+      const chg = rows.map(r => r.cap_wgt_chg);
+
+      galaxyChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Total Market Cap",
+            data: mcap,
+            backgroundColor: chg.map(v => pctColor(v)),
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => {
+                  const i = ctx.dataIndex;
+                  return [
+                    `Sector: ${labels[i]}`,
+                    `Mkt Cap: ${mcap[i].toLocaleString()}`,
+                    `Cap-wgt Change: ${chg[i].toFixed(2)}%`,
+                  ];
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { maxRotation: 60, minRotation: 30, color:"#e5e7eb" },
+              grid: { display: false },
+            },
+            y: {
+              ticks: {
+                callback: v => v >= 1e9 ? (v/1e9).toFixed(1) + "B" : v.toFixed(0),
+                color:"#9ca3af",
+              },
+              grid: { color: "rgba(31,41,55,0.6)" }
+            }
+          }
+        }
+      });
+      return;
+    }
+
+    // -----------------------------
+    // 3) Factor Grid (bubble 2×2)
+    // -----------------------------
+    if (VIEW_MODE === "factor") {
+      const pts = FACTOR_GRID || [];
+
+      galaxyChart = new Chart(ctx, {
+        type: "bubble",
+        data: {
+          datasets: [{
+            data: pts.map(p => ({x: p.x, y: p.y, r: p.r})),
+            backgroundColor: pts.map(p => pctColor(p.avg_chg)),
+            borderWidth: 0,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => {
+                  const p = pts[ctx.dataIndex];
+                  return [
+                    `${p.label}`,
+                    `Count: ${p.count}`,
+                    `Avg Change: ${p.avg_chg.toFixed(2)}%`
+                  ];
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              min: -1.5,
+              max: 1.5,
+              ticks: {
+                callback: v => v < 0 ? "Small" : "Large",
+                color:"#e5e7eb"
+              },
+              grid: { color:"rgba(55,65,81,0.8)" }
+            },
+            y: {
+              min: -1.5,
+              max: 1.5,
+              ticks: {
+                callback: v => v < 0 ? "Down" : "Up",
+                color:"#e5e7eb"
+              },
+              grid: { color:"rgba(55,65,81,0.8)" }
+            }
+          }
+        }
+      });
+      return;
+    }
+
+    // -----------------------------
+    // 4) Risk Radar (radar chart)
+    // -----------------------------
+    if (VIEW_MODE === "risk") {
+      const labels = RISK_RADAR.labels || [];
+      const risk = RISK_RADAR.risk || [];
+
+      galaxyChart = new Chart(ctx, {
+        type: "radar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Avg |Daily Change| %",
+            data: risk,
+            borderColor: "rgba(96,165,250,0.9)",
+            backgroundColor: "rgba(96,165,250,0.25)",
+            pointRadius: 2,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+          },
+          scales: {
+            r: {
+              angleLines: { color:"rgba(55,65,81,0.7)" },
+              grid: { color:"rgba(55,65,81,0.7)" },
+              pointLabels: { color:"#e5e7eb" },
+              ticks: {
+                backdropColor:"transparent",
+                color:"#9ca3af",
+                callback: v => v.toFixed(1) + "%"
+              }
+            }
+          }
+        }
+      });
+      return;
+    }
+
+    // -----------------------------
+    // 5) Flow Orbit (doughnut)
+    // -----------------------------
+    if (VIEW_MODE === "flow") {
+      const labels = FLOW_ORBIT.labels || [];
+      const flow = FLOW_ORBIT.flow || [];
+
+      galaxyChart = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: labels,
+          datasets: [{
+            data: flow,
+            backgroundColor: flow.map(v => flowColor(v)),
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: "45%",
+          plugins: {
+            legend: {
+              position: "right",
+              labels: { color:"#e5e7eb", boxWidth:12 }
+            },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => {
+                  const v = flow[ctx.dataIndex];
+                  return `${labels[ctx.dataIndex]}: ${v.toLocaleString()} (net mkt cap)`;
+                }
+              }
+            }
+          }
+        }
+      });
+      return;
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", renderGalaxyChart);
+</script>
+{% endblock %}

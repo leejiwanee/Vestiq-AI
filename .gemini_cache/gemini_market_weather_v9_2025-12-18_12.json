@@ -1,0 +1,174 @@
+{
+  "en": {
+    "title": "Risk-On Rhythm: Tech Leads as Yields Take a Breather",
+    "summary": "Wall Street is feeling the good vibes today, with major indices pushing higher, led by a strong tech rebound. Bond yields are taking a breather, easing some pressure and encouraging a 'risk-on' mood, while volatility takes a notable dip.",
+    "snapshot": [
+      {
+        "label": "S&P 500 (The Big Board)",
+        "value": "+0.83%",
+        "comment": "Riding the positive wave."
+      },
+      {
+        "label": "Nasdaq (Tech Titans)",
+        "value": "+1.48%",
+        "comment": "Innovators flying high."
+      },
+      {
+        "label": "Russell 2000 (Small Caps)",
+        "value": "+0.66%",
+        "comment": "Showing some broad strength."
+      },
+      {
+        "label": "Bitcoin (Digital Gold)",
+        "value": "-0.12%",
+        "comment": "Taking a minor pause."
+      }
+    ],
+    "macro": {
+      "title": "Macro Vibes",
+      "points": [
+        "<b>Bond Yields Ease</b>: U.S. Treasury yields across the board, from the 10-year to short-term T-bills, have seen declines, potentially signaling an easing of financial conditions or shifting expectations for future rate hikes.",
+        "<b>Volatility Retreats</b>: The VIX, often called the 'fear gauge', dipped over 2.5%, indicating a reduction in market uncertainty and a more confident investor sentiment today.",
+        "<b>Tech Leads the Charge</b>: The Nasdaq significantly outperformed, suggesting that investors are favoring growth and technology stocks as yields come down.",
+        "<b>Dollar's Gentle Ascent</b>: The U.S. Dollar Index (DXY) saw a modest gain, while EURUSD softened, reflecting minor currency movements but not a dramatic shift.",
+        "<b>Commodity Glimmers</b>: Gold and Crude Oil both posted gains, potentially pointing to underlying demand or a slight hedging sentiment amidst a generally positive market, with Copper also seeing a rise."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "Technology",
+        "change": "Up",
+        "comment": "Led by Nasdaq's strong performance, investor appetite for growth is back."
+      },
+      {
+        "name": "Consumer Discretionary",
+        "change": "Up",
+        "comment": "Positive news from Darden (Olive Garden) and Chipotle, alongside activist interest in Lululemon, boosts the sector."
+      },
+      {
+        "name": "Industrials",
+        "change": "Up",
+        "comment": "American Airlines' new fleet and rising copper prices suggest strength."
+      },
+      {
+        "name": "Utilities",
+        "change": "Down",
+        "comment": "Typically lags in 'risk-on' rallies as investors seek growth over defensives."
+      },
+      {
+        "name": "Consumer Staples",
+        "change": "Down",
+        "comment": "Defensive nature makes it less appealing when growth sectors are favored."
+      },
+      {
+        "name": "Real Estate",
+        "change": "Down",
+        "comment": "Despite falling yields, could be relatively weaker in a strong growth-led rally."
+      }
+    ],
+    "themes": [
+      {
+        "name": "Consumer Spending & Dining Out",
+        "change": "Positive",
+        "comment": "Darden's raised outlook and Chipotle's menu innovation suggest resilience in discretionary spending."
+      },
+      {
+        "name": "Activist Engagement",
+        "change": "Catalyst",
+        "comment": "Elliott Management's significant stake in Lululemon highlights the ongoing influence of activist investors."
+      },
+      {
+        "name": "Tech & Growth Resilience",
+        "change": "Strong",
+        "comment": "Nasdaq's robust performance, aided by easing bond yields, points to renewed investor appetite for growth-oriented stocks."
+      }
+    ]
+  },
+  "ko": {
+    "title": "위험 선호 리듬: 금리 하락하며 기술주 선두",
+    "summary": "오늘 월가는 긍정적인 분위기에 휩싸였습니다. 주요 지수는 기술주의 강세에 힘입어 상승세를 보였고, 채권 금리는 잠시 숨을 고르며 부담을 완화해 '위험 선호' 심리를 부추겼습니다. 변동성 지수도 눈에 띄게 하락했습니다.",
+    "snapshot": [
+      {
+        "label": "스탠더드앤드푸어스 500 (대형주)",
+        "value": "+0.83%",
+        "comment": "긍정적인 흐름에 동참."
+      },
+      {
+        "label": "나스닥 (기술주)",
+        "value": "+1.48%",
+        "comment": "혁신 기업들이 고공 행진."
+      },
+      {
+        "label": "러셀 2000 (중소형주)",
+        "value": "+0.66%",
+        "comment": "폭넓은 강세 시현."
+      },
+      {
+        "label": "비트코인 (디지털 금)",
+        "value": "-0.12%",
+        "comment": "잠시 숨고르기."
+      }
+    ],
+    "macro": {
+      "title": "매크로 경제",
+      "points": [
+        "<b>채권 금리 완화</b>: 미국 국채 10년물부터 단기 국채까지 전반적으로 금리가 하락하며, 금융 여건 완화 또는 향후 금리 인상 기대감 변화를 시사했습니다.",
+        "<b>변동성 후퇴</b>: 시장의 '공포 지수'로 불리는 VIX가 2.5% 이상 하락하여, 시장 불확실성이 줄고 투자자 신뢰가 높아졌음을 나타냅니다.",
+        "<b>기술주가 선도</b>: 나스닥이 눈에 띄게 우수한 성과를 보이며, 금리 하락 국면에서 투자자들이 성장 및 기술주를 선호하고 있음을 시사했습니다.",
+        "<b>달러의 완만한 상승</b>: 미국 달러 지수(DXY)가 소폭 상승하고 유로화가 달러 대비 약세를 보이며, 큰 변화는 아니지만 미묘한 통화 움직임을 반영했습니다.",
+        "<b>원자재의 광채</b>: 금과 원유 모두 상승세를 보이며, 전반적인 시장의 긍정적인 분위기 속에서 기본 수요 또는 약간의 헤징 심리를 나타냈으며 구리 또한 상승했습니다."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "기술 (Technology)",
+        "change": "상승",
+        "comment": "나스닥의 강세가 이를 뒷받침하며, 성장에 대한 투자자들의 욕구가 돌아왔습니다."
+      },
+      {
+        "name": "임의 소비재 (Consumer Discretionary)",
+        "change": "상승",
+        "comment": "Darden (올리브 가든)과 Chipotle의 긍정적인 소식, Lululemon에 대한 행동주의 투자자들의 관심이 이 부문을 끌어올렸습니다."
+      },
+      {
+        "name": "산업재 (Industrials)",
+        "change": "상승",
+        "comment": "American Airlines의 신형 항공기 소식과 구리 가격 상승이 강세를 시사합니다."
+      },
+      {
+        "name": "유틸리티 (Utilities)",
+        "change": "하락",
+        "comment": "성장주가 강세를 보이는 '위험 선호' 랠리에서는 일반적으로 방어주보다 뒤처지는 경향이 있습니다."
+      },
+      {
+        "name": "필수 소비재 (Consumer Staples)",
+        "change": "하락",
+        "comment": "방어적 성격으로, 성장 부문이 선호될 때 매력이 떨어집니다."
+      },
+      {
+        "name": "부동산 (Real Estate)",
+        "change": "하락",
+        "comment": "금리 하락에도 불구하고, 강력한 성장 주도 랠리에서는 상대적으로 약세를 보일 수 있습니다."
+      }
+    ],
+    "themes": [
+      {
+        "name": "소비 지출 및 외식",
+        "change": "긍정적",
+        "comment": "Darden의 상향된 전망과 Chipotle의 메뉴 혁신은 재량적 소비 지출의 회복력을 시사합니다."
+      },
+      {
+        "name": "행동주의 투자",
+        "change": "촉매",
+        "comment": "Elliott Management의 Lululemon에 대한 상당한 지분 투자는 행동주의 투자자들의 지속적인 영향력을 보여줍니다."
+      },
+      {
+        "name": "기술 및 성장 탄력성",
+        "change": "강세",
+        "comment": "완화된 채권 금리에 힘입은 나스닥의 강력한 실적은 성장 지향 및 기술주에 대한 투자자들의 새로운 욕구를 보여줍니다."
+      }
+    ]
+  },
+  "last_updated": "2025-12-18 12:39 PM EST",
+  "last_updated_ts": "2025-12-18T12:39:59.981106-05:00"
+}

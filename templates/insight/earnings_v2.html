@@ -1,0 +1,140 @@
+
+{% extends "base.html" %}
+{% load i18n static humanize %}
+
+{% block title %}{% trans "AI Earnings Analysis 2.0" %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">{% trans "AI Earnings Analysis 2.0" %}</h1>
+    </div>
+
+    <!-- Search Box -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">{% trans "Search 8-K Filing" %}</h6>
+        </div>
+        <div class="card-body">
+            <form method="get" class="form-inline justify-content-center">
+                <input type="text" name="symbol" class="form-control mr-2" placeholder="Ex: AAPL, TSLA" value="{{ symbol|default:'' }}" style="text-transform: uppercase;">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> {% trans "Analyze" %}
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-danger">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    {% if filing %}
+    <!-- Badge for Earnings Status -->
+    <div class="row mb-3">
+        <div class="col-12">
+            {% if is_confirmed_earnings %}
+                <span class="badge badge-success px-3 py-2" style="font-size: 1rem;"><i class="bi bi-check-circle-fill"></i> Matches Earnings Date</span>
+            {% else %}
+                <span class="badge badge-warning px-3 py-2" style="font-size: 1rem;"><i class="bi bi-exclamation-triangle-fill"></i> Unconfirmed Event (Check Classification)</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Filing Info Card -->
+        <div class="col-xl-4 col-md-12 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                {% if is_confirmed_earnings %}Latest Earnings Report (8-K){% else %}Latest 8-K Filing{% endif %}
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ filing.symbol }}</div>
+                            <div class="mt-2 text-sm text-gray-600">
+                                <strong>{% trans "Date:" %}</strong> {{ filing.filingDate }}<br>
+                                <strong>{% trans "Accepted:" %}</strong> {{ filing.acceptedDate }}<br>
+                                <strong>{% trans "CIK:" %}</strong> {{ filing.cik }}
+                            </div>
+                            <div class="mt-3">
+                                <a href="{{ filing.finalLink }}" target="_blank" class="btn btn-sm btn-info shadow-sm">
+                                    <i class="bi bi-file-earmark-text"></i> {% trans "View Full Source" %}
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-file-text-fill fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Analysis Card -->
+        <div class="col-xl-8 col-md-12 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="bi bi-stars"></i> {% trans "AI Insight (Gemini)" %}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if ai_report %}
+                        <div class="ai-report-content markdown-body">
+                            {{ ai_report|linebreaks }}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <p class="mt-3 text-gray-500">Generating AI Analysis...</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Other Recent Filings Section -->
+    {% if other_filings %}
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-secondary">{% trans "Other Recent 8-K Filings" %}</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Form Type</th>
+                            <th>Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for f in other_filings %}
+                        <tr>
+                            <td>{{ f.filingDate }}</td>
+                            <td>{{ f.formType }}</td>
+                            <td>
+                                <a href="{{ f.finalLink|default:f.link }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                    View <i class="bi bi-box-arrow-up-right"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load static humanize i18n %}
+
+{% block title %}{% trans "Market News" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-5 space-y-6">
+
+    <!-- Header -->
+    <div class="news-header mb-4">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-newspaper me-2"></i>{% trans "Market News Feed" %}</h2>
+            <div class="small opacity-75">{% trans "Latest financial headlines from NewsAPI" %}</div>
+        </div>
+    </div>
+
+    <!-- News List -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>{% trans "Latest Articles" %}</h5>
+        </div>
+        <div class="card-body p-0">
+            {% if articles %}
+                <div class="list-group list-group-flush">
+                {% for article in articles %}
+                    <div class="list-group-item p-4 hover:bg-gray-50 transition-colors duration-200">
+                        <div class="d-flex align-items-start">
+                            <!-- Image (Left) -->
+                            <div class="flex-shrink-0 me-4">
+                                {% if article.image_url %}
+                                    <img src="{{ article.image_url }}" alt="News Image" class="rounded shadow-sm" style="width: 120px; height: 80px; object-fit: cover;" referrerpolicy="no-referrer" onerror="this.src='https://placehold.co/120x80?text=News';">
+                                {% else %}
+                                    <img src="https://placehold.co/120x80?text=News" alt="No Image" class="rounded shadow-sm" style="width: 120px; height: 80px; object-fit: cover;">
+                                {% endif %}
+                            </div>
+
+                            <!-- Content (Right) -->
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="badge bg-light text-dark border me-2">{{ article.source }}</span>
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock me-1"></i>{{ article.published_at|naturaltime }}
+                                    </small>
+                                </div>
+                                <h5 class="mb-2 fw-bold">
+                                    <a href="{{ article.url }}" target="_blank" class="text-decoration-none text-dark stretched-link">
+                                        {% get_current_language as LANGUAGE_CODE %}
+                                        {% if LANGUAGE_CODE == 'ko' and article.title_ko %}
+                                            {{ article.title_ko }}
+                                        {% else %}
+                                            {{ article.title }}
+                                        {% endif %}
+                                    </a>
+                                </h5>
+                                {% if article.description %}
+                                    <p class="text-muted mb-0 small line-clamp-2">{{ article.description|striptags }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+
+                <!-- Pagination Controls -->
+                {% if articles.has_other_pages %}
+                <div class="card-footer bg-white py-3">
+                    <nav aria-label="News pagination">
+                        <ul class="pagination justify-content-center mb-0">
+                            {% if articles.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ articles.previous_page_number }}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">&laquo;</span>
+                                </li>
+                            {% endif %}
+
+                            {% for i in articles.paginator.page_range %}
+                                {% if articles.number == i %}
+                                    <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                                {% else %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if articles.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ articles.next_page_number }}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">&raquo;</span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <div class="text-muted mb-3">{% trans "No news articles found." %}</div>
+                    <p class="small text-muted">{% trans "Please wait while we fetch the latest updates..." %}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

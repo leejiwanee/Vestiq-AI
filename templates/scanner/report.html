@@ -1,0 +1,418 @@
+{% extends "base.html" %}
+{% load i18n humanize %}  {% block title %}AI Report · {{ symbol }}{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h3 class="mb-0 fw-bold text-white d-flex align-items-center gap-2">
+      <i class="bi bi-robot text-primary"></i> AI Report — <span class="text-primary">{{ symbol }}</span>
+    </h3>
+    <div class="text-slate-400 small mt-1">
+      {{ company_name }}
+      {% if sector %} · <span class="text-slate-300">{{ sector }}</span>{% endif %}
+      {% if industry %} · <span class="text-slate-300">{{ industry }}</span>{% endif %}
+    </div>
+  </div>
+  <a href="{% url 'scanner:dashboard' %}?f={{ prev_filter }}&sort={{ prev_sort }}" class="btn btn-outline-light text-slate-300 hover-bg-slate-700 transition-all"> 
+    <i class="bi bi-arrow-left me-1"></i> Back to Scanner
+  </a>
+</div>
+
+{% if error %}
+<div class="alert alert-warning mb-3">
+  {% trans "Failed to load AI Report." %}<br>
+  <span class="small text-muted">{{ error }}</span>
+</div>
+{% endif %}
+
+<div class="row g-4">
+  {# ----------------- Left Sidebar: Stats ----------------- #}
+  <div class="col-lg-3">
+    <div class="card shadow-lg border-0 bg-slate-800 mb-4 sticky-top" style="top: 20px; z-index: 10;">
+        <div class="card-header bg-transparent border-slate-700">
+            <h6 class="text-white fw-bold mb-0">{% trans "LATEST SCAN" %}</h6>
+        </div>
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-slate-400">Close</span>
+                <span class="fw-bold text-white fs-4">{{ stats.close|floatformat:2 }}</span>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-slate-700 pb-3">
+                <span class="text-slate-400">Change %</span>
+                <span class="fw-bold fs-5 {% if stats.price_change_pct > 0 %}text-success{% elif stats.price_change_pct < 0 %}text-danger{% endif %}">
+                    {{ stats.price_change_pct|floatformat:2 }}%
+                </span>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-slate-400">Vol %</span>
+                <span class="fw-bold {% if stats.vol_change_pct > 0 %}text-success{% elif stats.vol_change_pct < 0 %}text-danger{% endif %}">
+                    {{ stats.vol_change_pct|floatformat:1 }}%
+                </span>
+            </div>
+            
+            <div class="mt-4 pt-3 border-top border-slate-700 text-end">
+                <small class="text-slate-500">Scan Time</small><br>
+                <strong class="text-slate-300">{{ row.batch.started_at|date:"Y-m-d H:i" }}</strong>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  {# ----------------- Main Content: Chart & AI Text ----------------- #}
+  <div class="col-lg-9">
+      
+      <!-- 1. AI Analysis Text (AJAX Loaded) -->
+      <div id="ai-report-container" class="mb-4">
+        <div class="card shadow-lg border-0 h-100 bg-slate-800">
+            <div class="card-body text-center py-5">
+              <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-3 text-slate-400 fs-5 animate-pulse">{% trans "Generating AI Analysis..." %}</p>
+            </div>
+        </div>
+      </div>
+
+      <!-- 2. Chart Container -->
+      <div class="card shadow-lg border-0 bg-slate-800 mb-4">
+          <div class="card-body p-2">
+               <!-- Header Legend -->
+               <div class="d-flex justify-content-between align-items-center px-3 py-2">
+                   <div class="fw-bold text-white">{{ symbol }} Technical Chart</div>
+               </div>
+
+               <!-- ECharts Container -->
+               <div id="chartMain" style="height: 600px; width: 100%; border-radius: 8px;"></div>
+          </div>
+      </div>
+
+      <!-- 3. Email Form -->
+      <div class="p-4 rounded-3 bg-slate-800 border border-slate-700">
+          <h5 class="text-white mb-3 d-flex align-items-center">
+            <i class="bi bi-envelope-paper me-2 text-primary"></i> {% trans "Send this report via Email" %}
+          </h5>
+          <form method="post" action="{% url 'scanner:send_report_email' %}" class="row g-3 align-items-end">
+            {% csrf_token %}
+            <input type="hidden" name="symbol" value="{{ symbol }}" />
+            <div class="col-md-9">
+              <label for="email" class="form-label text-slate-400 small text-uppercase fw-bold">{% trans "Recipient Email" %}</label>
+              <input type="email" class="form-control bg-slate-900 border-slate-600 text-white placeholder-slate-500 focus-ring-primary" id="email" name="email" placeholder="example@domain.com" required />
+            </div>
+            <div class="col-md-3">
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-send me-1"></i> {% trans "Send" %}
+              </button>
+            </div>
+          </form>
+      </div>
+
+  </div>
+</div>
+
+<!-- ECharts CDN -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
+<script>
+    let chartMain = null;
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // 1. Load AI Report Text
+        const aiContainer = document.getElementById("ai-report-container");
+        if (aiContainer) {
+            fetch("{% url 'scanner:api_ai_report' symbol %}")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.html) {
+                        aiContainer.innerHTML = data.html;
+                    } else if (data.error) {
+                        aiContainer.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                    }
+                })
+                .catch(err => {
+                    console.error("Error loading AI report:", err);
+                    aiContainer.innerHTML = `<div class="alert alert-danger">Failed to load AI report.</div>`;
+                });
+        }
+        
+        // 2. Load Chart
+        const chartEl = document.getElementById('chartMain');
+        if(chartEl) {
+             chartMain = echarts.init(chartEl);
+             chartMain.showLoading({ color:'#22d3ee', maskColor:'rgba(15,23,42,0.8)', textColor:'#94a3b8' });
+             loadDailyChart('{{ symbol }}');
+        }
+    });
+
+    window.addEventListener('resize', () => {
+        if(chartMain) chartMain.resize();
+    });
+
+    async function loadDailyChart(symbol) {
+        try {
+            const response = await fetch(`/scanner/chart/${symbol}/`);
+            if (!response.ok) throw new Error(response.statusText);
+            const data = await response.json();
+            
+            chartMain.hideLoading();
+            renderEChart(data, symbol);
+
+        } catch (e) {
+            console.error(e);
+            chartMain.hideLoading();
+            // document.getElementById('chartMain').innerHTML = '<div class="text-danger text-center mt-5">Error loading chart data.</div>';
+        }
+    }
+
+    function renderEChart(data, symbol) {
+         if (!data.ohlcv || !data.ohlcv.length) return;
+         
+         if(chartMain) {
+             try { chartMain.dispose(); } catch(e) {}
+             chartMain = echarts.init(document.getElementById('chartMain'));
+         } else {
+             chartMain = echarts.init(document.getElementById('chartMain'));
+         }
+
+         const dates = data.ohlcv.map(d => new Date(d.time * 1000).toISOString().split('T')[0]);
+         const candleData = data.ohlcv.map(d => [d.open, d.close, d.low, d.high]);
+         const volumes = data.ohlcv.map((d, i) => [i, d.volume, d.close > d.open ? 1 : -1]);
+
+         // Helper for alignment
+         const tsMap = new Map();
+         data.ohlcv.forEach((d, i) => tsMap.set(d.time, i));
+         const alignData = (sourceArr, key = 'value') => {
+            const arr = new Array(dates.length).fill(null);
+            if(!sourceArr) return arr;
+            sourceArr.forEach(x => {
+                const idx = tsMap.get(x.time);
+                if (idx !== undefined) arr[idx] = x[key];
+            });
+            return arr;
+         };
+
+         // Indicators
+         const ma5 = alignData(data.ma && data.ma.ma5 ? data.ma.ma5 : []);
+         const ma20 = alignData(data.ma && data.ma.ma20 ? data.ma.ma20 : []);
+         const ma60 = alignData(data.ma && data.ma.ma60 ? data.ma.ma60 : []);
+         const ma120 = alignData(data.ma && data.ma.ma120 ? data.ma.ma120 : []);
+
+         // Bollinger Bands
+         const bbUp = alignData(data.bb && data.bb.upper ? data.bb.upper : []);
+         const bbLow = alignData(data.bb && data.bb.lower ? data.bb.lower : []);
+         
+         const bbDiff = bbUp.map((u, i) => {
+             const l = bbLow[i];
+             if(u === null || l === null) return null;
+             return u - l;
+         });
+
+         const rsi = alignData(data.rsi || []);
+         const macdLine = data.macd && data.macd.macd ? alignData(data.macd.macd) : [];
+         const macdSignal = data.macd && data.macd.signal ? alignData(data.macd.signal) : [];
+         const macdHist = data.macd && data.macd.hist ? alignData(data.macd.hist) : [];
+         
+         // --- Last Value Calculation ---
+         const getLast = (arr) => {
+             for(let i=arr.length-1; i>=0; i--) {
+                 if(arr[i] !== null && arr[i] !== undefined) return arr[i];
+             }
+             return null;
+         };
+         
+         const lastRSIVal = getLast(rsi);
+         const lastMACDVal = getLast(macdLine);
+         const lastSigVal = getLast(macdSignal);
+         const lastHistVal = getLast(macdHist);
+
+         const formatVal = (v) => v !== null ? v.toFixed(2) : '-';
+         
+         // Color helpers
+         const getRSIColor = (v) => v > 70 ? '#ef4444' : v < 30 ? '#22c55e' : '#facc15';
+
+         const option = {
+            backgroundColor: '#0b1120', // Ultra Dark Blue
+            animation: false,
+            title: [
+                // Labels (Left)
+                { text: 'Price & Volume', left: '60', top: '2%', textStyle: { color: '#64748b', fontSize: 11, fontWeight: 'bold' } },
+                { text: 'RSI(14)', left: '60', top: '63%', textStyle: { color: '#64748b', fontSize: 11, fontWeight: 'bold' } }, 
+                { text: 'MACD(12,26,9)', left: '60', top: '82%', textStyle: { color: '#64748b', fontSize: 11, fontWeight: 'bold' } },
+                
+                // Values (Right)
+                { 
+                    text: `RSI: ${formatVal(lastRSIVal)}`, 
+                    right: '30', top: '63%', 
+                    textStyle: { color: lastRSIVal !== null ? getRSIColor(lastRSIVal) : '#94a3b8', fontSize: 11, fontWeight: 'bold', textShadowBlur: 5, textShadowColor: lastRSIVal !== null ? getRSIColor(lastRSIVal) : 'transparent' } 
+                },
+                { 
+                    text: `MACD: ${formatVal(lastMACDVal)}  Sig: ${formatVal(lastSigVal)}  Hist: ${formatVal(lastHistVal)}`, 
+                    right: '30', top: '82%',
+                    textStyle: { color: '#94a3b8', fontSize: 11 }
+                }
+            ],
+            tooltip: { 
+                trigger: 'axis', 
+                axisPointer: { type: 'cross', label: { backgroundColor: '#1e293b' } },
+                backgroundColor: 'rgba(11, 17, 32, 0.95)', 
+                borderColor: '#334155', 
+                borderWidth: 1,
+                textStyle: { color: '#f8fafc', fontSize: 12 },
+                padding: 12,
+                formatter: function (params) {
+                    let date = params[0].axisValue;
+                    let str = `<div style="font-weight:bold; margin-bottom:8px; color:#e2e8f0; font-family:monospace; border-bottom:1px solid #334155; padding-bottom:4px;">${date}</div>`;
+                    
+                    params.forEach(param => {
+                        if(param.seriesName === 'Volume' || param.value === null || param.seriesName === 'BB-Base' || param.seriesName === 'BB-Fill') return;
+                        
+                        let val = param.value;
+                        if(Array.isArray(val)) val = val[1]; 
+                        
+                        let color = param.color;
+                        if(typeof color === 'object' && color.colorStops) color = color.colorStops[0].color; 
+                        
+                        str += `<div style="display:flex; justify-content:space-between; width:180px; font-size:11px; margin-bottom:4px; align-items:center;">
+                            <span style="display:flex; align-items:center; gap:6px;">
+                                <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:${color}; box-shadow: 0 0 5px ${color};"></span>
+                                <span style="color:#94a3b8;">${param.seriesName}</span>
+                            </span>
+                            <span style="color:#f8fafc; font-weight:700; font-family:monospace;">${typeof val === 'number' ? val.toFixed(2) : val}</span>
+                        </div>`;
+                    });
+                    return str;
+                }
+            },
+            axisPointer: { link: { xAxisIndex: 'all' } },
+            grid: [
+                { left: '60px', right: '30px', top: '5%', height: '55%', show: true, borderColor: '#1e293b', borderWidth: 1 }, 
+                { left: '60px', right: '30px', top: '65%', height: '15%', show: true, borderColor: '#1e293b', borderWidth: 1 }, 
+                { left: '60px', right: '30px', top: '84%', height: '14%', show: true, borderColor: '#1e293b', borderWidth: 1 }  
+            ],
+            xAxis: [
+                { 
+                    type: 'category', 
+                    data: dates, 
+                    gridIndex: 0, 
+                    axisLine:{lineStyle:{color:'#334155'}}, 
+                    axisLabel: { color: '#64748b', showMaxLabel: true, fontSize: 10 },
+                    axisTick: { show: false }
+                },
+                { type: 'category', data: dates, gridIndex: 1, show: false, axisPointer: { label: { show: false } } },
+                { type: 'category', data: dates, gridIndex: 2, show: false, axisPointer: { label: { show: false } } }
+            ],
+            yAxis: [
+                { scale: true, gridIndex: 0, splitLine: { lineStyle: { color: '#1e293b', opacity: 0.5 } }, axisLabel: { color: '#64748b', fontSize: 10 } },
+                { scale: true, gridIndex: 1, splitLine: { show: true, lineStyle: { color: '#1e293b', opacity: 0.3 } }, axisLabel: { show: false }, min: 0, max: 100 },
+                { scale: true, gridIndex: 2, splitLine: { show: true, lineStyle: { color: '#1e293b', opacity: 0.3 } }, axisLabel: { show: false } },
+                { scale: true, gridIndex: 0, show: false, min: 0, max: series => series.max * 5 } // Volume Axis
+            ],
+            dataZoom: [
+                { type: 'inside', xAxisIndex: [0, 1, 2], start: 60, end: 100 },
+                { type: 'slider', xAxisIndex: [0, 1, 2], top: '99%', height: 6, show: false }
+            ],
+            series: [
+                // Bollinger Bands (Blue Mist)
+                { name: 'BB-Base', type: 'line', data: bbLow, xAxisIndex: 0, yAxisIndex: 0, lineStyle: { opacity: 0 }, symbol: 'none', stack: 'bb-band' },
+                { name: 'BB-Fill', type: 'line', data: bbDiff, xAxisIndex: 0, yAxisIndex: 0, lineStyle: { opacity: 0 }, areaStyle: { color: 'rgba(6, 182, 212, 0.08)' }, symbol: 'none', stack: 'bb-band' },
+                { name: 'Upper', type: 'line', data: bbUp, xAxisIndex: 0, yAxisIndex: 0, showSymbol: false, lineStyle: { width: 1, color: '#06b6d4', type: 'dashed', opacity: 0.3 } },
+                { name: 'Lower', type: 'line', data: bbLow, xAxisIndex: 0, yAxisIndex: 0, showSymbol: false, lineStyle: { width: 1, color: '#06b6d4', type: 'dashed', opacity: 0.3 } },
+
+                // Price (Neon Candles)
+                { 
+                    name: 'Price', 
+                    type: 'candlestick', 
+                    data: candleData, 
+                    xAxisIndex: 0, 
+                    yAxisIndex: 0, 
+                    itemStyle: { 
+                        color: '#06b6d4',        // Up: Cyan
+                        color0: '#ef4444',       // Down: Red
+                        borderColor: '#06b6d4', 
+                        borderColor0: '#ef4444',
+                        shadowBlur: 5,
+                        shadowColor: 'rgba(34, 211, 238, 0.4)' 
+                    } 
+                },
+                // Moving Averages (Glowing Lines)
+                { name: 'MA5', type: 'line', data: ma5, xAxisIndex: 0, yAxisIndex: 0, showSymbol: false, lineStyle: { width: 2, color: '#facc15', shadowBlur: 10, shadowColor: 'rgba(250, 204, 21, 0.5)' } },
+                { name: 'MA20', type: 'line', data: ma20, xAxisIndex: 0, yAxisIndex: 0, showSymbol: false, lineStyle: { width: 2, color: '#f472b6', shadowBlur: 10, shadowColor: 'rgba(244, 114, 182, 0.5)' } },
+                { name: 'MA60', type: 'line', data: ma60, xAxisIndex: 0, yAxisIndex: 0, showSymbol: false, lineStyle: { width: 2, color: '#a78bfa', shadowBlur: 10, shadowColor: 'rgba(167, 139, 250, 0.5)' } },
+                { name: 'MA120', type: 'line', data: ma120, xAxisIndex: 0, yAxisIndex: 0, showSymbol: false, lineStyle: { width: 2, color: '#22c55e', shadowBlur: 10, shadowColor: 'rgba(34, 197, 94, 0.5)' } },
+                
+                // Volume
+                { name: 'Volume', type: 'bar', data: volumes, xAxisIndex: 0, yAxisIndex: 3, itemStyle: { borderRadius: [2,2,0,0], color: (params) => params.value[2] > 0 ? 'rgba(6, 182, 212, 0.3)' : 'rgba(239, 68, 68, 0.3)' } },
+                
+                // RSI (Neon Purple)
+                { name: 'RSI(14)', type: 'line', data: rsi, xAxisIndex: 1, yAxisIndex: 1, showSymbol: false, lineStyle: { width: 2, color: '#c084fc', shadowBlur: 10, shadowColor: 'rgba(192, 132, 252, 0.6)' } },
+                
+                // MACD (Neon Blue/Orange)
+                { name: 'MACD', type: 'line', data: macdLine, xAxisIndex: 2, yAxisIndex: 2, showSymbol: false, lineStyle: { width: 1.5, color: '#38bdf8', shadowBlur: 8, shadowColor: 'rgba(56, 189, 248, 0.5)' } },
+                { name: 'Signal', type: 'line', data: macdSignal, xAxisIndex: 2, yAxisIndex: 2, showSymbol: false, lineStyle: { width: 1.5, color: '#fb923c', shadowBlur: 8, shadowColor: 'rgba(251, 146, 60, 0.5)' } },
+                { name: 'Hist', type: 'bar', data: macdHist, xAxisIndex: 2, yAxisIndex: 2, itemStyle: { borderRadius: 2, color: (params) => params.value > 0 ? '#22c55e' : '#ef4444' } }
+            ]
+         };
+         
+         // RSI Guides
+         option.series[option.series.findIndex(s => s.name === 'RSI(14)')].markLine = { 
+            symbol: 'none',
+            data: [{ yAxis: 70 }, { yAxis: 30 }],
+            lineStyle: { type: 'dashed', color: '#475569', opacity: 0.5 },
+            label: { show: false }
+         };
+
+         chartMain.setOption(option);
+         
+         // --- Interactive Titles ---
+         const updateTitles = (idx) => {
+             const r = rsi[idx];
+             const m = macdLine[idx];
+             const s = macdSignal[idx];
+             const h = macdHist[idx];
+             
+             chartMain.setOption({
+                 title: [
+                     {}, {}, {},
+                     { 
+                         text: `RSI: ${formatVal(r)}`, 
+                         textStyle: { color: r !== null ? getRSIColor(r) : '#94a3b8' } 
+                     },
+                     { 
+                         text: `MACD: ${formatVal(m)}  Sig: ${formatVal(s)}  Hist: ${formatVal(h)}`
+                     }
+                 ]
+             });
+         };
+
+         // Mouse Move
+         chartMain.getZr().on('mousemove', function(params) {
+              const pointInPixel = [params.offsetX, params.offsetY];
+              if (chartMain.containPixel('grid', pointInPixel)) {
+                  const pointInGrid = chartMain.convertFromPixel({seriesIndex: 0}, pointInPixel);
+                  const xIndex = pointInGrid[0];
+                  if(xIndex >= 0 && xIndex < dates.length) {
+                       updateTitles(Math.round(xIndex));
+                  }
+              }
+         });
+         
+         // Mouse Out (Global) - Reset to Last
+         chartMain.on('globalout', () => {
+             chartMain.setOption({
+                 title: [
+                     {}, {}, {},
+                     { 
+                         text: `RSI: ${formatVal(lastRSIVal)}`, 
+                         textStyle: { color: lastRSIVal !== null ? getRSIColor(lastRSIVal) : '#94a3b8' } 
+                     },
+                     { 
+                         text: `MACD: ${formatVal(lastMACDVal)}  Sig: ${formatVal(lastSigVal)}  Hist: ${formatVal(lastHistVal)}`
+                     }
+                 ]
+             });
+         });
+    }
+</script>
+{% endblock %}

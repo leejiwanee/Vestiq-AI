@@ -1,0 +1,142 @@
+{
+  "en": {
+    "title": "Market's Siesta, News Keeps Buzzing: Flat Charts, Active Headlines",
+    "summary": "Today was a remarkably quiet day on the trading floor, with all major indices holding perfectly steady. However, the headlines offered a more dynamic picture, revealing underlying shifts in consumer spending, the persistent creep of AI into new industries, and ongoing adjustments in key real estate sectors.",
+    "snapshot": [
+      {
+        "label": "S&P 500 (The Big Index)",
+        "value": "0.00%",
+        "comment": "Absolutely no movement today."
+      },
+      {
+        "label": "Nasdaq (Tech's Playground)",
+        "value": "0.00%",
+        "comment": "Tech giants also took a day off from moving."
+      },
+      {
+        "label": "Russell 2000 (Small Caps' Pulse)",
+        "value": "0.00%",
+        "comment": "Small businesses saw no change in market sentiment."
+      },
+      {
+        "label": "Bitcoin (Digital Gold?)",
+        "value": "0.00%",
+        "comment": "Crypto's usually wild ride was surprisingly tame."
+      }
+    ],
+    "macro": {
+      "title": "Macro Vibes: Undercurrents in a Calm Market",
+      "points": [
+        "<b>Consumer Dichotomy</b>: While luxury vehicle demand (like Stellantis's resurrected Ram TRX) suggests resilience at the high end, challenges in the restaurant sector (location closures) indicate continued pressure on broad consumer spending and discretionary income, possibly due to persistent high down payments hindering housing affordability.",
+        "<b>Housing Affordability Still a Hurdle</b>: Despite home prices showing signs of becoming 'slightly more affordable,' the formidable hurdle of down payments continues to sideline potential buyers, dampening overall housing market activity even as prices ease.",
+        "<b>AI's Expanding Footprint</b>: Artificial intelligence isn't just for data centers anymore; its integration into everyday operations, such as restaurant lunch lines (Hyphen's AI with Cava and Chipotle), signals an ongoing tech-driven transformation impacting various industries.",
+        "<b>Commercial Real Estate Uncertainty Lingers</b>: The continued focus on the 2026 outlook for commercial real estate highlights lingering uncertainties and a long road to recovery or rebalancing for this sector, suggesting structural shifts are still unfolding."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "Automotive",
+        "change": "0.00%",
+        "comment": "News of high-end truck resurgence, but no market price movement."
+      },
+      {
+        "name": "Restaurant & Hospitality",
+        "change": "0.00%",
+        "comment": "Headlines pointed to closures and AI integration, but sector was flat."
+      },
+      {
+        "name": "Real Estate (Residential & Commercial)",
+        "change": "0.00%",
+        "comment": "Affordability issues and future outlook were in the news, but no market impact today."
+      }
+    ],
+    "themes": [
+      {
+        "name": "AI Innovation & Adoption",
+        "change": "0.00%",
+        "comment": "AI making inroads into new, unexpected industries like food service."
+      },
+      {
+        "name": "Consumer Spending & Trends",
+        "change": "0.00%",
+        "comment": "Mixed signals: luxury demand vs. restaurant closures and housing affordability."
+      },
+      {
+        "name": "Industry Regulation & Policy",
+        "change": "0.00%",
+        "comment": "Deregulation mentioned for auto sector, potentially impacting future trends."
+      }
+    ]
+  },
+  "ko": {
+    "title": "시장의 낮잠, 뉴스는 활기: 차트는 고요, 헤드라인은 분주",
+    "summary": "오늘 거래 시장은 놀라울 정도로 조용했고, 모든 주요 지수들은 완벽하게 보합세를 유지했습니다. 하지만 차분한 표면 아래에서는 헤드라인이 소비 지출의 변화, 인공지능이 새로운 산업으로 꾸준히 스며드는 현상, 그리고 주요 부동산 부문의 지속적인 조정을 보여주며 더욱 역동적인 그림을 그렸습니다.",
+    "snapshot": [
+      {
+        "label": "S&P 500 (대형 지수)",
+        "value": "0.00%",
+        "comment": "오늘은 전혀 움직임이 없었습니다."
+      },
+      {
+        "label": "나스닥 (기술주의 놀이터)",
+        "value": "0.00%",
+        "comment": "기술 거인들도 쉬는 날을 가졌습니다."
+      },
+      {
+        "label": "러셀 2000 (소형주의 맥박)",
+        "value": "0.00%",
+        "comment": "소형주 시장의 심리에도 변화가 없었습니다."
+      },
+      {
+        "label": "비트코인 (디지털 금?)",
+        "value": "0.00%",
+        "comment": "보통 격렬한 암호화폐 시장도 놀랍게도 차분했습니다."
+      }
+    ],
+    "macro": {
+      "title": "매크로 경제: 고요한 시장 속의 저류",
+      "points": [
+        "<b>소비자 양분화</b>: 럭셔리 차량 수요(스텔란티스의 부활한 램 TRX 등)가 고급 부문의 회복력을 시사하는 반면, 외식 부문의 어려움(매장 폐쇄)은 주택 구입 시 높은 계약금으로 인해 주택 구매력이 저해되는 등 전반적인 소비 지출과 재량 소득에 대한 지속적인 압력을 나타냅니다.",
+        "<b>주택 구매력 여전히 난관</b>: 주택 가격이 '약간 더 저렴해지고' 있다는 조짐에도 불구하고, 엄청난 계약금이라는 장애물이 잠재적 구매자들을 계속 주저하게 하여, 가격이 완화됨에도 불구하고 전반적인 주택 시장 활동을 위축시키고 있습니다.",
+        "<b>AI의 확장하는 발자취</b>: 인공지능은 더 이상 데이터 센터만을 위한 것이 아닙니다. 레스토랑 점심 라인(Cava 및 Chipotle와 협력하는 Hyphen의 AI)과 같은 일상적인 운영에 AI가 통합되는 것은 다양한 산업에 영향을 미치는 기술 주도 혁신이 계속되고 있음을 보여줍니다.",
+        "<b>상업용 부동산 불확실성 지속</b>: 상업용 부동산의 2026년 전망에 대한 지속적인 관심은 이 부문의 회복 또는 재균형을 위한 불확실성과 긴 여정을 강조하며, 구조적 변화가 여전히 전개되고 있음을 시사합니다."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "자동차 (Automotive)",
+        "change": "0.00%",
+        "comment": "고급 트럭 부활 소식이 있었으나, 시장 가격 변동은 없었습니다."
+      },
+      {
+        "name": "외식 및 서비스 (Restaurant & Hospitality)",
+        "change": "0.00%",
+        "comment": "폐쇄 소식과 AI 통합이 헤드라인을 장식했지만, 해당 부문은 보합세였습니다."
+      },
+      {
+        "name": "부동산 (주거 및 상업) (Real Estate - Residential & Commercial)",
+        "change": "0.00%",
+        "comment": "구매력 문제와 미래 전망이 뉴스에 나왔지만, 오늘 시장 영향은 없었습니다."
+      }
+    ],
+    "themes": [
+      {
+        "name": "AI 혁신 및 도입 (AI Innovation & Adoption)",
+        "change": "0.00%",
+        "comment": "AI가 외식 서비스와 같은 새롭고 예상치 못한 산업으로 진출하고 있습니다."
+      },
+      {
+        "name": "소비 지출 및 트렌드 (Consumer Spending & Trends)",
+        "change": "0.00%",
+        "comment": "고급 수요와 레스토랑 폐쇄, 주택 구매력 문제 등 상반된 신호가 나타났습니다."
+      },
+      {
+        "name": "산업 규제 및 정책 (Industry Regulation & Policy)",
+        "change": "0.00%",
+        "comment": "자동차 부문의 규제 완화가 언급되어 향후 트렌드에 영향을 미칠 수 있습니다."
+      }
+    ]
+  },
+  "last_updated": "2026-01-01 06:31 PM EST",
+  "last_updated_ts": "2026-01-01T18:31:08.260102-05:00"
+}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{{ symbol }} · StockDashboard{% endblock %}
+{% block content %}
+<h3>{{ symbol }} — Daily</h3>
+<div id="chart" style="height:420px;"></div>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<script>
+  const chart = {{ chart|safe }};
+  if (chart) {
+    const data = [
+      {x: chart.x, y: chart.close, type:'scatter', mode:'lines', name:'Close'},
+      {x: chart.x, y: chart.bbh,   type:'scatter', mode:'lines', name:'BB Upper'},
+      {x: chart.x, y: chart.bbm,   type:'scatter', mode:'lines', name:'BB Mid'},
+      {x: chart.x, y: chart.bbl,   type:'scatter', mode:'lines', name:'BB Lower'}
+    ];
+    Plotly.newPlot('chart', data, {margin:{t:20}, xaxis:{title:'Date'}, yaxis:{title:'Price'}});
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% load i18n humanize %}
+
+{% block content %}
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --cal-bg: #0f172a;
+        --cal-border: rgba(255,255,255,0.1);
+        --cal-text: #94a3b8;
+        --cal-today: #06b6d4; /* Cyan */
+        --neon-profit: #4ade80;
+        --neon-loss: #f87171;
+        --font-typewriter: 'Hahmlet', serif;
+    }
+
+    body {
+        background-color: #020617 !important;
+        background-image: 
+            linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+    }
+
+    .font-typewriter { font-family: var(--font-typewriter); }
+
+    /* Calendar Container */
+    .calendar-container {
+        border: 1px solid var(--cal-border);
+        border-radius: 16px;
+        background: var(--cal-bg);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+    }
+
+    /* Header */
+    .cal-header {
+        background: rgba(255,255,255,0.03);
+        border-bottom: 1px solid var(--cal-border);
+        padding: 1.5rem;
+    }
+
+    /* Grid */
+    .cal-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        border-collapse: collapse;
+    }
+
+    .cal-head-cell {
+        padding: 1rem;
+        text-align: center;
+        font-family: var(--font-typewriter);
+        color: rgba(255,255,255,0.3);
+        font-weight: 600;
+        border-bottom: 1px solid var(--cal-border);
+        border-right: 1px solid var(--cal-border);
+    }
+    .cal-head-cell:last-child { border-right: none; }
+
+    /* Day Cell */
+    .cal-cell {
+        min-height: 140px;
+        border-right: 1px solid var(--cal-border);
+        border-bottom: 1px solid var(--cal-border);
+        padding: 0.8rem;
+        position: relative;
+        background: var(--cal-bg);
+        transition: background 0.2s;
+    }
+    .cal-cell:nth-child(7n) { border-right: none; } /* End of row */
+    
+    .cal-cell:hover {
+        background: rgba(255,255,255,0.02);
+    }
+
+    /* Empty Day (Crosshatch) */
+    .cal-cell.empty {
+        background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.01) 0, rgba(255,255,255,0.01) 1px, transparent 0, transparent 50%);
+        background-size: 10px 10px;
+    }
+
+    /* Date Number */
+    .cal-date {
+        font-family: var(--font-typewriter);
+        font-size: 1.1rem;
+        color: var(--cal-text);
+        margin-bottom: 0.5rem;
+        display: inline-block;
+        width: 32px; height: 32px;
+        line-height: 32px;
+        text-align: center;
+        border-radius: 50%;
+    }
+
+    /* Today Indicator */
+    .is-today .cal-date {
+        color: #fff;
+        background: rgba(6, 182, 212, 0.2);
+        box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+        border: 1px solid var(--cal-today);
+    }
+
+    /* Badges */
+    .badge-profit {
+        background: rgba(74, 222, 128, 0.1);
+        color: var(--neon-profit);
+        border: 1px solid rgba(74, 222, 128, 0.2);
+    }
+    .badge-loss {
+        background: rgba(248, 113, 113, 0.1);
+        color: var(--neon-loss);
+        border: 1px solid rgba(248, 113, 113, 0.2);
+    }
+
+    /* Nav Buttons */
+    .btn-nav {
+        background: transparent;
+        border: 1px solid var(--cal-border);
+        color: var(--cal-text);
+        border-radius: 50%;
+        width: 40px; height: 40px;
+        display: flex; align-items: center; justify-content: center;
+        transition: all 0.2s;
+    }
+    .btn-nav:hover {
+        background: rgba(255,255,255,0.1);
+        color: #fff;
+        border-color: rgba(255,255,255,0.3);
+    }
+
+</style>
+
+<div class="container py-5" style="max-width: 1100px;">
+    
+    <!-- Title & Nav -->
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h6 class="text-white-50 text-uppercase letter-spacing-2 mb-1">Vestiq Financial</h6>
+            <h1 class="font-typewriter text-white fw-bold display-6">Monthly Plan</h1>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+             <div class="d-flex gap-2">
+                <a href="?year={{ prev_year }}&month={{ prev_month }}" class="btn-nav"><i class="bi bi-chevron-left"></i></a>
+                <h4 class="font-typewriter text-white mb-0" style="min-width: 180px; text-align: center;">{{ current_date|date:"F Y" }}</h4>
+                <a href="?year={{ next_year }}&month={{ next_month }}" class="btn-nav"><i class="bi bi-chevron-right"></i></a>
+            </div>
+            <a href="{% url 'trade_list' %}" class="btn btn-outline-light rounded-pill px-4 border-secondary border-opacity-50 font-typewriter ms-3">
+                <i class="bi bi-list-ul me-2"></i>Ledger
+            </a>
+        </div>
+    </div>
+
+    <!-- Calendar Card -->
+    <div class="calendar-container">
+        
+        <!-- Grid Header -->
+        <div class="cal-grid bg-dark bg-opacity-50">
+            <div class="cal-head-cell text-danger">SUN</div>
+            <div class="cal-head-cell">MON</div>
+            <div class="cal-head-cell">TUE</div>
+            <div class="cal-head-cell">WED</div>
+            <div class="cal-head-cell">THU</div>
+            <div class="cal-head-cell">FRI</div>
+            <div class="cal-head-cell text-primary">SAT</div>
+        </div>
+
+        <!-- Grid Body -->
+        <div class="cal-grid">
+            {% for week in calendar_rows %}
+                {% for day in week %}
+                    {% if day %}
+                        <div class="cal-cell {% if day.is_today %}is-today{% endif %}">
+                            <!-- Date & Daily P/L -->
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="cal-date">{{ day.day }}</span>
+                                {% if day.pl != 0 %}
+                                    <span class="badge rounded-pill {% if day.pl > 0 %}badge-profit{% else %}badge-loss{% endif %} font-typewriter">
+                                        {% if day.pl > 0 %}+{% endif %}${{ day.pl|floatformat:0|intcomma }}
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            <div class="d-flex flex-column gap-1">
+                                {# Closed Trades (Sells) #}
+                                {% for trade in day.sells %}
+                                    <div class="d-flex justify-content-between align-items-center small" style="font-size: 0.85rem;">
+                                        <span class="text-white fw-bold font-typewriter">{{ trade.ticker }}</span>
+                                        {% if trade.profit_amount > 0 %}
+                                            <span class="text-success start-100">+${{ trade.profit_amount|floatformat:0 }}</span>
+                                        {% elif trade.profit_amount < 0 %}
+                                            <span class="text-danger">-${{ trade.abs_profit|floatformat:0 }}</span>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+
+                                {# Buys (Activity) #}
+                                {% if day.buys %}
+                                    <div class="mt-2 pt-2 border-top border-secondary border-opacity-25"></div>
+                                    {% for tx in day.buys %}
+                                        <div class="text-truncate small text-white-50 font-typewriter" title="Bought {{ tx.trade.ticker }}">
+                                            <i class="bi bi-cart-plus text-info me-1"></i> {{ tx.trade.ticker }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <!-- Empty Cell -->
+                        <div class="cal-cell empty"></div>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+            
+            <!-- Fill remaining grid cells if last row is incomplete (Optional, logic handles full weeks usually) -->
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

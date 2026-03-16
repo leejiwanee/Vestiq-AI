@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}AI Report · {{ symbol }}{% endblock %}
+{% block content %}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h3 class="mb-0">{{ company.name|default:symbol }} <span class="text-muted">({{ symbol }})</span></h3>
+  <a href="{% url 'scanner:detail' symbol %}" class="btn btn-outline-primary">차트 열기</a>
+</div>
+
+{% if ai %}
+  <!-- Top overview -->
+  {% if ai.top_overview %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="text-uppercase small text-muted mb-1">회사 개요</div>
+        <div class="fs-5">{{ ai.top_overview }}</div>
+        {% if company.sector %}
+          <div class="small text-muted mt-2">Sector: {{ company.sector }}</div>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- News with reasons -->
+  {% if ai.news and ai.news|length %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="text-uppercase small text-muted mb-2">최근 뉴스 (하락 관련)</div>
+        <ul class="list-unstyled mb-0">
+          {% for n in ai.news %}
+            <li class="mb-2">
+              <a href="{{ n.url }}" target="_blank" rel="noopener" class="fw-semibold">{{ n.title }}</a>
+              {% if n.reason %}<div class="small text-muted">{{ n.reason }}</div>{% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Positives / Negatives -->
+  <div class="row g-3">
+    <div class="col-md-6">
+      {% if ai.positives and ai.positives|length %}
+        <div class="card h-100"><div class="card-body">
+          <div class="text-uppercase small text-success mb-2">긍정적 신호</div>
+          <ul class="mb-0">{% for x in ai.positives %}<li>{{ x }}</li>{% endfor %}</ul>
+        </div></div>
+      {% endif %}
+    </div>
+    <div class="col-md-6">
+      {% if ai.negatives and ai.negatives|length %}
+        <div class="card h-100"><div class="card-body">
+          <div class="text-uppercase small text-danger mb-2">부정적 요인</div>
+          <ul class="mb-0">{% for x in ai.negatives %}<li>{{ x }}</li>{% endfor %}</ul>
+        </div></div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Conclusion -->
+  {% if ai.conclusion %}
+    <div class="card mt-3">
+      <div class="card-body">
+        <div class="text-uppercase small text-muted mb-2">결론</div>
+        <p class="mb-0" style="white-space:pre-wrap">{{ ai.conclusion }}</p>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Checklist -->
+  {% if ai.checklist and ai.checklist|length %}
+    <div class="card mt-3">
+      <div class="card-body">
+        <div class="text-uppercase small text-muted mb-2">체크리스트</div>
+        <ul class="mb-0">{% for c in ai.checklist %}<li>{{ c }}</li>{% endfor %}</ul>
+      </div>
+    </div>
+  {% endif %}
+
+{% else %}
+  <div class="alert alert-warning">
+    AI 리포트를 불러오지 못했습니다.
+    {% if error %}<br><strong>Error:</strong> {{ error }}{% endif %}
+  </div>
+  {% if news and news|length %}
+    <div class="card mt-3"><div class="card-body">
+      <div class="text-uppercase small text-muted mb-2">최근 뉴스</div>
+      <ul class="mb-0">
+        {% for n in news %}
+          <li class="mb-1"><a href="{{ n.url }}" target="_blank" rel="noopener">{{ n.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </div></div>
+  {% endif %}
+{% endif %}
+
+<div class="mt-4">
+  <a href="{% url 'scanner:dashboard' %}" class="btn btn-outline-secondary">Back</a>
+</div>
+{% endblock %}

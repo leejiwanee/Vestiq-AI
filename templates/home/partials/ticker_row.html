@@ -1,0 +1,34 @@
+{% load i18n humanize %}
+
+<div class="d-flex justify-content-between align-items-center p-2 rounded hover-bg-dark" style="cursor: pointer; transition: all 0.2s;" onclick="openGlobalChartModal('{{ item.tk }}', '{{ item.title }}')">
+    <div class="d-flex align-items-center gap-3">
+        <!-- Icon/Flag -->
+        <div style="width: 24px; text-align: center;">
+            {% if "bi-" in item.icon or "bi " in item.icon %}
+                <i class="{{ item.icon }}" style="color: {{ item.color }}; font-size: 1.1rem;"></i>
+            {% else %}
+                <span style="font-size: 1.2rem;">{{ item.icon }}</span>
+            {% endif %}
+        </div>
+        
+        <div>
+            <div class="text-white fw-bold" style="font-size: 0.95rem;">{{ item.title }}</div>
+            <div class="text-muted small" style="font-size: 0.75rem; font-family: 'DM Mono', monospace;">{{ item.tk }}</div>
+        </div>
+    </div>
+    
+    <div class="text-end">
+        <div class="text-white" style="font-family: 'DM Mono', monospace; font-size: 0.95rem;">
+            {{ item.price|floatformat:2|intcomma }}
+        </div>
+        <div class="{% if item.pct >= 0 %}text-success{% else %}text-danger{% endif %} small fw-bold" style="font-size: 0.8rem;">
+            {% if item.pct >= 0 %}+{% endif %}{{ item.pct|floatformat:2 }}%
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-bg-dark:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+</style>

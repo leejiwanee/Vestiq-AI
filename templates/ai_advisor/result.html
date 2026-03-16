@@ -1,0 +1,530 @@
+{% extends "base.html" %}
+{% load humanize i18n %}
+
+{% block title %}Investment Strategy{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        --card-bg: #ffffff;
+        --text-main: #111827;
+        --text-sub: #6b7280;
+    }
+
+    body { background-color: #f3f4f6; }
+    .report-container { max-width: 1100px; margin: 0 auto; padding-bottom: 80px; }
+
+    /* 1. Header Upgrade */
+    .strategy-header {
+        background: var(--primary-gradient);
+        color: white;
+        border-radius: 24px;
+        padding: 40px 36px;
+        margin-bottom: 30px;
+        box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    /* 배경 데코레이션 */
+    .strategy-header::before {
+        content: ""; position: absolute; top: -20px; right: -20px;
+        width: 200px; height: 200px;
+        background: radial-gradient(circle, rgba(59,130,246,0.2) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    .strategy-title { font-size: 32px; font-weight: 800; margin-bottom: 16px; letter-spacing: -0.5px; }
+    
+    /* 눈에 잘 띄는 뱃지 스타일 */
+    .header-badge {
+        display: inline-flex; align-items: center;
+        padding: 8px 16px;
+        border-radius: 12px;
+        font-weight: 700; font-size: 14px;
+        margin-right: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .badge-risk { background: #fef3c7; color: #92400e; } /* 노랑/갈색 */
+    .badge-goal { background: #d1fae5; color: #065f46; } /* 초록/진초록 */
+    
+    /* Content Card */
+    .content-card {
+        background: white; border-radius: 20px; padding: 28px;
+        border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+        height: 100%;
+    }
+    .section-title {
+        font-size: 18px; font-weight: 700; color: var(--text-main);
+        margin-bottom: 24px; display: flex; align-items: center; gap: 8px;
+    }
+
+    /* Asset Class Badges (테이블용) */
+    .ac-badge { font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; }
+    .ac-stock-us { background: #eff6ff; color: #1d4ed8; }
+    .ac-stock-intl { background: #e0f2fe; color: #0369a1; }
+    .ac-bond { background: #f5f3ff; color: #7c3aed; }
+    .ac-gold { background: #fffbeb; color: #b45309; }
+    .ac-cash { background: #f3f4f6; color: #4b5563; }
+
+    /* Chart Containers */
+    .chart-box { position: relative; height: 260px; width: 100%; }
+    
+    /* KPI Box inside Header */
+    .kpi-box {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 20px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .kpi-value { font-size: 24px; font-weight: 700; }
+    .kpi-sub { font-size: 13px; opacity: 0.7; margin-top: 4px; }
+    .header-email-input::placeholder {
+    color: rgba(255, 255, 255, 0.8) !important; /* 80% 불투명한 흰색 */
+    opacity: 1; /* 파이어폭스 등 브라우저 호환성 */
+}
+</style>
+
+<div class="container mt-4 report-container">
+    
+    <div class="strategy-header">
+        <div class="row align-items-end">
+            <div class="col-lg-7">
+                <div class="d-flex align-items-center mb-3">
+                    <a href="{% url 'ai_advisor:input' %}" 
+                       class="btn btn-light border shadow-sm rounded-circle me-3 d-flex align-items-center justify-content-center" 
+                       style="width: 42px; height: 42px; transition: all 0.2s;"
+                       onmouseover="this.style.backgroundColor='#e5e7eb'" 
+                       onmouseout="this.style.backgroundColor='#f8f9fa'"
+                       title="{% trans 'Return to input screen' %}">
+                        <i class="bi bi-arrow-left text-dark fs-5"></i>
+                    </a>
+                    
+                    <div style="font-size: 13px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8;">
+                        {% trans "AI Personalized Strategy" %}
+                    </div>
+                </div>
+
+                <div class="strategy-title">{{ strategy_name }}</div>
+                
+                <div class="d-flex flex-wrap gap-2">
+                    <div class="header-badge badge-risk">
+                        <i class="bi bi-lightning-charge-fill me-2"></i>
+                        {{ profile.get_risk_tolerance_display }}
+                    </div>
+                    <div class="header-badge badge-goal">
+                        <i class="bi bi-flag-fill me-2"></i>
+                        {% blocktrans with months=profile.duration_months %}{{ months }} Month Goal{% endblocktrans %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- <div class="col-lg-5 text-lg-end mt-4 mt-lg-0">
+                <div class="mb-4">
+                    <a href="{% url 'ai_advisor:input' %}" class="btn btn-primary btn-sm rounded-pill px-4 shadow-sm fw-bold">
+                        <i class="bi bi-plus-lg me-1"></i> New Analysis
+                    </a>
+                </div> -->
+                
+                <div class="col-lg-5 text-lg-end mt-4 mt-lg-0">
+    
+    <div class="mb-4 d-flex justify-content-lg-end justify-content-start">
+        <form id="emailForm" onsubmit="sendEmail(event)" 
+              class="d-flex gap-2 p-1 rounded-pill" 
+              style="background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(5px);">
+            
+            <input type="email" name="email" required
+       class="form-control border-0 bg-transparent text-white shadow-none header-email-input" 
+       placeholder="{% trans 'Email Report...' %}" 
+       style="height: 38px; min-width: 200px; color: white !important;">
+            
+            <button type="submit" class="btn btn-light rounded-pill px-3 fw-bold shadow-sm" 
+                    style="height: 38px; color: #1e40af;">
+                {% trans "Send" %} <i class="bi bi-send-fill ms-1"></i>
+            </button>
+        </form>
+    </div>
+    
+    <div id="emailResult" class="mb-2 text-white small fw-bold" style="min-height: 20px;"></div>
+
+    <div style="opacity: 0.8; font-size: 14px;">{% trans "Total Investment Asset" %}</div>
+    <div style="font-size: 36px; font-weight: 800; line-height: 1.2;">
+        ${{ profile.total_amount|intcomma }}
+    </div>
+    <div style="font-size: 14px; color: #86efac; font-weight: 600;">
+        + ${{ profile.monthly_contribution|intcomma }} / {% trans "month" %}
+    </div>
+</div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="content-card">
+                <div class="section-title">
+                    <i class="bi bi-pie-chart-fill text-primary"></i> {% trans "Asset Allocation" %}
+                </div>
+                <div class="chart-box">
+                    <canvas id="allocationChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="content-card">
+                <div class="section-title">
+                    <i class="bi bi-graph-up-arrow text-success"></i> {% trans "Projected Asset Growth (Projection)" %}
+                    <span class="badge bg-success bg-opacity-10 text-success ms-2" style="font-size:12px;">{% trans "Target:" %} {{ profile.target_return }}% / {% trans "yr" %}</span>
+                </div>
+                <div class="chart-box">
+                    <canvas id="projectionChart"></canvas>
+                </div>
+                <div class="text-end mt-2 text-muted small">
+                    *{% trans "Simulation assuming compound interest" %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="content-card bg-light border-0">
+                <div class="section-title">
+                    <i class="bi bi-stars text-warning"></i> {% trans "Strategy Analysis (Rationale)" %}
+                </div>
+                <p style="font-size: 15px; line-height: 1.7; color: #374151; white-space: pre-line;">
+                    {{ analysis }}
+                </p>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="content-card">
+                <div class="section-title">
+                    <i class="bi bi-collection-fill text-primary"></i> {% trans "Portfolio Holdings" %}
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0" style="min-width: 600px;">
+                        <thead class="bg-light">
+                            <tr style="font-size: 12px; text-transform: uppercase; color: #6b7280;">
+                                <th class="ps-3 py-3">{% trans "Asset Class" %}</th>
+                                <th>{% trans "Ticker" %}</th>
+                                <th>{% trans "Name / Reason" %}</th>
+                                <th class="text-end pe-3">{% trans "Weight" %}</th>
+                                <th class="text-end pe-3">{% trans "Est. Amount" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in portfolio_list %}
+                            <tr>
+                                <td class="ps-3">
+                                    {% if "US" in item.asset_class or "Stock" in item.asset_class %}
+                                        <span class="ac-badge ac-stock-us">{{ item.asset_class }}</span>
+                                    {% elif "Bond" in item.asset_class %}
+                                        <span class="ac-badge ac-bond">{{ item.asset_class }}</span>
+                                    {% elif "Gold" in item.asset_class or "Commodity" in item.asset_class %}
+                                        <span class="ac-badge ac-gold">{{ item.asset_class }}</span>
+                                    {% elif "Cash" in item.asset_class %}
+                                        <span class="ac-badge ac-cash">{{ item.asset_class }}</span>
+                                    {% else %}
+                                        <span class="ac-badge ac-stock-intl">{{ item.asset_class }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="fw-bold text-primary">{{ item.ticker }}</td>
+                                <td>
+                                    <div class="fw-semibold text-dark">{{ item.name }}</div>
+                                    <div class="text-muted small mt-1">{{ item.rationale }}</div>
+                                </td>
+                                <td class="text-end pe-3 fw-bold">{{ item.weight }}%</td>
+                                <td class="text-end pe-3 text-muted">
+                                    {% widthratio profile.total_amount 100 item.weight as amt %}
+                                    ${{ amt|intcomma }}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="5" class="text-center py-4">{% trans "No data available." %}</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // 1. Asset Allocation Chart
+    const allocData = {{ allocation|safe }};
+    if (allocData) {
+        const ctx1 = document.getElementById('allocationChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(allocData).map(k => k.replace('_', ' ')),
+                datasets: [{
+                    data: Object.values(allocData),
+                    backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#cbd5e1'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, font: {size: 11} } } }
+            }
+        });
+    }
+
+    // 2. Wealth Projection Chart (Simulation)
+    const initial = {{ profile.total_amount }};
+    const monthly = {{ profile.monthly_contribution }};
+    const rate = {{ profile.target_return }} / 100;
+    const months = {{ profile.duration_months }};
+    
+    // 1년 단위로 데이터 포인트 생성 (최대 10개 포인트)
+    const step = Math.max(1, Math.floor(months / 10));
+    const labels = [];
+    const data = [];
+    
+    let currentAmount = initial;
+    // 시작점(0개월) 추가
+    labels.push('Start');
+    data.push(currentAmount);
+
+    for (let m = 1; m <= months; m++) {
+        // 월 복리 계산 (단순화)
+        currentAmount = currentAmount * (1 + rate/12) + monthly;
+        
+        if (m % step === 0 || m === months) {
+            labels.push(m + '{% trans "Months" %}');
+            data.push(currentAmount);
+        }
+    }
+
+    const ctx2 = document.getElementById('projectionChart').getContext('2d');
+    
+    // 그라데이션 채우기
+    let gradient = ctx2.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(34, 197, 94, 0.4)'); // Green start
+    gradient.addColorStop(1, 'rgba(34, 197, 94, 0.0)'); // Transparent end
+
+    new Chart(ctx2, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '{% trans "Projected Asset Value ($)" %}',
+                data: data,
+                borderColor: '#22c55e',
+                backgroundColor: gradient,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return '$ ' + context.raw.toLocaleString(undefined, {maximumFractionDigits: 0});
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: { 
+                    grid: { borderDash: [4, 4] },
+                    ticks: {
+                        callback: function(value) { 
+                            if(value >= 1000) return '$' + (value/1000).toFixed(0) + 'k'; 
+                            return '$' + value;
+                        }
+                    }
+                },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // 3. Email Sending Logic
+    function sendEmail(e) {
+        e.preventDefault();
+        const form = document.getElementById('emailForm');
+        const resultDiv = document.getElementById('emailResult');
+        const btn = form.querySelector('button');
+        const originalText = btn.innerText;
+        
+        btn.disabled = true;
+        btn.innerText = '{% trans "Sending..." %}';
+        resultDiv.innerHTML = '';
+        
+        const formData = new FormData(form);
+        
+        fetch("{% url 'ai_advisor:send_email' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                resultDiv.innerHTML = '<span class="text-white"><i class="bi bi-check-circle"></i> {% trans "Sent successfully!" %}</span>';
+                form.reset();
+            } else {
+                resultDiv.innerHTML = '<span class="text-warning"><i class="bi bi-exclamation-circle"></i> ' + (data.error || '{% trans "Failed" %}') + '</span>';
+            }
+        })
+        .catch(error => {
+            resultDiv.innerHTML = '<span class="text-warning"><i class="bi bi-exclamation-circle"></i> {% trans "Error occurred" %}</span>';
+            console.error('Error:', error);
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerText = originalText;
+            setTimeout(() => { resultDiv.innerHTML = ''; }, 5000);
+        });
+    }
+</script>
+
+<style>
+    /* 채팅 버튼 (Floating Action Button) */
+    .chat-fab {
+        position: fixed; bottom: 30px; right: 30px;
+        width: 60px; height: 60px; border-radius: 50%;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: white; border: none;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 24px; cursor: pointer; z-index: 1000;
+        transition: transform 0.2s;
+    }
+    .chat-fab:hover { transform: scale(1.1); }
+
+    /* 채팅 창 */
+    .chat-window {
+        position: fixed; bottom: 100px; right: 30px;
+        width: 350px; height: 500px;
+        background: white; border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        display: none; flex-direction: column;
+        z-index: 1000; overflow: hidden;
+        border: 1px solid #e5e7eb;
+    }
+    .chat-header {
+        background: #1e293b; color: white; padding: 15px 20px;
+        font-weight: 700; display: flex; justify-content: space-between; align-items: center;
+    }
+    .chat-body {
+        flex: 1; padding: 20px; overflow-y: auto;
+        background-color: #f8fafc; display: flex; flex-direction: column; gap: 10px;
+    }
+    .chat-input-area {
+        padding: 15px; background: white; border-top: 1px solid #e5e7eb;
+        display: flex; gap: 10px;
+    }
+    .chat-input {
+        flex: 1; border: 1px solid #e2e8f0; border-radius: 20px; padding: 10px 15px; outline: none;
+    }
+    
+    /* 메시지 버블 */
+    .msg { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 14px; line-height: 1.4; }
+    .msg-ai { background: white; border: 1px solid #e2e8f0; align-self: flex-start; border-bottom-left-radius: 2px; }
+    .msg-user { background: #2563eb; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+    
+    /* 로딩 애니메이션 */
+    .typing-indicator { font-size: 12px; color: #94a3b8; margin-left: 10px; display: none; }
+</style>
+
+<button class="chat-fab" onclick="toggleChat()">
+    <i class="bi bi-chat-dots-fill"></i>
+</button>
+
+<div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+        <span>🤖 {% trans "AI Investment Assistant" %}</span>
+        <button onclick="toggleChat()" class="btn btn-sm text-white"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="chat-body" id="chatBody">
+        <div class="msg msg-ai">
+            {% trans "Hello! 👋" %}<br>{% trans "Any questions about your portfolio?" %}
+        </div>
+    </div>
+    <div class="typing-indicator" id="typingInfo">{% trans "AI is thinking..." %}</div>
+    <div class="chat-input-area">
+        <input type="text" id="chatInput" class="chat-input" placeholder="{% trans 'e.g., Why is bond allocation high?' %}" onkeypress="handleEnter(event)">
+        <button onclick="sendMessage()" class="btn btn-primary btn-sm rounded-circle" style="width: 40px; height: 40px;">
+            <i class="bi bi-send-fill"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+    const reportId = "{{ report.id }}"; // 현재 리포트 ID
+
+    function toggleChat() {
+        const win = document.getElementById('chatWindow');
+        win.style.display = (win.style.display === 'none' || win.style.display === '') ? 'flex' : 'none';
+    }
+
+    function handleEnter(e) {
+        if (e.key === 'Enter') sendMessage();
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        // 1. 사용자 메시지 표시
+        addMessage(msg, 'user');
+        input.value = '';
+        
+        // 2. 로딩 표시
+        const typing = document.getElementById('typingInfo');
+        typing.style.display = 'block';
+
+        try {
+            // 3. API 호출
+            const res = await fetch("{% url 'ai_advisor:chat_api' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({ message: msg, report_id: reportId })
+            });
+            const data = await res.json();
+            
+            // 4. AI 응답 표시
+            typing.style.display = 'none';
+            if (data.error) {
+                addMessage("Error: " + data.error, 'ai');
+            } else {
+                addMessage(data.answer, 'ai');
+            }
+        } catch (e) {
+            typing.style.display = 'none';
+            addMessage("Server Connection Failed", 'ai');
+        }
+    }
+
+    function addMessage(text, sender) {
+        const body = document.getElementById('chatBody');
+        const div = document.createElement('div');
+        div.className = `msg msg-${sender}`;
+        // Convert newlines to <br>
+        div.innerHTML = text.replace(/\n/g, '<br>');
+        body.appendChild(div);
+        body.scrollTop = body.scrollHeight; // 스크롤 하단으로
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "AI Report" %}: {{ symbol }} - Vestiq{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">
+            <i class="bi bi-robot text-primary me-2"></i>{% trans "AI Analysis Report" %}: <span class="text-primary">{{ symbol }}</span>
+        </h2>
+        <a href="{% url 'ai_advisor:report_input' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-search me-1"></i>{% trans "New Search" %}
+        </a>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading-container" class="text-center py-5">
+        <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <h4 class="fw-bold text-muted">{% trans "Generating AI Report..." %}</h4>
+        <p class="text-muted">
+            {% trans "Analyzing market data, financials, and technical indicators." %}<br>
+            {% trans "This may take a few seconds." %}
+        </p>
+    </div>
+
+    <!-- Report Container -->
+    <div id="report-container" style="display: none;">
+        <!-- Content loaded via AJAX -->
+    </div>
+
+    <!-- Error Container -->
+    <div id="error-container" class="alert alert-danger shadow-sm" style="display: none;">
+        <h4 class="alert-heading"><i class="bi bi-exclamation-triangle-fill me-2"></i>{% trans "Analysis Failed" %}</h4>
+        <p id="error-message">{% trans "An error occurred while generating the report." %}</p>
+        <hr>
+        <p class="mb-0">
+            <a href="{% url 'ai_advisor:report_input' %}" class="btn btn-outline-danger btn-sm">{% trans "Try Another Ticker" %}</a>
+        </p>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const symbol = "{{ symbol }}";
+    const reportContainer = document.getElementById('report-container');
+    const loadingContainer = document.getElementById('loading-container');
+    const errorContainer = document.getElementById('error-container');
+    const errorMessage = document.getElementById('error-message');
+
+    // Fetch AI Report
+    fetch("{% url 'ai_advisor:api_report' symbol %}")
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Failed to load report');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.html) {
+                reportContainer.innerHTML = data.html;
+                loadingContainer.style.display = 'none';
+                reportContainer.style.display = 'block';
+                
+                // Re-initialize any scripts if needed (e.g. tooltips)
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl)
+                });
+            } else {
+                throw new Error('Invalid response format');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            loadingContainer.style.display = 'none';
+            errorContainer.style.display = 'block';
+            errorMessage.textContent = error.message;
+        });
+});
+</script>
+{% endblock %}

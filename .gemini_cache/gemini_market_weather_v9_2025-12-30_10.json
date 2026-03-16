@@ -1,0 +1,172 @@
+{
+  "en": {
+    "title": "Commodity Carnival Meets Rate Jitters: A Tug-of-War Market",
+    "summary": "Today's markets are a mixed bag, with precious metals and industrial commodities soaring, hinting at inflation and robust demand. Meanwhile, major indices largely tread water, feeling the pinch of rising bond yields and tariff concerns, making for a cautiously optimistic but complex landscape.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "+0.00%",
+        "comment": "Holding steady, catching its breath."
+      },
+      {
+        "label": "Nasdaq",
+        "value": "+0.00%",
+        "comment": "Tech titans are mostly flat today."
+      },
+      {
+        "label": "Russell 2000",
+        "value": "-0.15%",
+        "comment": "Small caps feeling a slight chill."
+      },
+      {
+        "label": "Bitcoin",
+        "value": "+1.72%",
+        "comment": "Digital assets continue their climb."
+      }
+    ],
+    "macro": {
+      "title": "Macro Vibes",
+      "points": [
+        "<b>Bond Yields Climbing</b>: US Treasury yields across the board spiked today, suggesting increasing borrowing costs and potential inflation concerns on the horizon.",
+        "<b>Commodity Rally Heats Up</b>: Silver, Copper, and Gold saw significant gains, with crude oil also rising, pointing towards strong industrial demand or brewing inflationary pressures.",
+        "<b>Tariff Troubles & Price Jumps</b>: News of tariffs driving up leather prices for consumer goods like boots and bags indicates persistent supply-chain and cost pressures for businesses.",
+        "<b>Chinese Yuan Weakness</b>: The Chinese Yuan experienced a notable decline against the USD, which could signal economic concerns in China or shifts in global trade dynamics."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "Materials/Mining",
+        "change": "+7.98% (Silver)",
+        "comment": "Commodities like silver and copper are having a breakout day, signaling strong demand."
+      },
+      {
+        "name": "Energy",
+        "change": "+0.55% (Crude Oil)",
+        "comment": "Oil continues its steady climb amidst global demand projections."
+      },
+      {
+        "name": "Cryptocurrency/Digital Assets",
+        "change": "+1.72% (BTC)",
+        "comment": "The digital asset space is buzzing with solid gains across the board."
+      },
+      {
+        "name": "Consumer Discretionary (Retail)",
+        "change": "Impacted by Tariffs",
+        "comment": "Facing headwinds from rising input costs due to new tariffs on leather goods."
+      },
+      {
+        "name": "Airlines/Travel",
+        "change": "Flight Cancellations",
+        "comment": "Ongoing disruptions from weather, even as they ease, weigh on sentiment."
+      },
+      {
+        "name": "Small Cap Stocks",
+        "change": "-0.15% (RUT)",
+        "comment": "The Russell 2000 saw a slight dip, often sensitive to rising rates and economic uncertainty."
+      }
+    ],
+    "themes": [
+      {
+        "name": "Commodity Boom",
+        "change": "Strong Gains",
+        "comment": "Robust gains in metals and oil point to increasing demand and inflationary pressures."
+      },
+      {
+        "name": "Digital Asset Resurgence",
+        "change": "Solid Performance",
+        "comment": "Cryptocurrencies like Bitcoin and Ethereum continue their upward trajectory, drawing investor interest."
+      },
+      {
+        "name": "Inflationary Concerns",
+        "change": "Rising Yields & Prices",
+        "comment": "Rising bond yields and commodity prices, coupled with tariff news, highlight ongoing worries about inflation."
+      }
+    ]
+  },
+  "ko": {
+    "title": "상품 시장 축제 속 금리 불안: 시장의 줄다리기",
+    "summary": "오늘 시장은 귀금속 및 산업 상품의 급등으로 인플레이션과 견조한 수요를 암시하며 혼조세를 보였습니다. 한편, 주요 지수는 금리 상승과 관세 우려에 압박을 받으며 전반적으로 보합세를 유지, 신중한 낙관론과 복잡한 상황이 공존하고 있습니다.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "+0.00%",
+        "comment": "숨 고르며 보합세를 유지했습니다."
+      },
+      {
+        "label": "나스닥",
+        "value": "+0.00%",
+        "comment": "기술주들은 오늘 대부분 보합세를 보였습니다."
+      },
+      {
+        "label": "러셀 2000",
+        "value": "-0.15%",
+        "comment": "소형주들은 약간의 냉각을 느꼈습니다."
+      },
+      {
+        "label": "비트코인",
+        "value": "+1.72%",
+        "comment": "디지털 자산은 계속해서 상승세를 이어갔습니다."
+      }
+    ],
+    "macro": {
+      "title": "매크로 경제",
+      "points": [
+        "<b>채권 금리 상승</b>: 미국 국채 금리가 전반적으로 상승하여, 차입 비용 증가와 향후 인플레이션 우려를 시사했습니다.",
+        "<b>상품 랠리 가열</b>: 은, 구리, 금이 크게 올랐고, 원유도 상승세를 보여 견조한 산업 수요 또는 인플레이션 압력 고조를 나타냈습니다.",
+        "<b>관세 문제 및 물가 상승</b>: 가죽 제품에 대한 관세로 인해 부츠와 가방 같은 소비재 가격이 상승했다는 소식은 기업의 공급망 및 비용 압박이 지속되고 있음을 보여줍니다.",
+        "<b>위안화 약세</b>: 중국 위안화가 미국 달러 대비 눈에 띄게 하락하여, 중국 경제에 대한 우려 또는 글로벌 무역 역학의 변화를 나타낼 수 있습니다."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "소재/광업",
+        "change": "+7.98% (은)",
+        "comment": "은과 구리 같은 원자재가 오늘 시장을 주도하며 강한 수요를 시사했습니다."
+      },
+      {
+        "name": "에너지",
+        "change": "+0.55% (원유)",
+        "comment": "글로벌 수요 전망 속에서 원유는 꾸준한 상승세를 이어가고 있습니다."
+      },
+      {
+        "name": "암호화폐/디지털 자산",
+        "change": "+1.72% (BTC)",
+        "comment": "디지털 자산 시장은 전반적으로 견조한 상승세를 보이며 활기를 띠고 있습니다."
+      },
+      {
+        "name": "경기소비재 (소매)",
+        "change": "관세 영향",
+        "comment": "가죽 제품에 대한 새로운 관세로 인해 원자재 비용 상승이라는 역풍에 직면했습니다."
+      },
+      {
+        "name": "항공/여행",
+        "change": "항공편 취소",
+        "comment": "기상 악화로 인한 혼란이 완화되고 있음에도 불구하고 지속적인 항공편 취소는 투자 심리에 부담을 줍니다."
+      },
+      {
+        "name": "소형주",
+        "change": "-0.15% (RUT)",
+        "comment": "러셀 2000은 금리 상승과 경제 불확실성에 민감하게 반응하며 소폭 하락했습니다."
+      }
+    ],
+    "themes": [
+      {
+        "name": "상품 호황",
+        "change": "강한 상승세",
+        "comment": "금속 및 원유의 견조한 상승세는 수요 증가와 인플레이션 압력을 나타냅니다."
+      },
+      {
+        "name": "디지털 자산 부활",
+        "change": "견조한 성과",
+        "comment": "비트코인과 이더리움 같은 암호화폐는 계속해서 상승 궤도를 그리며 투자자들의 관심을 끌고 있습니다."
+      },
+      {
+        "name": "인플레이션 우려",
+        "change": "금리 및 가격 상승",
+        "comment": "상승하는 채권 금리와 상품 가격, 그리고 관세 소식은 지속적인 인플레이션 우려를 부각시킵니다."
+      }
+    ]
+  },
+  "last_updated": "2025-12-30 10:05 AM EST",
+  "last_updated_ts": "2025-12-30T10:05:51.943763-05:00"
+}

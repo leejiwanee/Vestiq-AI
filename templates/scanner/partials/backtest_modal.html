@@ -1,0 +1,170 @@
+<!-- Backtest Lab Modal (Redesigned) -->
+<div id="backtestModal" class="scan-modal" style="display: none; align-items:center; justify-content:center;">
+    <div class="scan-modal-content" style="width: 1200px; max-width: 95vw; height: 85vh; background: #0f172a; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 24px; display:flex; overflow:hidden; box-shadow: 0 0 50px rgba(0,0,0,0.5);">
+        
+        <!-- Sidebar: Settings -->
+        <div style="width: 300px; background: rgba(30, 41, 59, 0.4); border-right: 1px solid rgba(255,255,255,0.1); padding: 24px; display:flex; flex-direction:column;">
+            <div style="margin-bottom: 32px;">
+                <h2 style="font-size:1.2rem; font-weight:700; color:white; display:flex; align-items:center; gap:10px; margin:0;">
+                    <i class="bi bi-flask" style="color:#4ade80;"></i> Backtest Lab
+                </h2>
+                <div style="font-size:0.8rem; color:#64748b; margin-top:4px;">Test Vestiq strategies with history</div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:24px; flex:1;">
+                <!-- Date Range -->
+                <div>
+                    <label style="display:block; color:#94a3b8; font-size:0.8rem; font-weight:600; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Test Period</label>
+                    <div style="background:rgba(15, 23, 42, 0.6); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:12px; display:flex; align-items:center; gap:8px;">
+                        <i class="bi bi-calendar-range" style="color:#3b82f6;"></i>
+                        <input type="text" id="bt-date-range" placeholder="Select Period" 
+                               style="background:transparent; border:none; color:white; font-family:'Outfit'; font-size:0.9rem; width:100%; outline:none;">
+                    </div>
+                </div>
+
+                <!-- Hold Period -->
+                <div>
+                    <label style="display:block; color:#94a3b8; font-size:0.8rem; font-weight:600; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">
+                        Max Holding Days
+                    </label>
+                    <div style="background:rgba(15, 23, 42, 0.6); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:16px;">
+                        <input type="range" id="bt-hold-days" min="1" max="10" value="5" style="width:100%; accent-color:#38bdf8; margin-bottom:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.8rem; color:#64748b;">1 Day</span>
+                            <span id="bt-hold-days-val" style="font-size:1.2rem; font-weight:700; color:#38bdf8;">5 Days</span>
+                            <span style="font-size:0.8rem; color:#64748b;">10 Days</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top:auto;">
+                    <button onclick="runBacktest()" id="btn-run-bt"
+                            style="width:100%; background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color:white; border:none; padding:16px; border-radius:16px; font-weight:700; cursor:pointer; font-size:1rem; transition:0.2s; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                        <i class="bi bi-play-fill" style="font-size:1.2rem;"></i> Run Simulation
+                    </button>
+                    <div style="text-align:center; margin-top:16px; cursor:pointer; color:#64748b; font-size:0.9rem;" onclick="closeBacktestModal()">
+                        Close
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div style="flex:1; padding:32px; overflow-y:auto; display:flex; flex-direction:column; gap:24px;">
+            
+            <!-- Loading Overlay -->
+            <div id="bt-loading" style="display:none; width:100%; height:100%; align-items:center; justify-content:center; flex-direction:column;">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+                <div style="margin-top:20px; color:#94a3b8; font-size:1.1rem;">Simulating Strategy...</div>
+            </div>
+
+            <div id="bt-results" style="display:none; animation:fadeIn 0.5s ease; flex-direction:column; gap:24px;">
+                <!-- Stats Grid -->
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px;">
+                    <!-- Total Return -->
+                    <div class="bt-stat-card">
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <div>
+                                <div class="bt-label">Cumulative Return</div>
+                                <div class="bt-val" id="bt-cum-ret">0.0%</div>
+                            </div>
+                            <div class="bt-icon-box" style="background:rgba(59, 130, 246, 0.1); color:#3b82f6;">
+                                <i class="bi bi-graph-up-arrow"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Win Rate -->
+                    <div class="bt-stat-card">
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <div>
+                                <div class="bt-label">Win Rate</div>
+                                <div class="bt-val" id="bt-win-rate">0.0%</div>
+                            </div>
+                            <div class="bt-icon-box" style="background:rgba(34, 197, 94, 0.1); color:#4ade80;">
+                                <i class="bi bi-check-lg"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Trades -->
+                    <div class="bt-stat-card">
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <div>
+                                <div class="bt-label">Total Trades</div>
+                                <div class="bt-val" id="bt-total-trades">0</div>
+                            </div>
+                            <div class="bt-icon-box" style="background:rgba(251, 191, 36, 0.1); color:#fbbf24;">
+                                <i class="bi bi-layers-fill"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart Section -->
+                <div class="bt-panel">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                        <div style="font-weight:700; color:white;">Equity Curve</div>
+                        <div style="font-size:0.8rem; color:#94a3b8; background:rgba(255,255,255,0.05); padding:4px 10px; border-radius:12px;">Cumulative P&L</div>
+                    </div>
+                    <div id="bt-chart" style="width:100%; height:300px;"></div>
+                </div>
+
+                <!-- Trades Table -->
+                <div class="bt-panel" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+                    <div style="margin-bottom:16px; font-weight:700; color:white;">Recent Trades</div>
+                    <div style="overflow-y:auto; flex:1; border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+                        <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+                            <thead style="background:rgba(20, 30, 48, 0.6); position:sticky; top:0;">
+                                <tr>
+                                    <th class="bt-th">Symbol</th>
+                                    <th class="bt-th">Buy Date</th>
+                                    <th class="bt-th">Sell Date</th>
+                                    <th class="bt-th">Price</th>
+                                    <th class="bt-th text-right">Return</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bt-trades-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bt-stat-card {
+        background: #1e293b;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 20px;
+    }
+    .bt-label { font-size: 0.85rem; color: #94a3b8; font-weight: 500; margin-bottom: 4px; }
+    .bt-val { font-size: 1.8rem; font-weight: 700; color: white; letter-spacing: -0.5px; }
+    .bt-icon-box {
+        width: 48px; height: 48px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .bt-panel {
+        background: #1e293b;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 20px;
+    }
+
+    .bt-th {
+        padding: 12px 16px;
+        text-align: left;
+        color: #94a3b8;
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+    }
+    .bt-td {
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(255,255,255,0.03);
+        color: #cbd5e1;
+    }
+</style>

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-lg border-0 rounded-4" style="max-width: 450px; width: 100%; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);">
+        <div class="card-body p-5">
+            <div class="text-center mb-4">
+                <h3 class="fw-bold text-primary">{% trans "Create Account" %}</h3>
+                <p class="text-muted">{% trans "Join Vestiq today" %}</p>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label fw-semibold">{{ field.label }}</label>
+                        {{ field|add_class:"form-control bg-light" }}
+                        {% if field.help_text %}
+                            <div class="form-text small text-muted">{{ field.help_text }}</div>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-primary w-100 py-2 rounded-3 fw-bold shadow-sm mt-3">
+                    {% trans "Sign Up" %}
+                </button>
+            </form>
+
+            <div class="text-center mt-4">
+                <p class="small text-muted mb-0">{% trans "Already have an account?" %} 
+                    <a href="{% url 'login' %}" class="text-decoration-none fw-bold">{% trans "Login" %}</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

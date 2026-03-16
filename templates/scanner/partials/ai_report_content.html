@@ -1,0 +1,325 @@
+{% load i18n humanize %}
+
+<style>
+    .glass-panel {
+        background: rgba(30, 41, 59, 0.4);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+        backdrop-filter: blur(8px);
+        border-radius: 16px;
+    }
+    .glass-header {
+        background: linear-gradient(180deg, rgba(51, 65, 85, 0.5) 0%, rgba(30, 41, 59, 0.5) 100%);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        padding: 12px 16px;
+        border-radius: 16px 16px 0 0;
+        font-weight: 600;
+        color: #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .stat-value {
+        font-family: 'Inter', sans-serif;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+    }
+    .report-section-title {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #94a3b8;
+        margin-bottom: 12px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .report-section-title::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: rgba(148, 163, 184, 0.2);
+    }
+</style>
+
+{# Market Data Strip #}
+{% if stats %}
+<div class="d-flex w-100 mb-4 p-3 glass-panel justify-content-around align-items-center bg-slate-900 shadow-sm" style="border-radius: 99px;">
+    <div class="text-center px-4 border-end border-secondary border-opacity-25">
+        <div class="text-xs text-slate-400 text-uppercase fw-bold mb-1">Price</div>
+        <div class="fs-4 text-white stat-value">${{ stats.close|floatformat:2 }}</div>
+    </div>
+    <div class="text-center px-4 border-end border-secondary border-opacity-25">
+         <div class="text-xs text-slate-400 text-uppercase fw-bold mb-1">Change</div>
+         <div class="fs-5 stat-value {% if stats.price_change_pct > 0 %}text-emerald-400{% elif stats.price_change_pct < 0 %}text-rose-400{% else %}text-slate-200{% endif %}">
+            {% if stats.price_change_pct > 0 %}<i class="bi bi-caret-up-fill small"></i>{% elif stats.price_change_pct < 0 %}<i class="bi bi-caret-down-fill small"></i>{% endif %}
+            {{ stats.price_change_pct|floatformat:2 }}%
+         </div>
+    </div>
+    <div class="text-center px-4">
+         <div class="text-xs text-slate-400 text-uppercase fw-bold mb-1">Volume</div>
+         <div class="fs-5 text-indigo-400 stat-value">{{ stats.volume|intcomma }}</div>
+    </div>
+</div>
+{% endif %}
+
+{# Company Overview #}
+{% if ai_report.overview %}
+<div class="mb-5 px-1">
+    <div class="d-flex align-items-start gap-3">
+        <div class="d-flex align-items-center justify-content-center rounded-circle bg-slate-800 border border-slate-700 text-slate-400 flex-shrink-0 shadow-lg" style="width: 48px; height: 48px;">
+            <i class="bi bi-building fs-5"></i>
+        </div>
+        <div>
+             <h5 class="text-white fw-bold mb-2">{{ company.name }}</h5>
+             <p class="text-slate-300 small mb-0" style="line-height: 1.6; max-width: 800px;">
+                {{ ai_report.overview }}
+            </p>
+            <div class="mt-2 d-flex gap-2">
+                {% if company.sector %}<span class="badge bg-slate-800 border border-slate-700 text-slate-400 rounded-pill px-3 fw-normal small">{{ company.sector }}</span>{% endif %}
+                {% if company.industry %}<span class="badge bg-slate-800 border border-slate-700 text-slate-400 rounded-pill px-3 fw-normal small">{{ company.industry }}</span>{% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row g-4">
+    
+    {# Left Column: Fair Value & Financials #}
+    <div class="col-lg-8">
+        
+        {# Fair Value Hero #}
+        {% if fair_value %}
+        <div class="glass-panel mb-4 position-relative overflow-hidden">
+            <!-- Background Glow -->
+            <div class="position-absolute top-0 end-0 rounded-circle" style="width: 200px; height: 200px; background: {% if fair_value.tone == 'cheap' %}#10b981{% elif fair_value.tone == 'expensive' %}#f43f5e{% else %}#3b82f6{% endif %}; filter: blur(80px); opacity: 0.15; transform: translate(30%, -30%);"></div>
+
+            <div class="p-4 position-relative">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <div class="text-uppercase text-xs fw-bold tracking-wider mb-1" style="color: {% if fair_value.tone == 'cheap' %}#34d399{% elif fair_value.tone == 'expensive' %}#fb7185{% else %}#60a5fa{% endif %};">
+                            Gemini AI Valuation
+                        </div>
+                        <h2 class="display-6 fw-bold text-white mb-0 d-flex align-items-center gap-3">
+                            ${{ fair_value.price|floatformat:2 }}
+                            {% if fair_value.label %}
+                            <span class="badge rounded-pill fs-6 px-3 py-1 align-middle border" 
+                                style="background: rgba(30,41,59,0.5); border-color: currentColor; 
+                                color: {% if fair_value.tone == 'cheap' %}#34d399{% elif fair_value.tone == 'expensive' %}#fb7185{% else %}#60a5fa{% endif %};">
+                                {{ fair_value.label }}
+                            </span>
+                            {% endif %}
+                        </h2>
+                    </div>
+                     {% if fair_value.diff_pct %}
+                    <div class="text-end">
+                        <div class="fs-4 fw-bold {% if fair_value.tone == 'cheap' %}text-emerald-400{% elif fair_value.tone == 'expensive' %}text-rose-400{% else %}text-blue-400{% endif %}">
+                            {{ fair_value.diff_pct|floatformat:1 }}%
+                        </div>
+                        <div class="text-xs text-slate-500 text-uppercase fw-bold">Upside / Downside</div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if fair_value.rationale %}
+                <div class="p-3 bg-slate-900 bg-opacity-50 rounded-3 border border-slate-700 border-opacity-50">
+                     <div class="d-flex gap-2">
+                        <i class="bi bi-robot text-slate-400 mt-1"></i>
+                        <span class="text-slate-300 small" style="line-height: 1.6;">{{ fair_value.rationale }}</span>
+                     </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {# Financial Analysis Grid #}
+        {% if ai_report.financial_analysis %}
+        <div class="glass-panel p-0 mb-4 overflow-hidden">
+             <div class="glass-header">
+                <i class="bi bi-search text-primary"></i> Financial Analysis
+             </div>
+             <div class="p-4">
+                 
+                 {# Verdict #}
+                 <div class="mb-4">
+                    <h5 class="fw-bold text-white mb-2">{{ ai_report.financial_analysis.verdict.title }}</h5>
+                    <p class="text-slate-400 small mb-0">{{ ai_report.financial_analysis.verdict.content }}</p>
+                 </div>
+
+                 <div class="row g-3">
+                     {# Valuation Mini Card #}
+                     <div class="col-md-6">
+                        <div class="p-3 bg-slate-900 rounded-3 border border-slate-700 h-100">
+                            <div class="d-flex align-items-center gap-2 mb-3 text-purple-400 text-uppercase text-xs fw-bold">
+                                <i class="bi bi-calculator"></i> Valuation
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-slate-500 small">P/E Ratio</span>
+                                <span class="text-white fw-bold small">{{ ai_report.financial_analysis.valuation.pe_ratio }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="text-slate-500 small">P/B Ratio</span>
+                                <span class="text-white fw-bold small">{{ ai_report.financial_analysis.valuation.pb_ratio }}</span>
+                            </div>
+                            <div class="text-xs text-slate-400 pt-2 border-top border-slate-800">
+                                {{ ai_report.financial_analysis.valuation.assessment|truncatechars:80 }}
+                            </div>
+                        </div>
+                     </div>
+
+                     {# Earnings Mini Card #}
+                     <div class="col-md-6">
+                        <div class="p-3 bg-slate-900 rounded-3 border border-slate-700 h-100">
+                             <div class="d-flex align-items-center gap-2 mb-3 text-emerald-400 text-uppercase text-xs fw-bold">
+                                <i class="bi bi-cash-stack"></i> Earnings
+                            </div>
+                             <div class="d-flex justify-content-between mb-2">
+                                <span class="text-slate-500 small">Revenue</span>
+                                <span class="text-white fw-bold small">{{ ai_report.financial_analysis.earnings.revenue }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="text-slate-500 small">Growth</span>
+                                <span class="text-white fw-bold small">{{ ai_report.financial_analysis.earnings.growth_summary|truncatewords:4 }}</span>
+                            </div>
+                             <div class="text-xs text-slate-400 pt-2 border-top border-slate-800">
+                                {{ ai_report.financial_analysis.earnings.recent_earnings_summary|truncatechars:80 }}
+                            </div>
+                        </div>
+                     </div>
+                     
+                     {# Health Mini Card #}
+                     <div class="col-md-6">
+                        <div class="p-3 bg-slate-900 rounded-3 border border-slate-700 h-100">
+                             <div class="d-flex align-items-center gap-2 mb-3 text-cyan-400 text-uppercase text-xs fw-bold">
+                                <i class="bi bi-heart-pulse"></i> Health
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-slate-500 small">Debt/Equity</span>
+                                <span class="text-white fw-bold small">{{ ai_report.financial_analysis.health.debt_to_equity }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="text-slate-500 small">Cash</span>
+                                <span class="text-white fw-bold small">{{ ai_report.financial_analysis.health.cash }}</span>
+                            </div>
+                            <div class="text-xs text-slate-400 pt-2 border-top border-slate-800">
+                                {{ ai_report.financial_analysis.health.assessment|truncatechars:80 }}
+                            </div>
+                        </div>
+                     </div>
+
+                     {# Wall St #}
+                     <div class="col-md-6">
+                        <div class="p-3 bg-slate-900 rounded-3 border border-slate-700 h-100">
+                             <div class="d-flex align-items-center gap-2 mb-3 text-amber-400 text-uppercase text-xs fw-bold">
+                                <i class="bi bi-bank"></i> Wall Street
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-slate-500 small">Consensus</span>
+                                <span class="text-white fw-bold small">{{ ai_report.financial_analysis.wall_street.consensus }}</span>
+                            </div>
+                             <div class="d-flex justify-content-between mb-3">
+                                <span class="text-slate-500 small">Target</span>
+                                <span class="text-white fw-bold small">{{ ai_report.financial_analysis.wall_street.target_price }}</span>
+                            </div>
+                        </div>
+                     </div>
+                 </div>
+             </div>
+        </div>
+        {% elif ai_report %}
+            <div class="alert alert-secondary bg-slate-800 border-slate-700 text-slate-400 mb-4">
+                Financial analysis unavailable.
+            </div>
+        {% elif ai_disabled %}
+            <!-- Disabled -->
+        {% endif %}
+        
+        {# Conclusion for Left Col #}
+        {% if ai_report.conclusion %}
+             <div class="glass-panel p-4 border-start border-4
+                 {% if '매수' in ai_report.conclusion or 'BUY' in ai_report.conclusion %}border-emerald-500
+                 {% elif '매도' in ai_report.conclusion or 'SELL' in ai_report.conclusion %}border-rose-500
+                 {% else %}border-slate-500{% endif %}">
+                
+                <h6 class="fw-bold text-white mb-3 text-uppercase tracking-wide">
+                    {% if '매수' in ai_report.conclusion or 'BUY' in ai_report.conclusion %}🚀 Bullish Verdict
+                    {% elif '매도' in ai_report.conclusion or 'SELL' in ai_report.conclusion %}🔻 Bearish Verdict
+                    {% else %}⚖️ Neutral Verdict{% endif %}
+                </h6>
+                <div class="text-slate-300" style="line-height: 1.7; white-space: pre-line;">
+                    {{ ai_report.conclusion }}
+                </div>
+             </div>
+        {% endif %}
+
+    </div>
+
+    {# Right Column: Checklists & Pos/Neg #}
+    <div class="col-lg-4">
+        
+        {# Pos/Neg Panel #}
+        <div class="glass-panel p-0 mb-4 overflow-hidden">
+             <div class="glass-header">
+                <i class="bi bi-list-check text-warning"></i> Key Factors
+             </div>
+             <div class="p-3">
+                <div class="mb-3">
+                    <div class="text-xs text-emerald-400 fw-bold uppercase mb-2 ps-1">POSITIVES</div>
+                    <ul class="list-unstyled mb-0">
+                        {% for p in ai_report.positives %}
+                        <li class="d-flex align-items-start gap-2 mb-2 text-slate-300 small">
+                            <i class="bi bi-check-circle-fill text-emerald-500 mt-1 flex-shrink-0" style="font-size: 0.8rem;"></i>
+                            <span>{{ p }}</span>
+                        </li>
+                        {% empty %}
+                        <li class="text-slate-500 small ps-1">No major positives.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="pt-3 border-top border-slate-700 border-opacity-50">
+                    <div class="text-xs text-rose-400 fw-bold uppercase mb-2 ps-1">NEGATIVES</div>
+                    <ul class="list-unstyled mb-0">
+                        {% for n in ai_report.negatives %}
+                        <li class="d-flex align-items-start gap-2 mb-2 text-slate-300 small">
+                             <i class="bi bi-dash-circle-fill text-rose-500 mt-1 flex-shrink-0" style="font-size: 0.8rem;"></i>
+                            <span>{{ n }}</span>
+                        </li>
+                        {% empty %}
+                        <li class="text-slate-500 small ps-1">No major negatives.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+             </div>
+        </div>
+
+        {# Checklist Panel #}
+        <div class="glass-panel p-0 mb-4 overflow-hidden">
+            <div class="glass-header">
+                <i class="bi bi-clipboard-check text-info"></i> Technical Check
+             </div>
+             <div class="p-3">
+                 <ul class="list-unstyled mb-0">
+                    {% for c in ai_report.checklist %}
+                    <li class="d-flex align-items-start gap-2 mb-2 text-slate-300 small">
+                         <i class="bi bi-check2-square text-blue-400 mt-1 flex-shrink-0"></i>
+                        <span>{{ c }}</span>
+                    </li>
+                    {% endfor %}
+                 </ul>
+             </div>
+        </div>
+        
+        {# Technical Summary #}
+        <div class="glass-panel p-3">
+            <div class="text-xs text-slate-500 fw-bold uppercase mb-2">Technical Commentary</div>
+            <ul class="list-unstyled mb-0">
+                {% for t in ai_report.technical %}
+                <li class="mb-2 small text-slate-300" style="line-height:1.5;">• {{ t }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+    </div>
+</div>

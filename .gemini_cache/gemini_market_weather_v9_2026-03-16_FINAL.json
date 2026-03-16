@@ -1,0 +1,172 @@
+{
+  "en": {
+    "title": "Tech Titans Lead the Charge as Volatility Takes a Breather",
+    "summary": "U.S. equities rallied across the board, led by a buoyant tech sector and receding market fear, while bond yields softened. Commodities presented a mixed bag, with crude oil taking a significant hit, but industrial metals shined. Meanwhile, cryptocurrencies had a truly stellar day, soaring higher.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6699.38 (+1.01%)",
+        "comment": "Broad market enjoying the ride higher."
+      },
+      {
+        "label": "Nasdaq Composite",
+        "value": "22374.18 (+1.22%)",
+        "comment": "Tech's powerful engine drives the gains."
+      },
+      {
+        "label": "Russell 2000",
+        "value": "2503.29 (+0.94%)",
+        "comment": "Small caps join the rally, signaling broader confidence."
+      },
+      {
+        "label": "Bitcoin",
+        "value": "74624.91 (+2.52%)",
+        "comment": "Crypto's big comeback continues its upward trajectory."
+      }
+    ],
+    "macro": {
+      "title": "Macro Vibes",
+      "points": [
+        "<b>Bond Rally</b>: U.S. Treasury yields saw a broad decline across the curve (10-year, 30-year, 5-year), suggesting an easing of long-term interest rate concerns and potentially supporting equity valuations.",
+        "<b>Volatility Retreats</b>: The VIX index plunged over 13%, indicating a significant drop in market fear and an uptick in investor confidence as risk-on sentiment gained traction.",
+        "<b>Commodity Contrast</b>: Crude oil experienced a sharp 4.34% drop, signaling potential concerns about energy demand, while industrial metals like copper rallied significantly, painting a mixed picture for global economic signals.",
+        "<b>Tech Sector Strength</b>: Nvidia's strategic expansion into the self-driving car business with major automakers like Hyundai and BYD underscores the ongoing innovation and growth within the technology sector, particularly in the AI and automotive tech space, boosting overall tech sentiment."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "Technology",
+        "change": "+1.22%",
+        "comment": "Led by Nasdaq's strong performance and Nvidia's expansion news."
+      },
+      {
+        "name": "Cryptocurrencies",
+        "change": "+8.42%",
+        "comment": "Ethereum and Bitcoin posted impressive daily gains."
+      },
+      {
+        "name": "Materials/Industrials",
+        "change": "+2.18%",
+        "comment": "Boosted by copper's strong rally, hinting at industrial demand."
+      },
+      {
+        "name": "Energy",
+        "change": "-4.34%",
+        "comment": "Dragged down significantly by a steep drop in crude oil prices."
+      },
+      {
+        "name": "Precious Metals",
+        "change": "-0.91%",
+        "comment": "Gold saw declines as risk-on sentiment pushed investors towards other assets."
+      },
+      {
+        "name": "Utilities",
+        "change": "Laggard (inferred)",
+        "comment": "Likely underperformed relatively in a broad market risk-on rally."
+      }
+    ],
+    "themes": [
+      {
+        "name": "AI/Autonomy",
+        "change": "High Impact",
+        "comment": "Nvidia's self-driving tech deals signal continued growth in AI applications."
+      },
+      {
+        "name": "Digital Assets Boom",
+        "change": "Significant Gains",
+        "comment": "Strong performance from Bitcoin and Ethereum captivated market attention."
+      },
+      {
+        "name": "Risk-On Sentiment",
+        "change": "Positive",
+        "comment": "Broad market rally and plunging VIX indicate increased investor confidence."
+      }
+    ]
+  },
+  "ko": {
+    "title": "기술 거물들이 시장을 이끌고, 변동성은 숨 고르기",
+    "summary": "기술주의 활발한 움직임과 시장의 공포감 감소에 힘입어 미국 주식 시장이 전반적으로 상승세를 보였고, 채권 금리는 하락했습니다. 원자재 시장은 혼조세를 보였는데, 특히 유가는 큰 폭으로 하락했지만 산업 금속은 빛을 발했습니다. 한편, 암호화폐는 정말 눈부신 하루를 보냈습니다.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6699.38 (+1.01%)",
+        "comment": "전반적인 시장이 상승세를 즐겼습니다."
+      },
+      {
+        "label": "나스닥 종합",
+        "value": "22374.18 (+1.22%)",
+        "comment": "기술주의 강력한 엔진이 상승을 주도했습니다."
+      },
+      {
+        "label": "러셀 2000",
+        "value": "2503.29 (+0.94%)",
+        "comment": "소형주도 랠리에 동참하며 광범위한 신뢰를 보였습니다."
+      },
+      {
+        "label": "비트코인",
+        "value": "74624.91 (+2.52%)",
+        "comment": "암호화폐의 화려한 부활이 상승 궤도를 이어갔습니다."
+      }
+    ],
+    "macro": {
+      "title": "매크로 경제 동향",
+      "points": [
+        "<b>채권 랠리</b>: 미국 국채 금리가 전반적으로 하락(10년물, 30년물, 5년물)하여 장기 금리 우려가 완화되었음을 시사하며, 이는 주식 가치 평가를 지지할 수 있습니다.",
+        "<b>변동성 완화</b>: VIX 지수가 13% 이상 급락하여 시장의 공포가 크게 줄어들고 위험선호 심리가 확산되면서 투자자 신뢰가 높아졌음을 나타냅니다.",
+        "<b>원자재 혼조세</b>: 유가가 4.34% 급락하며 에너지 수요에 대한 잠재적 우려를 시사했지만, 구리 같은 산업 금속은 크게 상승하여 글로벌 경제 신호가 혼재되어 있음을 보여주었습니다.",
+        "<b>기술 부문 강세</b>: 엔비디아가 현대, BYD 등 주요 자동차 제조업체들과 자율주행 기술 사업을 확장하면서 AI 및 자동차 기술 분야에서 기술 부문의 지속적인 혁신과 성장이 부각되었고, 이는 전반적인 기술주 심리를 끌어올렸습니다."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "기술주",
+        "change": "+1.22%",
+        "comment": "나스닥의 강력한 성과와 엔비디아의 확장 소식에 힘입어 상승했습니다."
+      },
+      {
+        "name": "암호화폐",
+        "change": "+8.42%",
+        "comment": "이더리움과 비트코인이 인상적인 일일 상승률을 기록했습니다."
+      },
+      {
+        "name": "소재/산업재",
+        "change": "+2.18%",
+        "comment": "구리의 강세 랠리에 힘입어 산업 수요를 시사했습니다."
+      },
+      {
+        "name": "에너지",
+        "change": "-4.34%",
+        "comment": "원유 가격의 급락으로 인해 크게 하락했습니다."
+      },
+      {
+        "name": "귀금속",
+        "change": "-0.91%",
+        "comment": "위험선호 심리로 투자자들이 다른 자산으로 이동하면서 금은 하락했습니다."
+      },
+      {
+        "name": "유틸리티",
+        "change": "후행 (추론)",
+        "comment": "전반적인 시장의 위험선호 랠리에서 상대적으로 부진했을 것으로 추론됩니다."
+      }
+    ],
+    "themes": [
+      {
+        "name": "AI/자율주행",
+        "change": "높은 영향",
+        "comment": "엔비디아의 자율주행 기술 거래는 AI 애플리케이션의 지속적인 성장을 시사합니다."
+      },
+      {
+        "name": "디지털 자산 붐",
+        "change": "상당한 상승",
+        "comment": "비트코인과 이더리움의 강력한 성과가 시장의 주목을 받았습니다."
+      },
+      {
+        "name": "위험선호 심리",
+        "change": "긍정적",
+        "comment": "광범위한 시장 랠리와 VIX 급락은 투자자 신뢰 증가를 나타냅니다."
+      }
+    ]
+  },
+  "last_updated": "2026-03-16 06:38 PM EST",
+  "last_updated_ts": "2026-03-16T18:38:37.199025-04:00"
+}

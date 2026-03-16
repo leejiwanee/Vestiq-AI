@@ -1,0 +1,1051 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Guru Portfolio Tracker{% endblock %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    /* ========== DARK MODE BASE ========== */
+    body { 
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+        background-attachment: fixed;
+        font-family: 'Inter', sans-serif;
+        color: #e2e8f0;
+    }
+
+    /* Layout */
+    .guru-container { 
+        display: flex; 
+        gap: 30px; 
+        align-items: flex-start; 
+    }
+    .guru-sidebar { 
+        width: 280px; 
+        flex-shrink: 0; 
+    }
+    .guru-content { 
+        flex-grow: 1; 
+        min-width: 0; 
+    }
+
+    /* ========== GLASSMORPHISM SIDEBAR ========== */
+    .guru-menu {
+        background: rgba(30, 41, 59, 0.4);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    .guru-menu-header {
+        padding: 20px 24px;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        font-weight: 800;
+        color: #f8fafc;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-family: 'Outfit', sans-serif;
+        background-clip: padding-box;
+        position: relative;
+    }
+    
+    .guru-menu-header::before {
+        content: '💎';
+        margin-right: 8px;
+        font-size: 16px;
+    }
+
+    .guru-link {
+        display: block;
+        padding: 16px 24px;
+        color: #94a3b8;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .guru-link::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: linear-gradient(180deg, #3b82f6 0%, #8b5cf6 100%);
+        transform: scaleY(0);
+        transition: transform 0.3s ease;
+    }
+
+    .guru-link:hover {
+        background: rgba(59, 130, 246, 0.1);
+        color: #f8fafc;
+        padding-left: 28px;
+        box-shadow: inset 0 0 20px rgba(59, 130, 246, 0.1);
+    }
+
+    .guru-link:hover::before {
+        transform: scaleY(1);
+    }
+
+    .guru-link.active {
+        background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(139, 92, 246, 0.1) 100%);
+        color: #ffffff;
+        border-left: 4px solid transparent;
+        border-image: linear-gradient(180deg, #3b82f6 0%, #8b5cf6 100%) 1;
+        padding-left: 20px;
+        font-weight: 700;
+        box-shadow: 0 0 30px rgba(59, 130, 246, 0.3), inset 0 0 20px rgba(59, 130, 246, 0.1);
+    }
+
+    /* ========== GLASSMORPHISM CARDS ========== */
+    .chart-card {
+        background: rgba(30, 41, 59, 0.5);
+        backdrop-filter: blur(20px);
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 28px;
+        margin-bottom: 30px;
+        height: 480px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        display: flex;
+        flex-direction: column;
+        transition: all 0.3s ease;
+    }
+
+    .chart-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 40px rgba(59, 130, 246, 0.1);
+        border-color: rgba(59, 130, 246, 0.3);
+    }
+
+    .chart-card h6 {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
+        color: #cbd5e1;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 20px;
+    }
+
+    /* ========== HEADER CARD GRADIENT ========== */
+    .info-header {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(139, 92, 246, 0.2) 50%, rgba(236, 72, 153, 0.2) 100%);
+        backdrop-filter: blur(20px);
+        border-radius: 24px;
+        padding: 32px;
+        margin-bottom: 32px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: white;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 60px rgba(59, 130, 246, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .info-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        animation: glow-pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes glow-pulse {
+        0%, 100% { opacity: 0.3; transform: scale(1); }
+        50% { opacity: 0.6; transform: scale(1.1); }
+    }
+
+    .info-header h2 {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 900;
+        font-size: 2.2rem;
+        letter-spacing: -1px;
+        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        position: relative;
+        z-index: 1;
+    }
+
+    .info-header .badge {
+        background: rgba(255, 255, 255, 0.2) !important;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        padding: 8px 16px;
+        font-weight: 700;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* ========== TICKER BADGES ========== */
+    .ticker-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(139, 92, 246, 0.3) 100%);
+        backdrop-filter: blur(10px);
+        color: #93c5fd;
+        font-size: 11px;
+        font-weight: 700;
+        border: 1px solid rgba(59, 130, 246, 0.4);
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+        letter-spacing: 0.5px;
+    }
+
+    /* ========== TABLE DARK MODE ========== */
+    .card {
+        background: rgba(30, 41, 59, 0.5);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-header {
+        background: rgba(15, 23, 42, 0.6) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        backdrop-filter: blur(10px);
+    }
+
+    .card-header h6 {
+        color: #f8fafc !important;
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
+    }
+
+    .table {
+        color: #e2e8f0;
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        background: rgba(15, 23, 42, 0.8);
+        color: #94a3b8;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 1px;
+        border-bottom: 2px solid rgba(59, 130, 246, 0.3);
+        padding: 16px 12px;
+    }
+
+    .table tbody tr {
+        background: rgba(30, 41, 59, 0.3) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+        background: rgba(59, 130, 246, 0.2) !important;
+        transform: scale(1.002);
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+    }
+
+    .table tbody td {
+        padding: 14px 12px;
+        vertical-align: middle;
+        color: #cbd5e1 !important;
+        background: transparent !important;
+    }
+
+    /* Holdings Row Highlights with NEON GLOW */
+    .holding-row-new {
+        background: rgba(59, 130, 246, 0.25) !important;
+        border-left: 3px solid #3b82f6;
+        box-shadow: inset 0 0 20px rgba(59, 130, 246, 0.15);
+    }
+
+    .holding-row-up {
+        background: rgba(34, 197, 94, 0.25) !important;
+        border-left: 3px solid #22c55e;
+        box-shadow: inset 0 0 20px rgba(34, 197, 94, 0.15);
+    }
+
+    .holding-row-down {
+        background: rgba(239, 68, 68, 0.25) !important;
+        border-left: 3px solid #ef4444;
+        box-shadow: inset 0 0 20px rgba(239, 68, 68, 0.15);
+    }
+
+    /* Holding Badges */
+    .holding-badge {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 3px 10px;
+        margin-left: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .holding-badge-new {
+        background: rgba(59, 130, 246, 0.2);
+        color: #93c5fd;
+        border: 1px solid rgba(59, 130, 246, 0.4);
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+    }
+
+    .holding-badge-up {
+        background: rgba(34, 197, 94, 0.2);
+        color: #86efac;
+        border: 1px solid rgba(34, 197, 94, 0.4);
+        box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+    }
+
+    .holding-badge-down {
+        background: rgba(239, 68, 68, 0.2);
+        color: #fca5a5;
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+    }
+
+    /* ========== CHANGE SECTION CARDS ========== */
+    .change-section-card {
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        background: rgba(30, 41, 59, 0.4);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .change-section-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Individual category styling */
+    .change-section-card:has(.change-badge-new) {
+        border-color: rgba(59, 130, 246, 0.4);
+        box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
+    }
+
+    .change-section-card:has(.change-badge-exit) {
+        border-color: rgba(239, 68, 68, 0.4);
+        box-shadow: 0 4px 20px rgba(239, 68, 68, 0.2);
+    }
+
+    .change-section-card:has(.change-badge-up) {
+        border-color: rgba(34, 197, 94, 0.4);
+        box-shadow: 0 4px 20px rgba(34, 197, 94, 0.2);
+    }
+
+    .change-section-card:has(.change-badge-down) {
+        border-color: rgba(249, 115, 22, 0.4);
+        box-shadow: 0 4px 20px rgba(249, 115, 22, 0.2);
+    }
+
+    .change-badge {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 4px 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .change-badge-new {
+        background: rgba(59, 130, 246, 0.2);
+        color: #93c5fd;
+        border: 1px solid rgba(59, 130, 246, 0.5);
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .change-badge-exit {
+        background: rgba(239, 68, 68, 0.2);
+        color: #fca5a5;
+        border: 1px solid rgba(239, 68, 68, 0.5);
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+    }
+
+    .change-badge-up {
+        background: rgba(34, 197, 94, 0.2);
+        color: #86efac;
+        border: 1px solid rgba(34, 197, 94, 0.5);
+        box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+    }
+
+    .change-badge-down {
+        background: rgba(249, 115, 22, 0.2);
+        color: #fdba74;
+        border: 1px solid rgba(249, 115, 22, 0.5);
+        box-shadow: 0 0 15px rgba(249, 115, 22, 0.4);
+    }
+
+    .change-row-new { 
+        background: rgba(59, 130, 246, 0.15) !important; 
+    }
+    .change-row-exit { 
+        background: rgba(239, 68, 68, 0.15) !important; 
+    }
+    .change-row-up { 
+        background: rgba(34, 197, 94, 0.15) !important; 
+    }
+    .change-row-down { 
+        background: rgba(249, 115, 22, 0.15) !important; 
+    }
+
+    /* Text colors for change section */
+    .change-section-card .table tbody td {
+        color: #e2e8f0 !important;
+    }
+
+    .change-value-up {
+        color: #86efac !important;
+        font-weight: 700;
+    }
+
+    .change-value-down {
+        color: #fca5a5 !important;
+        font-weight: 700;
+    }
+
+    .change-small-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    /* Progress bars */
+    .table td div[style*="background: #e2e8f0"] {
+        background: rgba(71, 85, 105, 0.3) !important;
+    }
+
+    .table td div[style*="background: #10b981"] {
+        background: linear-gradient(90deg, #22c55e 0%, #10b981 100%) !important;
+        box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 991px) {
+        .guru-container { flex-direction: column; }
+        .guru-sidebar { width: 100%; margin-bottom: 24px; }
+        .guru-menu {
+            display: flex;
+            overflow-x: auto;
+            padding: 12px;
+            gap: 12px;
+            border: none;
+            background: rgba(30, 41, 59, 0.4);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            scrollbar-width: thin;
+        }
+        .guru-link {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px !important;
+            padding: 10px 20px;
+            white-space: nowrap;
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+        }
+        .guru-menu-header { display: none; }
+        .guru-link:hover { padding-left: 20px; }
+        .guru-link.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+        }
+
+        .info-header {
+            flex-direction: column;
+            text-align: center;
+            gap: 20px;
+        }
+
+        .info-header h2 {
+            font-size: 1.8rem;
+        }
+    }
+
+    /* ========== ANIMATIONS ========== */
+    @keyframes fadeSlideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .chart-card, .change-section-card, .card {
+        animation: fadeSlideUp 0.6s ease-out backwards;
+    }
+
+    .chart-card:nth-child(1) { animation-delay: 0.1s; }
+    .chart-card:nth-child(2) { animation-delay: 0.2s; }
+    .card { animation-delay: 0.3s; }
+    .change-section-card:nth-child(1) { animation-delay: 0.4s; }
+    .change-section-card:nth-child(2) { animation-delay: 0.5s; }
+
+</style>
+
+<div class="container mt-4 pb-5">
+    <div class="guru-container">
+        <aside class="guru-sidebar">
+            <div class="guru-menu">
+                <div class="guru-menu-header">Super Investors</div>
+                {% for key, info in gurus.items %}
+                    <a href="?guru={{ key }}" class="guru-link {% if current_guru == key %}active{% endif %}">
+                        {{ info.name }}
+                    </a>
+                {% endfor %}
+            </div>
+        </aside>
+
+        <main class="guru-content">
+
+            <div class="info-header shadow-sm">
+                <div>
+                    <div style="opacity: 0.8; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">
+                        Current Portfolio
+                    </div>
+                    <h2 class="fw-bold mb-0 mt-1">{{ current_guru_name }}</h2>
+                </div>
+                <div class="text-end">
+                    <div style="font-size: 13px; opacity: 0.8;">Report Date</div>
+                    <div class="fw-bold fs-5">{{ meta.date }}</div>
+                    <div class="mt-1 badge bg-white text-dark bg-opacity-25 border border-white border-opacity-25">
+                        Total Value: ${{ meta.total_value|intword }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h6 class="fw-bold text-secondary small mb-3 text-uppercase">
+                    Top 10 Holdings Allocation
+                </h6>
+                <div id="portfolioChart" style="flex-grow: 1;"></div>
+            </div>
+            <div class="chart-card mt-3">
+                <h6 class="fw-bold text-secondary small mb-3 text-uppercase">
+                    Share Change Bar Chart (Top 10 by Shares)
+                </h6>
+                <div id="shareChangeChart" style="flex-grow: 1;"></div>
+            </div>
+
+
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header py-3 border-bottom">
+                    <h6 class="fw-bold mb-0">Holdings Detail ({{ meta.count }} Tickers)</h6>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-guru table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">#</th>
+                                <th>Symbol / Name</th>
+                                <th>Name</th>
+                                <th class="text-end">Shares</th>
+                                <th class="text-end">Value</th>
+                                <th class="text-end pe-4">Weight</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+    {% for item in holdings %}
+    {% with t=item.ticker %}
+    <tr class="
+        {% if t in new_tickers %}holding-row-new{% endif %}
+        {% if t in increased_tickers %} holding-row-up{% endif %}
+        {% if t in decreased_tickers %} holding-row-down{% endif %}
+    ">
+        <td class="ps-4 fw-bold" style="color: #94a3b8;">{{ forloop.counter }}</td>
+        <td><span class="ticker-badge">{{ item.ticker }}</span></td>
+        <td class="fw-semibold" style="color: #f8fafc;">
+            {{ item.name|truncatechars:30 }}
+            {% if t in new_tickers %}
+        <span class="holding-badge holding-badge-new">NEW😄</span>
+    {% elif t in increased_tickers %}
+        <span class="holding-badge holding-badge-up">BUY</span>
+        <span class="text-success fw-bold">▲</span>
+    {% elif t in decreased_tickers %}
+        <span class="holding-badge holding-badge-down">SELL</span>
+        <span class="text-danger fw-bold">▼</span>
+    {% endif %}
+        </td>
+        <td class="text-end font-monospace" style="color: #cbd5e1;">{{ item.shares|intcomma }}</td>
+        <td class="text-end fw-bold font-monospace" style="color: #f8fafc;">
+            ${{ item.value|intword }}
+        </td>
+        <td class="text-end pe-4">
+            <div class="d-flex align-items-center justify-content-end gap-2">
+                <span class="fw-bold text-success">
+                    {{ item.percent|floatformat:2 }}%
+                </span>
+                <div style="width: 50px; height: 4px; background: #e2e8f0; border-radius: 2px;">
+                    <div style="width: {{ item.percent }}%; height: 100%; background: #10b981; border-radius: 2px;"></div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    {% endwith %}
+    {% empty %}
+    <tr><td colspan="6" class="text-center py-5" style="color: #64748b;">No data available</td></tr>
+    {% endfor %}
+</tbody>
+
+
+
+                    </table>
+                </div>
+            </div>
+
+            {% if changes %}
+            <div class="mt-4">
+                <div class="row">
+                    <!-- New Positions -->
+                    <div class="col-lg-6 mb-3">
+                        <div class="card change-section-card shadow-sm">
+                            <div class="card-header py-3 border-bottom d-flex justify-content-between align-items-center">
+                                <h6 class="fw-bold mb-0">New Positions</h6>
+                                <span class="change-badge change-badge-new">New this quarter</span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-sm mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th class="ps-3 change-small-label">Ticker</th>
+                                                <th class="change-small-label">Name</th>
+                                                <th class="text-end pe-3 change-small-label">Current Shares</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in changes.new_positions|slice:":10" %}
+                                            <tr class="change-row-new">
+                                                <td class="ps-3"><span class="ticker-badge">{{ item.ticker }}</span></td>
+                                                <td>{{ item.name|truncatechars:30 }}</td>
+                                                <td class="text-end pe-3 change-value-up">
+                                                    {{ item.curr_shares|intcomma }}
+                                                </td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr><td colspan="3" class="text-center py-3" style="color: #64748b;">
+                                                No new positions.
+                                            </td></tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Exited Positions -->
+                    <div class="col-lg-6 mb-3">
+                        <div class="card change-section-card shadow-sm">
+                            <div class="card-header py-3 border-bottom d-flex justify-content-between align-items-center">
+                                <h6 class="fw-bold mb-0">Exited Positions</h6>
+                                <span class="change-badge change-badge-exit">Fully sold</span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-sm mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th class="ps-3 change-small-label">Ticker</th>
+                                                <th class="change-small-label">Name</th>
+                                                <th class="text-end pe-3 change-small-label">Prev Shares</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in changes.exited_positions|slice:":10" %}
+                                            <tr class="change-row-exit">
+                                                <td class="ps-3"><span class="ticker-badge">{{ item.ticker }}</span></td>
+                                                <td>{{ item.name|truncatechars:30 }}</td>
+                                                <td class="text-end pe-3 change-value-down">
+                                                    {{ item.prev_shares|intcomma }}
+                                                </td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr><td colspan="3" class="text-center py-3" style="color: #64748b;">
+                                                No exited positions.
+                                            </td></tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Increases / Decreases -->
+                <div class="row mt-2">
+                    <div class="col-lg-6 mb-3">
+                        <div class="card change-section-card shadow-sm">
+                            <div class="card-header py-3 border-bottom d-flex justify-content-between align-items-center">
+                                <h6 class="fw-bold mb-0">Top Increases</h6>
+                                <span class="change-badge change-badge-up">Added / Up-sized</span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-sm mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th class="ps-3 change-small-label">Ticker</th>
+                                                <th class="change-small-label">Name</th>
+                                                <th class="text-end change-small-label">Current Shares</th>
+                                                <th class="text-end pe-3 change-small-label">Δ %</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in changes.increased|slice:":10" %}
+                                            <tr class="change-row-up">
+                                                <td class="ps-3"><span class="ticker-badge">{{ item.ticker }}</span></td>
+                                                <td>{{ item.name|truncatechars:24 }}</td>
+                                                <td class="text-end change-value-up">
+                                                    {{ item.curr_shares|intcomma }}
+                                                </td>
+                                                <td class="text-end pe-3">
+                                                    {% if item.share_pct %}
+                                                        <span class="change-value-up">
+                                                            +{{ item.share_pct|floatformat:1 }}%
+                                                        </span>
+                                                    {% else %}-{% endif %}
+                                                </td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr><td colspan="4" class="text-center py-3" style="color: #64748b;">
+                                                No significant increases.
+                                            </td></tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 mb-3">
+                        <div class="card change-section-card shadow-sm">
+                            <div class="card-header py-3 border-bottom d-flex justify-content-between align-items-center">
+                                <h6 class="fw-bold mb-0">Top Decreases</h6>
+                                <span class="change-badge change-badge-down">Trimmed / Down-sized</span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-sm mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th class="ps-3 change-small-label">Ticker</th>
+                                                <th class="change-small-label">Name</th>
+                                                <th class="text-end change-small-label">Current Shares</th>
+                                                <th class="text-end pe-3 change-small-label">Δ %</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in changes.decreased|slice:":10" %}
+                                            <tr class="change-row-down">
+                                                <td class="ps-3"><span class="ticker-badge">{{ item.ticker }}</span></td>
+                                                <td>{{ item.name|truncatechars:24 }}</td>
+                                                <td class="text-end change-value-down">
+                                                    {{ item.curr_shares|intcomma }}
+                                                </td>
+                                                <td class="text-end pe-3">
+                                                    {% if item.share_pct %}
+                                                        <span class="change-value-down">
+                                                            {{ item.share_pct|floatformat:1 }}%
+                                                        </span>
+                                                    {% else %}
+                                                        -
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr><td colspan="4" class="text-center py-3" style="color: #64748b;">
+                                                No significant decreases.
+                                            </td></tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+        </main>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // ====== 1) DONUT CHART (DARK THEME) =====================================================
+
+    var labels = {{ chart_labels|safe }};
+    var series = {{ chart_series|safe }};
+
+    if (!series || series.length === 0) {
+        document.querySelector("#portfolioChart").innerHTML =
+            "<div class='d-flex align-items-center justify-content-center h-100' style='color:#64748b;'>No data available</div>";
+    } else {
+        var options = {
+            series: series,
+            labels: labels,
+            chart: {
+                type: 'donut',
+                height: '100%',
+                fontFamily: 'Inter, sans-serif',
+                background: 'transparent',
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800
+                }
+            },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '70%',
+                        labels: {
+                            show: true,
+                            name: {
+                                show: true,
+                                fontSize: '14px',
+                                fontWeight: 700,
+                                color: '#cbd5e1',
+                                offsetY: -10
+                            },
+                            value: {
+                                show: true,
+                                fontSize: '24px',
+                                fontWeight: 800,
+                                color: '#f8fafc',
+                                offsetY: 8,
+                                formatter: function (val) {
+                                    if (val >= 1e9) return "$" + (val / 1e9).toFixed(2) + "B";
+                                    if (val >= 1e6) return "$" + (val / 1e6).toFixed(1) + "M";
+                                    return "$" + val.toLocaleString();
+                                }
+                            },
+                            total: {
+                                show: true,
+                                label: 'Top 10 Total',
+                                fontSize: '13px',
+                                fontWeight: 600,
+                                color: '#94a3b8',
+                                formatter: function (w) {
+                                    var total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                                    if (total >= 1e9) return "$" + (total / 1e9).toFixed(2) + "B";
+                                    return "$" + (total / 1e6).toFixed(1) + "M";
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            dataLabels: { enabled: false },
+            legend: {
+                position: 'right',
+                fontSize: '13px',
+                fontWeight: 600,
+                offsetY: 0,
+                height: 400,
+                labels: {
+                    colors: '#cbd5e1'
+                },
+                markers: {
+                    width: 12,
+                    height: 12,
+                    radius: 6
+                },
+                itemMargin: { vertical: 8 }
+            },
+            colors: [
+                '#3b82f6', // Blue
+                '#22c55e', // Green
+                '#f59e0b', // Amber
+                '#ef4444', // Red
+                '#8b5cf6', // Purple
+                '#ec4899', // Pink
+                '#6366f1', // Indigo
+                '#14b8a6', // Teal
+                '#f97316', // Orange
+                '#a855f7', // Violet
+                '#06b6d4'  // Cyan
+            ],
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ['rgba(15, 23, 42, 0.8)']
+            },
+            states: {
+                hover: {
+                    filter: {
+                        type: 'lighten',
+                        value: 0.15
+                    }
+                },
+                active: {
+                    filter: {
+                        type: 'none'
+                    }
+                }
+            },
+            tooltip: {
+                theme: 'dark',
+                style: {
+                    fontSize: '13px',
+                    fontFamily: 'Inter, sans-serif'
+                },
+                y: {
+                    formatter: function (value) {
+                        return "$" + value.toLocaleString();
+                    }
+                }
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#portfolioChart"), options);
+        chart.render();
+    }
+
+
+    // ====== 2) SHARES CHANGE BAR CHART (DARK THEME) =========================================
+
+    var shareLabels = {{ share_change_labels|safe }};
+    var shareValues = {{ share_change_values|safe }};
+
+    if (shareValues && shareValues.length > 0) {
+
+        var barColors = shareValues.map(function (v) {
+            return v >= 0 ? '#22c55e' : '#ef4444';
+        });
+
+        var shareOptions = {
+            series: [{
+                name: 'Δ Shares',
+                data: shareValues
+            }],
+            chart: {
+                type: 'bar',
+                height: 400,
+                fontFamily: 'Inter, sans-serif',
+                background: 'transparent',
+                toolbar: {
+                    show: false
+                },
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800
+                }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: true,
+                    distributed: true,
+                    barHeight: '70%',
+                    borderRadius: 4,
+                    dataLabels: {
+                        position: 'top'
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            xaxis: {
+                categories: shareLabels,
+                labels: {
+                    formatter: function (val) {
+                        return val.toLocaleString();
+                    },
+                    style: {
+                        colors: '#94a3b8',
+                        fontSize: '12px',
+                        fontWeight: 500
+                    }
+                },
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false
+                },
+                title: {
+                    text: 'Change in Shares',
+                    style: {
+                        color: '#cbd5e1',
+                        fontSize: '13px',
+                        fontWeight: 700
+                    }
+                }
+            },
+            yaxis: {
+                labels: {
+                    style: {
+                        colors: '#cbd5e1',
+                        fontSize: '13px',
+                        fontWeight: 600
+                    }
+                }
+            },
+            colors: barColors,
+            grid: {
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                strokeDashArray: 3,
+                xaxis: {
+                    lines: {
+                        show: true
+                    }
+                },
+                yaxis: {
+                    lines: {
+                        show: false
+                    }
+                }
+            },
+            tooltip: {
+                theme: 'dark',
+                style: {
+                    fontSize: '13px',
+                    fontFamily: 'Inter, sans-serif'
+                },
+                y: {
+                    formatter: function (val) {
+                        return (val > 0 ? "+" : "") + val.toLocaleString() + " shares";
+                    }
+                }
+            }
+        };
+
+        var shareChart = new ApexCharts(document.querySelector("#shareChangeChart"), shareOptions);
+        shareChart.render();
+
+    } else {
+        document.querySelector("#shareChangeChart").innerHTML =
+            "<div class='d-flex align-items-center justify-content-center h-100' style='color:#64748b;'>No change data available</div>";
+    }
+
+}); // <==== CRITICAL CLOSING BRACKET!
+
+</script>
+
+
+{% endblock %}

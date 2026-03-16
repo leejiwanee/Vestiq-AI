@@ -1,0 +1,42 @@
+# Seasonality Explorer Logic
+
+## Overview
+The Seasonality Explorer analyzes the historical monthly returns of a specific stock (default: SPY) over the last 20 years to identify seasonal patterns.
+
+## Logic Flow
+
+1.  **Input**:
+    -   User provides a stock ticker (e.g., "SPY").
+    -   Default is "SPY" if no ticker is provided.
+
+2.  **Data Fetching**:
+    -   The system uses `yfinance` to download historical market data.
+    -   **Period**: Last 20 years (`period="20y"`).
+    -   **Interval**: Monthly data (`interval="1mo"`).
+
+3.  **Data Processing**:
+    -   Extracts the 'Close' price from the fetched data.
+    -   Calculates the **Monthly Percentage Change** for each month using `pct_change()`.
+    -   Groups the data by month (January to December).
+
+4.  **Statistical Analysis (Per Month)**:
+    -   For each month (Jan, Feb, ..., Dec), the system calculates:
+        -   **Average Return**: The mean percentage change for that month across all 20 years.
+        -   **Win Rate**: The percentage of times the return was positive ( > 0).
+            -   Formula: `(Number of Positive Months / Total Months) * 100`
+        -   **Count**: The number of data points available for that month (usually 20, but can vary if data is missing).
+
+5.  **Ranking**:
+    -   **Best Month**: The month with the highest Average Return.
+    -   **Worst Month**: The month with the lowest Average Return.
+
+6.  **Visualization**:
+    -   **Bar Chart**: Displays the Average Return for each month.
+        -   Green bars indicate positive average returns.
+        -   Red bars indicate negative average returns.
+    -   **Table**: Detailed breakdown of Average Return, Win Rate, and Years Analyzed for each month.
+
+## Technical Details
+-   **Backend**: Python (Django), `yfinance`, `pandas`.
+-   **Frontend**: HTML, Bootstrap, Chart.js.
+-   **File**: `insight/views.py` (Function: `seasonality_analysis`)

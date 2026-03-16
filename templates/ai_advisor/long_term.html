@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% load humanize i18n %}
+
+{% block title %}{% trans "AI Long-Term Picks" %}{% endblock %}
+
+{% block content %}
+<style>
+    .long-term-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: white;
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 24px 24px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .thesis-card {
+        border: none;
+        border-radius: 16px;
+        background: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .thesis-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .sector-badge {
+        background-color: #f1f5f9;
+        color: #475569;
+        font-size: 0.8rem;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .return-badge {
+        background-color: #dcfce7;
+        color: #166534;
+        font-weight: 700;
+        padding: 5px 12px;
+        border-radius: 8px;
+    }
+
+    .risk-alert {
+        background-color: #fff1f2;
+        border-left: 4px solid #f43f5e;
+        padding: 10px 15px;
+        font-size: 0.9rem;
+        color: #881337;
+        margin-top: 1rem;
+    }
+
+    .outlook-box {
+        background: linear-gradient(to right, #f8fafc, #ffffff);
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 3rem;
+    }
+</style>
+
+<div class="long-term-header text-center">
+    <div class="container">
+        <h1 class="fw-bold mb-2"><i class="bi bi-binoculars me-2"></i>{% trans "AI Long-Term Vision" %}</h1>
+        {% now "Y" as current_year %}
+        <p class="opacity-75 lead mb-0">{% blocktrans with year=current_year next_year=current_year|add:"2" %}Key companies selected by Gemini AI to lead structural growth in {{ year }}-{{ next_year }}{% endblocktrans %}
+        </p>
+    </div>
+</div>
+
+<div class="container pb-5">
+
+    <!-- Loading State -->
+    <div id="loadingState" class="text-center py-5">
+        <div class="spinner-border text-primary mb-4" style="width: 3rem; height: 3rem;" role="status">
+            <span class="visually-hidden">{% trans "Loading..." %}</span>
+        </div>
+        <h3 class="fw-bold text-secondary">{% trans "AI is analyzing global market data..." %}</h3>
+        <p class="text-muted">{% trans "Evaluating company fundamentals, economic moats, and long-term growth potential." %}<br>{% trans "This takes about 10 seconds." %}</p>
+    </div>
+
+    <!-- Results Container -->
+    <div id="resultsContainer" style="display: none;">
+
+        <!-- Market Outlook -->
+        <div class="outlook-box shadow-sm">
+            <h4 class="fw-bold text-dark mb-3"><i class="bi bi-globe me-2"></i>{% trans "AI Market Outlook" %}</h4>
+            <p class="lead text-dark mb-0" id="marketOutlookText">
+                <!-- Outlook text will go here -->
+            </p>
+        </div>
+
+        <h4 class="fw-bold mb-4 text-primary"><i class="bi bi-star-fill me-2"></i>{% trans "Top 20 High-Conviction Picks" %}</h4>
+ 
+        <div class="row g-4" id="picksList">
+            <!-- Cards will be injected here -->
+        </div>
+
+        <div class="text-center mt-5">
+            <button class="btn btn-outline-secondary rounded-pill px-4" onclick="refreshPicks()">
+                <i class="bi bi-arrow-clockwise me-2"></i>{% trans "Get New Recommendations" %}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        fetchLongTermPicks();
+    });
+
+    function refreshPicks() {
+        document.getElementById('resultsContainer').style.display = 'none';
+        document.getElementById('loadingState').style.display = 'block';
+        fetchLongTermPicks();
+    }
+
+    function fetchLongTermPicks() {
+        fetch('{% url "ai_advisor:api_long_term_picks" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert('{% trans "Error:" %} ' + data.error);
+                    return;
+                }
+                renderResults(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('{% trans "An error occurred during analysis." %}');
+            });
+    }
+
+    function renderResults(data) {
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('resultsContainer').style.display = 'block';
+
+        // Render Outlook
+        document.getElementById('marketOutlookText').innerText = data.market_outlook || "{% trans 'Unable to load market outlook data.' %}";
+
+        // Render Picks
+        const container = document.getElementById('picksList');
+        container.innerHTML = '';
+
+        data.picks.forEach(pick => {
+            const card = `
+                <div class="col-lg-4 col-md-6">
+                    <div class="thesis-card p-4 d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <span class="sector-badge mb-2 d-inline-block">${pick.sector}</span>
+                                <h3 class="fw-bold mb-0">${pick.symbol}</h3>
+                                <div class="text-muted small">${pick.name}</div>
+                            </div>
+                            <div class="text-end">
+                                <div class="h4 fw-bold mb-0 text-dark">${pick.price}</div>
+                                <div class="small ${pick.change_percent.includes('+') ? 'text-success' : 'text-danger'}">
+                                    ${pick.change_percent}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4 flex-grow-1">
+                            <h6 class="fw-bold text-secondary mb-2">{% trans "Investment Thesis" %}</h6>
+                            <p class="text-dark opacity-75" style="line-height: 1.6;">${pick.thesis}</p>
+                        </div>
+                        
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-muted small">{% trans "Potential Return" %}</span>
+                                <span class="return-badge">${pick.potential_return}</span>
+                            </div>
+                            
+                            <div class="risk-alert rounded-3">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i> <strong>{% trans "Risk:" %}</strong> ${pick.risk}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', card);
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,174 @@
+{
+  "en": {
+    "title": "Volatility Rears Its Head as Tech Takes a Tumble, Commodities Shine",
+    "summary": "The market had a case of the jitters today, with major indices like the S&P 500 and Nasdaq experiencing notable declines, signaling a broad risk-off sentiment. Meanwhile, the VIX, often dubbed the 'fear gauge,' spiked, reflecting increased uncertainty, even as gold, silver, and crude oil enjoyed a robust session.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6721.43 (-1.16%)",
+        "comment": "Taking a breather after recent gains, indicating broad market weakness."
+      },
+      {
+        "label": "Nasdaq Composite",
+        "value": "22693.32 (-1.81%)",
+        "comment": "The tech sector feeling the most pressure, leading the broader market lower."
+      },
+      {
+        "label": "Russell 2000",
+        "value": "2492.29 (-1.07%)",
+        "comment": "Small caps also caught in the broader retreat, reflecting risk-off sentiment."
+      },
+      {
+        "label": "Bitcoin",
+        "value": "86105.97 (-1.98%)",
+        "comment": "Crypto assets caught in the downdraft, mirroring traditional market declines."
+      }
+    ],
+    "macro": {
+      "title": "Macro Vibes",
+      "points": [
+        "<b>Market Downturn</b>: Major indices like the S&P 500 (-1.16%), Nasdaq (-1.81%), and Russell 2000 (-1.07%) all ended the day in the red, suggesting a broad-based move away from risk.",
+        "<b>Rising Volatility</b>: The VIX index surged by nearly 7%, indicating a significant increase in market uncertainty and investor anxiety. Volatility has increased amidst general market uncertainty, as the provided news headlines did not offer specific macro-level reasons to explain this broad market shift.",
+        "<b>Commodity Boom</b>: Gold (+1.58%), Silver (+6.08%), Copper (+2.62%), and Crude Oil (+2.73%) all saw substantial gains, possibly signaling inflation concerns or a flight to tangible assets amid market jitters.",
+        "<b>Dollar Strength</b>: The US Dollar Index (DXY) advanced (+0.18%), leading to slight weakening in major currencies like the Euro and Yen against the greenback.",
+        "<b>Treasury Yields Creep Up</b>: Longer-term Treasury yields, such as the 10-year and 30-year, showed slight increases, suggesting some shifts in bond market sentiment."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "Materials",
+        "change": "+6.08% (Silver)",
+        "comment": "Buoyed by a strong rally in precious and industrial metals."
+      },
+      {
+        "name": "Energy",
+        "change": "+2.73% (Crude Oil)",
+        "comment": "Oil prices gained significantly, pushing energy sector prospects higher."
+      },
+      {
+        "name": "Industrials",
+        "change": "N/A",
+        "comment": "Potentially benefiting from higher material costs, though a more general sector."
+      },
+      {
+        "name": "Technology",
+        "change": "-1.81% (Nasdaq)",
+        "comment": "The tech-heavy Nasdaq led the declines, indicating pressure on growth stocks."
+      },
+      {
+        "name": "Communication Services",
+        "change": "N/A",
+        "comment": "Often moving in tandem with tech, likely facing similar headwinds."
+      },
+      {
+        "name": "Consumer Discretionary",
+        "change": "N/A",
+        "comment": "Typically sensitive to economic uncertainty and risk-off sentiment."
+      }
+    ],
+    "themes": [
+      {
+        "name": "Defensive Play & Commodity Strength",
+        "change": "Gold +1.58%, Silver +6.08%",
+        "comment": "Investors are fleeing risk assets while piling into commodities and potentially safe-havens like gold."
+      },
+      {
+        "name": "Tech Sector Underperformance",
+        "change": "Nasdaq -1.81%",
+        "comment": "The Nasdaq's steep decline points to particular pressure on growth and technology stocks today."
+      },
+      {
+        "name": "Rising Market Volatility",
+        "change": "VIX +6.92%",
+        "comment": "The significant jump in the VIX indicates heightened investor anxiety and uncertainty across the board."
+      }
+    ]
+  },
+  "ko": {
+    "title": "변동성 고개 들고 기술주 하락, 원자재는 빛났다",
+    "summary": "오늘 시장은 주요 지수들이 하락하며 전반적인 위험 회피 심리를 나타냈습니다. 특히 S&P 500과 나스닥이 눈에 띄게 하락했으며, '공포 지수'로 불리는 VIX가 급등하며 불확실성이 커졌습니다. 반면 금, 은, 원유는 견조한 상승세를 보였습니다.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6721.43 (-1.16%)",
+        "comment": "최근 상승세 후 숨고르기 양상을 보이며 광범위한 시장 약세를 나타냈습니다."
+      },
+      {
+        "label": "나스닥 종합",
+        "value": "22693.32 (-1.81%)",
+        "comment": "기술 섹터가 가장 큰 압박을 받으며 시장 하락세를 주도했습니다."
+      },
+      {
+        "label": "러셀 2000",
+        "value": "2492.29 (-1.07%)",
+        "comment": "소형주 역시 광범위한 하락세에 휘말리며 위험 회피 심리를 반영했습니다."
+      },
+      {
+        "label": "비트코인",
+        "value": "86105.97 (-1.98%)",
+        "comment": "암호화폐 자산도 하락세를 면치 못하며 전통 시장의 하락을 따랐습니다."
+      }
+    ],
+    "macro": {
+      "title": "매크로 경제",
+      "points": [
+        "<b>시장 하락세</b>: S&P 500(-1.16%), 나스닥(-1.81%), 러셀 2000(-1.07%) 등 주요 지수들이 일제히 하락하며 전반적인 위험 회피 움직임을 보였습니다.",
+        "<b>변동성 증가</b>: VIX 지수가 거의 7% 급등하며 시장의 불확실성과 투자자 불안감이 크게 증가했습니다. 제공된 뉴스 헤드라인에서는 이러한 광범위한 변동성 증가에 대한 직접적인 거시적 원인을 찾기 어려웠습니다.",
+        "<b>원자재 랠리</b>: 금(+1.58%), 은(+6.08%), 구리(+2.62%), 원유(+2.73%) 모두 상당한 상승세를 기록했으며, 이는 인플레이션 우려나 시장 불안 속에서 실물 자산으로의 피난처를 찾는 움직임을 시사할 수 있습니다.",
+        "<b>달러 강세</b>: 미국 달러 지수(DXY)가 상승(+0.18%)하며 유로화와 엔화 등 주요 통화들이 달러 대비 소폭 약세를 보였습니다.",
+        "<b>국채 금리 소폭 상승</b>: 10년물 및 30년물과 같은 장기 국채 금리가 소폭 상승하며 채권 시장 심리의 미묘한 변화를 시사했습니다."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "소재",
+        "change": "+6.08% (은)",
+        "comment": "귀금속 및 산업 금속의 강력한 랠리에 힘입어 상승했습니다."
+      },
+      {
+        "name": "에너지",
+        "change": "+2.73% (원유)",
+        "comment": "유가가 크게 오르며 에너지 섹터 전망을 밝게 했습니다."
+      },
+      {
+        "name": "산업재",
+        "change": "N/A",
+        "comment": "높아진 원자재 비용으로부터 잠재적으로 이점을 얻을 수 있는 일반적인 섹터입니다."
+      },
+      {
+        "name": "기술",
+        "change": "-1.81% (나스닥)",
+        "comment": "기술주 중심의 나스닥이 하락세를 주도하며 성장주에 대한 압박을 시사했습니다."
+      },
+      {
+        "name": "커뮤니케이션 서비스",
+        "change": "N/A",
+        "comment": "기술주와 함께 움직이는 경향이 있어 비슷한 역풍에 직면했을 가능성이 큽니다."
+      },
+      {
+        "name": "경기 소비재",
+        "change": "N/A",
+        "comment": "경제 불확실성 및 위험 회피 심리에 일반적으로 민감합니다."
+      }
+    ],
+    "themes": [
+      {
+        "name": "위험 회피 및 원자재 강세",
+        "change": "금 +1.58%, 은 +6.08%",
+        "comment": "투자자들이 위험 자산을 회피하고 금과 같은 원자재 및 안전 자산으로 몰려드는 모습입니다."
+      },
+      {
+        "name": "기술 섹터 부진",
+        "change": "나스닥 -1.81%",
+        "comment": "나스닥의 급격한 하락은 오늘날 성장주와 기술주에 대한 특별한 압박을 시사합니다."
+      },
+      {
+        "name": "시장 변동성 증대",
+        "change": "VIX +6.92%",
+        "comment": "VIX의 상당한 상승은 투자자들의 불안감과 전반적인 시장 불확실성 증가를 나타냅니다."
+      }
+    ]
+  },
+  "last_updated": "2025-12-17 07:32 PM EST",
+  "last_updated_ts": "2025-12-17T19:32:20.002521-05:00"
+}

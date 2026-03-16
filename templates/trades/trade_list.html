@@ -1,0 +1,467 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load i18n %}
+
+{% block content %}
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@400;600&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
+
+<style>
+    /* --- The Midnight Ledger Theme --- */
+    
+    :root {
+        --leather-dark: #1e293b;
+        --leather-deep: #0f172a;
+        --gold-stitch: rgba(251, 191, 36, 0.4);
+        --neon-profit: #4ade80;
+        --neon-loss: #f87171;
+        --font-typewriter: 'Hahmlet', serif;
+        --font-handwriting: 'Nanum Pen Script', cursive;
+        --cal-bg: #1e293b;
+        --cal-border: rgba(255,255,255,0.05);
+        --cal-today: #06b6d4;
+    }
+
+    body {
+        background-color: #020617 !important; /* Extremely dark navy/black */
+        background-image: 
+            linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+    }
+
+    .font-typewriter { font-family: var(--font-typewriter); }
+    .font-handwriting { font-family: var(--font-handwriting); font-size: 1.4rem; }
+
+    /* 1. Wallet Section */
+    .wallet-leather {
+        background-color: var(--leather-dark);
+        /* Noise */
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"),
+                          linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+        border-radius: 24px;
+        position: relative;
+        box-shadow: 
+            0 25px 50px -12px rgba(0, 0, 0, 0.7), 
+            0 10px 15px -3px rgba(0, 0, 0, 0.5),
+            inset 0 1px 0 rgba(255,255,255,0.1);
+        z-index: 5; /* Above timeline */
+    }
+
+    .wallet-fold {
+        display: none; /* Hidden on mobile */
+        position: absolute;
+        top: 20px; bottom: 20px; left: 50%;
+        width: 1px;
+        transform: translateX(-50%);
+        background-color: rgba(0,0,0,0.8); /* Deep Black Line */
+        border-right: 1px dashed rgba(255,255,255,0.15); /* Stitch Effect */
+        box-shadow: 
+            -1px 0 0 rgba(255,255,255,0.05),
+            1px 0 0 rgba(255,255,255,0.05); /* Highlight edges */
+        pointer-events: none;
+        z-index: 10;
+    }
+    
+    @media (min-width: 992px) {
+        .wallet-fold { display: block; }
+    }
+
+    .wallet-stitch {
+        position: absolute;
+        top: 12px; left: 12px; right: 12px; bottom: 12px;
+        border: 2px dashed var(--gold-stitch);
+        border-radius: 16px;
+        pointer-events: none;
+    }
+
+    .embossed-brand {
+        font-family: var(--font-typewriter);
+        color: rgba(0,0,0,0.4); /* DARKER/STRONGER */
+        text-shadow: 1px 1px 0 rgba(255,255,255,0.05);
+        font-weight: 900;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    /* 2. Performance Strip (MoM Stats) */
+    .perf-strip {
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        margin-top: 1.5rem;
+    }
+    
+    .perf-item { text-align: center; padding: 0 1rem; border-right: 1px solid rgba(255,255,255,0.1); }
+    .perf-item:last-child { border-right: none; }
+    .perf-label { font-size: 0.75rem; text-transform: uppercase; color: rgba(255,255,255,0.4); letter-spacing: 1px; margin-bottom: 0.25rem; }
+    .perf-val { font-family: var(--font-typewriter); font-weight: 600; font-size: 1.1rem; }
+
+    /* 3. Midnight Calendar Embedded */
+    .cal-embedded {
+        margin-top: 1.5rem;
+        border-top: 1px solid rgba(255,255,255,0.05);
+        padding-top: 1.5rem;
+    }
+
+    .cal-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px;
+    }
+    .cal-cell-mini {
+        background: rgba(255,255,255,0.02);
+        border-radius: 8px;
+        min-height: 80px;
+        padding: 6px;
+        position: relative;
+        font-family: var(--font-typewriter);
+    }
+    .cal-cell-mini:hover { background: rgba(255,255,255,0.05); }
+    .cal-cell-mini.empty { background: transparent; background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.01) 0, rgba(255,255,255,0.01) 1px, transparent 0, transparent 10px); }
+    .cal-cell-mini.is-today { box-shadow: inset 0 0 0 1px var(--cal-today); }
+    
+    .cal-date-mini { font-size: 0.8rem; color: #94a3b8; margin-bottom: 4px; display: block; }
+    .is-today .cal-date-mini { color: var(--cal-today); font-weight: bold; }
+    
+    .badge-pill-mini {
+        display: inline-block;
+        font-size: 0.7rem;
+        padding: 1px 6px;
+        border-radius: 10px;
+        width: 100%;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .badge-profit { background: rgba(74, 222, 128, 0.1); color: var(--neon-profit); }
+    .badge-loss { background: rgba(248, 113, 113, 0.1); color: var(--neon-loss); }
+
+
+    /* 4. Timeline Diary */
+    .timeline-container { position: relative; padding-left: 2rem; margin-top: 3rem; }
+    .timeline-line {
+        position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+        background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.1) 0, rgba(255,255,255,0.1) 8px, transparent 8px, transparent 16px);
+    }
+
+    .ticket-card {
+        background: #1e293b;
+        position: relative;
+        border-left: 4px solid #64748b;
+        transition: transform 0.2s;
+        /* Notches */
+        --notch-size: 12px;
+        mask-image: radial-gradient(circle at var(--notch-size) var(--notch-size), transparent var(--notch-size), black calc(var(--notch-size) + 0.5px));
+        mask-position: -var(--notch-size) -var(--notch-size);
+        mask-size: 100% 100%;
+    }
+    .ticket-card:hover { transform: translateX(5px); }
+    .ticket-card.win { border-left-color: var(--neon-profit); box-shadow: -15px 0 20px -10px rgba(74, 222, 128, 0.1); }
+    .ticket-card.loss { border-left-color: var(--neon-loss); box-shadow: -15px 0 20px -10px rgba(248, 113, 113, 0.1); }
+    
+    .ticket-split {
+        border-top: 2px dashed rgba(255,255,255,0.1);
+        position: relative; margin: 1rem 0;
+    }
+    .ticket-split::before, .ticket-split::after {
+        content: ''; position: absolute; width: 16px; height: 16px;
+        background-color: #020617; border-radius: 50%; top: -9px;
+    }
+    .ticket-split::before { left: -24px; }
+    .ticket-split::after { right: -24px; }
+
+    .stamp {
+        position: absolute; top: 10px; right: 20px;
+        font-family: 'Black Ops One', cursive; font-weight: 900;
+        text-transform: uppercase; border: 3px double; padding: 0.2rem 0.5rem;
+        transform: rotate(-15deg); opacity: 0.3; font-size: 1.5rem; pointer-events: none; mix-blend-mode: overlay;
+    }
+    .stamp-profit { color: var(--neon-profit); border-color: var(--neon-profit); }
+    .stamp-loss { color: var(--neon-loss); border-color: var(--neon-loss); }
+    
+</style>
+
+<div class="container py-5" style="max-width: 900px;">
+    
+    <!-- Title Area -->
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h6 class="text-white-50 text-uppercase letter-spacing-2 mb-1">Authenticated User: {{ user.username }}</h6>
+            <h1 class="font-typewriter text-white fw-bold display-5">Trading Journal</h1>
+        </div>
+        <div>
+             <a href="{% url 'trade_add' %}" class="btn btn-light rounded-pill px-4 font-typewriter fw-bold shadow-sm">
+                <i class="bi bi-pen me-2"></i>New Entry
+            </a>
+        </div>
+    </div>
+
+    <!-- 1. The Wallet (Unified Dashboard) -->
+    <div class="wallet-leather p-4 p-md-5 mb-5">
+        <div class="wallet-fold"></div>
+        <div class="wallet-stitch"></div>
+        
+        <div class="position-relative" style="z-index: 2;">
+            <div class="row align-items-start">
+                
+                <!-- Left: Net Worth & MoM Stats -->
+                <div class="col-lg-6 mb-4 mb-lg-0 pe-lg-5 position-relative">
+                    <!-- Brand -->
+                    <div class="embossed-brand mb-4">VESTIQ GENUINE</div>
+                    
+                    <!-- Main Value -->
+                    <div class="d-flex align-items-end flex-wrap gap-3 mb-2">
+                        <div>
+                            <div class="text-white-50 text-uppercase small" style="letter-spacing: 1px;">Total Net Worth</div>
+                            <div class="font-typewriter text-white display-4 fw-bold text-shadow">${{ total_valuation|floatformat:2|intcomma }}</div>
+                        </div>
+                        
+                        <!-- Mini Pill for Unrealized -->
+                        {% if total_unrealized_profit != 0 %}
+                        <div class="mb-3">
+                             <span class="badge rounded-pill border {% if total_unrealized_profit > 0 %}border-success text-success bg-success bg-opacity-10{% else %}border-danger text-danger bg-danger bg-opacity-10{% endif %} font-typewriter">
+                                Open P/L: {% if total_unrealized_profit > 0 %}+{% endif %}${{ total_unrealized_profit|floatformat:0|intcomma }}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Performance Strip (MoM) -->
+                    <div class="perf-strip">
+                        <div class="perf-item ps-0 text-start">
+                            <div class="perf-label">Last Month</div>
+                            <div class="perf-val text-muted">${{ previous_month_pl|floatformat:0|intcomma }}</div>
+                        </div>
+                        <div class="perf-item flex-grow-1">
+                             <div class="perf-label">Current Month</div>
+                             <div class="perf-val {% if current_month_pl > previous_month_pl %}text-success{% else %}text-white{% endif %}">
+                                 ${{ current_month_pl|floatformat:0|intcomma }}
+                                 {% if mom_delta > 0 %}
+                                    <i class="bi bi-arrow-up-short small"></i>
+                                 {% elif mom_delta < 0 %}
+                                     <i class="bi bi-arrow-down-short small"></i>
+                                 {% endif %}
+                             </div>
+                        </div>
+                        <!-- Fixed Cash Balance with max-width and truncate -->
+                        <div class="perf-item pe-0 text-end" style="max-width: 140px;"> 
+                            <div class="perf-label">Cash Balance</div>
+                            <div class="perf-val text-warning d-flex align-items-center justify-content-end pointer text-truncate" onclick="openCashModal()" style="cursor: pointer; overflow: hidden; white-space: nowrap;">
+                                <span class="text-truncate">${{ cash_balance|floatformat:0|intcomma }}</span> <i class="bi bi-pencil-square ms-2 small opacity-50 flex-shrink-0"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Embedded Calendar (Filtered Month) -->
+                <div class="col-lg-6 ps-lg-5">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <!-- Left Arrow -->
+                        <a href="?year={{ prev_year }}&month={{ prev_month }}" class="text-white-50 hover-text-white text-decoration-none">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                        
+                        <!-- Title -->
+                        <span class="text-white font-typewriter small text-uppercase fw-bold">{{ selected_date|date:"F Y" }}</span>
+                        
+                        <!-- Right Arrow -->
+                         <div class="d-flex gap-2 align-items-center">
+                            <a href="?year={{ next_year }}&month={{ next_month }}" class="text-white-50 hover-text-white text-decoration-none">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                            <a href="{% url 'trade_calendar' %}" class="text-white-50 text-decoration-none small hover-text-white ms-2" title="Expand">
+                                <i class="bi bi-arrows-fullscreen"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="cal-grid">
+                        <!-- Headers -->
+                        <div class="text-center text-muted small" style="font-size: 0.6rem;">S</div>
+                        <div class="text-center text-muted small" style="font-size: 0.6rem;">M</div>
+                        <div class="text-center text-muted small" style="font-size: 0.6rem;">T</div>
+                        <div class="text-center text-muted small" style="font-size: 0.6rem;">W</div>
+                        <div class="text-center text-muted small" style="font-size: 0.6rem;">T</div>
+                        <div class="text-center text-muted small" style="font-size: 0.6rem;">F</div>
+                        <div class="text-center text-muted small" style="font-size: 0.6rem;">S</div>
+                        
+                        <!-- Days -->
+                        {% for week in calendar_rows %}
+                            {% for day in week %}
+                                {% if day %}
+                                    <div class="cal-cell-mini {% if day.is_today %}is-today{% endif %}" title="Day {{ day.day }}">
+                                        <span class="cal-date-mini">{{ day.day }}</span>
+                                        {% if day.pl != 0 %}
+                                            <span class="badge-pill-mini {% if day.pl > 0 %}badge-profit{% else %}badge-loss{% endif %}">
+                                                ${{ day.pl|floatformat:0 }}
+                                            </span>
+                                        {% elif day.buys %}
+                                            <div class="text-center"><i class="bi bi-dot text-info fs-5" style="line-height:0.5;"></i></div>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <div class="cal-cell-mini empty"></div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. The Diary (Timeline - Filtered) -->
+    <div class="timeline-container">
+        
+        <!-- Filter Label -->
+        <h6 class="text-white-50 font-typewriter text-uppercase mb-4 ps-1 border-bottom border-light border-opacity-10 pb-2">
+            Journal Entries &mdash; {{ selected_date|date:"F Y" }}
+        </h6>
+
+        <div class="timeline-line"></div>
+
+        {% for trade in trades %}
+        <div class="mb-5 position-relative">
+            <!-- Timeline Dot -->
+            <div style="position: absolute; left: -39px; top: 20px; width: 14px; height: 14px; border-radius: 50%; background: #0f172a; border: 2px solid {% if trade.profit_percent > 0 %}var(--neon-profit){% elif trade.profit_percent < 0 %}var(--neon-loss){% else %}#64748b{% endif %}; z-index: 5;"></div>
+            
+            <!-- Date Label -->
+            <h6 class="text-white-50 font-typewriter mb-3 ps-2">{{ trade.buy_date|date:"F d, Y" }} <span class="opacity-25">|</span> <span class="text-info">{{ trade.buy_date|date:"l" }}</span></h6>
+
+            <!-- Ticket Card -->
+            <div class="ticket-card rounded-4 p-4 {% if trade.profit_percent > 0 %}win{% elif trade.profit_percent < 0 %}loss{% endif %}">
+                <!-- Stamp -->
+                {% if trade.profit_percent > 5 %}
+                    <div class="stamp stamp-profit">NICE TRADE</div>
+                {% elif trade.profit_percent < -5 %}
+                    <div class="stamp stamp-loss">LESSON</div>
+                {% endif %}
+
+                <!-- Main Info -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center bg-white bg-opacity-10 text-white fw-bold font-typewriter" style="width: 48px; height: 48px; font-size: 1.2rem;">
+                            {{ trade.ticker|slice:":2" }}
+                        </div>
+                        <div>
+                            <a href="{% url 'trade_history' trade.pk %}" class="h3 font-typewriter text-white text-decoration-none fw-bold mb-0 hover-text-info">{{ trade.ticker }}</a>
+                            <div class="small text-white-50">
+                                {% if trade.strategy %}
+                                    <span class="text-info">#{{ trade.strategy }}</span>
+                                {% endif %}
+                                {% if trade.sell_date %}Closed {{ trade.sell_date|date:"M d" }}{% else %}Active Position{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-end">
+                        {% if trade.profit_percent is not None %}
+                            <div class="display-6 fw-bold font-typewriter {% if trade.profit_percent > 0 %}text-success{% else %}text-danger{% endif %}">
+                                {{ trade.profit_percent|floatformat:1 }}%
+                            </div>
+                            <div class="small font-typewriter text-white-50">
+                                {% if trade.profit_amount > 0 %}+{% endif %}${{ trade.profit_amount|intcomma }}
+                            </div>
+                        {% elif trade.unrealized_percent is not None %}
+                             <div class="display-6 fw-bold font-typewriter {% if trade.unrealized_percent > 0 %}text-success{% else %}text-danger{% endif %}">
+                                {{ trade.unrealized_percent|floatformat:1 }}%
+                            </div>
+                            <div class="small font-typewriter text-white-50">Unrealized</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Perforation -->
+                <div class="ticket-split"></div>
+
+                <!-- Note -->
+                <div class="d-flex align-items-start gap-3">
+                    <i class="bi bi-pencil-fill text-secondary opacity-25 mt-1"></i>
+                    {% if trade.notes %}
+                        <p class="font-handwriting text-white opacity-75 mb-0" style="font-size: 1.5rem; line-height: 1.2;">
+                            {{ trade.notes|linebreaksbr }}
+                        </p>
+                    {% else %}
+                        <p class="font-handwriting text-white opacity-25 mb-0">No notes written for this entry...</p>
+                    {% endif %}
+                </div>
+
+                 <!-- Footer Actions -->
+                <div class="mt-3 pt-2 text-end opacity-50 hover-opacity-100 transition-opacity">
+                    <a href="{% url 'trade_edit' trade.pk %}" class="text-decoration-none text-white-50 small me-3">Edit</a>
+                    <a href="{% url 'trade_delete' trade.pk %}" class="text-decoration-none text-danger small">Delete</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center py-5">
+             <i class="bi bi-journal-album display-1 text-white opacity-10"></i>
+             <h3 class="font-typewriter text-white mt-3">No Journal Entries for {{ selected_date|date:"F" }}</h3>
+             <p class="font-handwriting text-white-50 fs-4">Your ledger is clean for this month.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<!-- Cash Balance Edit Modal (Moved to Bottom) -->
+<div class="modal fade" id="cashModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0" style="background-color: var(--leather-dark); color: white; box-shadow: 0 0 50px rgba(0,0,0,0.8);">
+            <div class="modal-header border-bottom border-secondary border-opacity-25">
+                <h5 class="modal-title font-typewriter">Adjust Cash Reserve</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <label class="form-label text-white-50 small text-uppercase">Cash Balance</label>
+                <div class="input-group mb-3">
+                    <span class="input-group-text bg-dark border-0 text-white font-typewriter">$</span>
+                    <input type="number" id="cashModalInput" 
+                           class="form-control bg-dark border-0 text-white font-typewriter fs-4" 
+                           value="{{ cash_balance|floatformat:2 }}" step="0.01">
+                </div>
+            </div>
+            <div class="modal-footer border-top border-secondary border-opacity-25">
+                <button type="button" class="btn btn-link text-white-50 text-decoration-none" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-light rounded-pill px-4" onclick="saveCashFromModal()">Update Ledger</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openCashModal() {
+    var myModal = new bootstrap.Modal(document.getElementById('cashModal'));
+    myModal.show();
+}
+
+function saveCashFromModal() {
+    const btn = document.querySelector('#cashModal .btn-light');
+    btn.innerHTML = 'Saving...';
+    btn.disabled = true;
+
+    const cashValue = parseFloat(document.getElementById('cashModalInput').value) || 0;
+    fetch('{% url "update_cash_balance" %}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+        body: JSON.stringify({ cash_balance: cashValue })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) location.reload();
+        else { alert(data.error); btn.innerHTML = 'Update Ledger'; btn.disabled = false; }
+    })
+    .catch(e => { alert('Error'); btn.innerHTML = 'Update Ledger'; btn.disabled = false; });
+}
+</script>
+{% endblock %}

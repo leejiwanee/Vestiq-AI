@@ -1,0 +1,656 @@
+{% load i18n %}
+{% load static %}
+
+<!doctype html>
+
+<html lang="en">
+
+<head>
+  <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootswatch: Zephyr (Local) -->
+  <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+  <!-- Bootstrap Icons (Local) -->
+  <link href="{% static 'css/bootstrap-icons.css' %}" rel="stylesheet">
+
+  <title>{% block title %}Stock Dashboard{% endblock %}</title>
+
+  <style>
+    /* ─── Linear Elegance (Gilded Obsidian) Theme ─── */
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Manrope:wght@200;300;400;500;600&display=swap');
+
+    :root {
+      /* Palette */
+      --bg-body: #000000;       /* Pure Black */
+      --bg-surface: #0a0a0a;    /* Very Dark Grey */
+      --bg-highlight: #141414;  /* Lighter Grey for cards */
+      
+      --accent-gold: #D4AF37;   /* Champagne Gold */
+      --accent-silver: #E5E4E2; /* Platinum */
+      --accent-dim: rgba(212, 175, 55, 0.3);
+      
+      --border-thin: 1px solid rgba(255, 255, 255, 0.1);
+      --border-gold: 1px solid rgba(212, 175, 55, 0.4);
+      
+      --text-main: #FFFFFF;
+      --text-muted: #888888;
+      
+      --nav-height: 60px; /* Reduced height */
+    }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: 'Manrope', -apple-system, sans-serif;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    
+    h1, h2, h3, h4, h5, .brand-text {
+        font-family: 'Cinzel', serif; /* Elegant Serif */
+        letter-spacing: 0.02em;
+    }
+    
+    a { text-decoration: none; color: inherit; transition: all 0.3s ease; }
+
+    /* ─── Header (Minimalist & Robust) ─── */
+    .main-header {
+      height: var(--nav-height);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.95); /* Nearly solid black for readability */
+      border-bottom: var(--border-thin);
+      display: flex;
+      align-items: center;
+    }
+    
+    .header-logo {
+        height: 24px; /* Small and sleek */
+        width: auto;
+    }
+    
+    .brand-text {
+        font-weight: 500;
+        font-size: 1.1rem;
+        letter-spacing: 0.2em;
+        color: #fff;
+        white-space: nowrap; /* Prevent wrap */
+    }
+
+    /* Navigation Links - Center */
+    .nav-center {
+        gap: 2rem;
+        flex-shrink: 0; /* Prevent crushing */
+    }
+
+    .nav-link {
+        color: #888 !important;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        padding: 0 !important;
+        border-bottom: 2px solid transparent;
+        transition: all 0.3s ease;
+        white-space: nowrap; /* Prevent wrap */
+    }
+    
+    .nav-link:hover {
+        color: #fff !important;
+    }
+    
+    .nav-link.active {
+        color: #fff !important;
+        border-bottom: 2px solid var(--accent-gold);
+    }
+
+    /* Dropdowns (Sharp) */
+    .dropdown-menu {
+        background: #000;
+        border: var(--border-gold);
+        border-radius: 0; 
+        padding: 0;
+        margin-top: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+    }
+    
+    .dropdown-item {
+        color: #888;
+        border-radius: 0;
+        padding: 12px 24px;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        transition: all 0.2s ease;
+    }
+    
+    .dropdown-item:last-child { border-bottom: none; }
+    
+    .dropdown-item:hover {
+        background: #111;
+        color: var(--accent-gold);
+        padding-left: 28px; 
+    }
+    
+    .dropdown-divider { border-color: rgba(255,255,255,0.1); margin: 0; }
+
+    /* Search Bar (Invisible style) */
+    .search-input {
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid #333;
+        color: #fff;
+        font-size: 0.85rem;
+        border-radius: 0;
+        padding: 4px 0 !important;
+    }
+    .search-input::placeholder { font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 0.1em; color: #555; }
+    
+    .search-input:focus {
+        background: transparent;
+        border-bottom: 1px solid var(--accent-gold);
+        box-shadow: none;
+        color: #fff;
+        outline: none;
+    }
+
+    /* Auth User */
+    .user-avatar {
+        width: 28px; 
+        height: 28px; 
+        background: #111;
+        border: 1px solid var(--accent-gold);
+        border-radius: 50%;
+        color: var(--accent-gold);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    /* Global Bootstrap Overrides - Gilded Obsidian */
+    .card { background: #0a0a0a; border: 1px solid #1a1a1a; color: var(--text-main); border-radius: 0; }
+    .modal-content { background: #000; border: 1px solid var(--accent-gold); color: var(--text-main); border-radius: 0; }
+    
+    /* Scrollbar (Thin Gold) */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #000; }
+    ::-webkit-scrollbar-thumb { background: #333; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-gold); }
+    
+  </style>
+
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+
+  <div id="wrapper" class="d-flex flex-column">
+    
+    <!-- ─── New Header (Responsive Flexbox Fix) ─── -->
+    <header class="main-header">
+        <div class="container-fluid px-4 px-lg-5 h-100 d-flex align-items-center justify-content-between">
+            
+            <!-- 1. LEFT: Logo & Brand -->
+            <div class="d-flex align-items-center gap-3 flex-shrink-0">
+                <a href="{% url 'home:index' %}" class="d-flex align-items-center text-decoration-none gap-3">
+                    <img src="{% static 'img/vestiq_signature.png' %}" alt="Vestiq" class="header-logo" style="height: 40px;"> <!-- Clean Signature -->
+                    <!-- Removed text span if the logo includes text, otherwise keep it but user wanted correct text in logo -->
+                </a>
+            </div>
+
+            <!-- 2. CENTER: Navigation (Hidden on Tablet < 1200px to prevent overflow) -->
+            <!-- Adjusted breakout point to xxl or xl depending on content width -->
+            <nav class="d-none d-xl-flex align-items-center nav-center mx-4">
+                <a href="{% url 'home:index' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                    {% trans "Overview" %}
+                </a>
+                <a href="{% url 'search:index' %}" class="nav-link {% if 'search' in request.path %}active{% endif %}">
+                    {% trans "Search" %}
+                </a>
+                
+                <!-- Scanner -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {% if 'scanner' in request.path %}active{% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {% trans "Scanner" %}
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'scanner:dashboard' %}?mode=day">{% trans "Day Trading" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'scanner:dashboard' %}?mode=swing">{% trans "Swing" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'scanner:dashboard' %}?mode=long">{% trans "Long Term" %}</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'scanner:backtest_lab' %}">{% trans "Backtest Lab" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'scanner:vestiq_pick' %}">{% trans "Vestiq Pick" %}</a></li>
+                    </ul>
+                </div>
+
+                <!-- Insights -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {% if 'insight' in request.path %}active{% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {% trans "Insights" %}
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'insight:dashboard' %}">{% trans "Dashboard" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'insight:top20' %}">{% trans "Top 20 Map" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'insight:sector_leaders' %}">{% trans "Sector Leaders" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'insight:market_101' %}">{% trans "Macro Insights" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'insight:13f' %}">{% trans "13F Guru Holdings" %}</a></li>
+                    </ul>
+                </div>
+
+                <!-- AI Advisor & Journal (Only if Auth) -->
+                {% if user.is_authenticated %}
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {% if 'ai_advisor' in request.path %}active{% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {% trans "AI Advisor" %}
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'ai_advisor:input' %}">{% trans "AI Portfolio" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'ai_advisor:recommendations' %}">{% trans "AI Picks" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'ai_advisor:inspector' %}">{% trans "Chart Inspector" %}</a></li>
+                    </ul>
+                </div>
+                <!-- Journal is often less priority, maybe hide if space tight? flexible -->
+                <a href="{% url 'trade_list' %}" class="nav-link {% if 'trades' in request.path %}active{% endif %}">
+                    {% trans "Journal" %}
+                </a>
+                {% endif %}
+
+                <a href="{% url 'news:dashboard' %}" class="nav-link {% if 'news' in request.path %}active{% endif %}">
+                    {% trans "News" %}
+                </a>
+            </nav>
+
+            <!-- 3. RIGHT: Search & Auth (Fixed width or flex-shrink) -->
+            <div class="d-flex align-items-center gap-4 flex-shrink-0">
+                 <!-- Global Search (Minimal) -->
+                 <div class="d-none d-lg-block">
+                    <div class="d-flex align-items-center border-bottom border-secondary pb-1">
+                        <i class="bi bi-search text-muted me-2" style="font-size: 0.8rem;"></i>
+                        <input id="globalSearchInput" class="form-control form-control-sm border-0 p-0 search-input" type="search" placeholder="{% trans 'SEARCH' %}" style="width: 100px; background: transparent; color: #fff;">
+                    </div>
+                 </div>
+
+                 <!-- Language Selector -->
+                 <form action="{% url 'set_language' %}" method="post" class="d-flex align-items-center">
+                    {% csrf_token %}
+                    <input name="next" type="hidden" value="{{ redirect_to }}">
+                    <select name="language" class="form-select form-select-sm border-0 bg-transparent text-muted text-uppercase fw-bold" style="width: auto; font-size: 0.75rem; cursor: pointer; padding-right: 1.5rem;" onchange="this.form.submit()">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% get_available_languages as LANGUAGES %}
+                        {% get_language_info_list for LANGUAGES as languages %}
+                        {% for language in languages %}
+                            <option value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %}selected{% endif %} class="text-dark">
+                                {{ language.code }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                 </form>
+
+                 <!-- Auth / User -->
+                 {% if user.is_authenticated %}
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle user-toggle" data-bs-toggle="dropdown">
+                            <div class="user-avatar">
+                                {{ user.username|first|upper }}
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="min-width: 200px;">
+                            <li class="px-3 py-2 text-muted small">Signed in as <strong>{{ user.username }}</strong></li>
+                            <li><hr class="dropdown-divider"></li>
+                            {% if user.kakao_profile and user.kakao_profile.kakao_access_token %}
+                            <li><a href="{% url 'kakao_disconnect' %}" class="dropdown-item text-warning">Kakao Disconnect</a></li>
+                            {% else %}
+                            <li><a href="{% url 'kakao_login' %}" class="dropdown-item text-warning">Kakao Connect</a></li>
+                            {% endif %}
+                            <li>
+                                <form method="post" action="{% url 'logout' %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item text-danger">Sign Out</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                 {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-sm btn-outline-light rounded-0 px-4" style="border: 1px solid rgba(255,255,255,0.2); font-size: 0.75rem; letter-spacing: 0.1em;">{% trans "LOGIN" %}</a>
+                 {% endif %}
+                 
+                 <!-- Mobile Toggle (Visible on XL and below now) -->
+                 <button class="btn btn-link text-white d-xl-none p-0 ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+                    <i class="bi bi-list fs-3" style="color: var(--accent-gold);"></i>
+                 </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="{% block container_class %}container-fluid px-0{% endblock %}">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    {% if request.resolver_match.view_name == 'home:index' %}
+    <footer class="text-center py-5 text-muted small border-top" style="background: #000; border-color: #111 !important;">
+        <div class="mb-2">VESTIQ &copy; {{ now|date:"Y" }}. EST. 2024</div>
+    </footer>
+    {% endif %}
+
+  </div>
+
+  <!-- Mobile Menu Offcanvas -->
+  <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="mobileMenu" style="background-color: #000 !important;">
+      <div class="offcanvas-header border-bottom border-dark">
+          <h5 class="offcanvas-title" style="font-family: 'Cinzel', serif; color: var(--accent-gold);">VESTIQ</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+      </div>
+      <div class="offcanvas-body">
+          <div class="d-flex flex-column gap-2">
+            <a href="{% url 'home:index' %}" class="btn btn-outline-secondary text-start border-0 text-white text-uppercase ls-1">Overview</a>
+            <a href="{% url 'search:index' %}" class="btn btn-outline-secondary text-start border-0 text-white text-uppercase ls-1">Search</a>
+            <a href="{% url 'scanner:dashboard' %}" class="btn btn-outline-secondary text-start border-0 text-white text-uppercase ls-1">Scanner</a>
+            <a href="{% url 'insight:dashboard' %}" class="btn btn-outline-secondary text-start border-0 text-white text-uppercase ls-1">Insights</a>
+            <a href="{% url 'news:dashboard' %}" class="btn btn-outline-secondary text-start border-0 text-white text-uppercase ls-1">News</a>
+          </div>
+      </div>
+  </div>
+
+  <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+  <!-- ECharts for Global Modal -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", function(){
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        if(sidebarToggle){
+            sidebarToggle.addEventListener('click', event => {
+                event.preventDefault();
+                document.body.classList.toggle('sb-sidenav-toggled');
+                document.getElementById('wrapper').classList.toggle('toggled');
+            });
+        }
+        
+        // --- GLOBAL SEARCH LOGIC ---
+        const globalInput = document.getElementById('globalSearchInput');
+        if (globalInput) {
+            globalInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    const symbol = this.value.trim().toUpperCase();
+                    if (symbol) {
+                        e.preventDefault(); 
+                        openGlobalChartModal(symbol, null);
+                        this.value = ''; 
+                    }
+                }
+            });
+        }
+        
+        // ECharts Init for Modal
+        const chartDom = document.getElementById('chart-main-global');
+        if(chartDom) {
+             window.chartGlobal = echarts.init(chartDom);
+             window.addEventListener('resize', function() {
+                 if(window.chartGlobal) window.chartGlobal.resize();
+             });
+        }
+        
+        // Resize chart when modal triggers (Fix for 100px width issue)
+        const modalEl = document.getElementById('chartModalGlobal');
+        if(modalEl) {
+            modalEl.addEventListener('shown.bs.modal', function () {
+                if(window.chartGlobal) {
+                    window.chartGlobal.resize();
+                }
+            });
+        }
+    });
+
+    // --- GLOBAL CHART MODAL FUNCTIONS ---
+    async function openGlobalChartModal(symbol, companyName) {
+        // 1. Show Modal & Loading State
+        const titleEl = document.getElementById('chartModalTitleGlobal');
+        if(titleEl) titleEl.innerText = `${symbol} Analysis`;
+        
+        const loadingEl = document.getElementById('chartLoadingGlobal');
+        if(loadingEl) loadingEl.style.display = 'block';
+        
+        // Remove AI Report Logic as requested by user
+        // const aiContainer = document.getElementById('aiReportContainerGlobal');
+        
+        if(window.chartGlobal) window.chartGlobal.clear();
+        
+        const modalEl = document.getElementById('chartModalGlobal');
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+
+        try {
+            // 2. Fetch Chart Data (OHLCV + Stoch) ONLY
+            const chartRes = await fetch(`/scanner/chart/${symbol}/`);
+            const data = await chartRes.json();
+            
+            if(data.error) throw new Error(data.error);
+
+            // 3. Render Chart
+            renderGlobalEChart(data, symbol);
+            
+            if(loadingEl) loadingEl.style.display = 'none';
+
+        } catch (error) {
+            console.error(error);
+            if(loadingEl) loadingEl.style.display = 'none';
+        }
+    }
+
+    function renderGlobalEChart(data, symbol) {
+         if (!data.ohlcv || !data.ohlcv.length || !window.chartGlobal) return;
+
+         const dates = data.ohlcv.map(d => new Date(d.time * 1000).toISOString().split('T')[0]);
+         const candleData = data.ohlcv.map(d => [d.open, d.close, d.low, d.high]);
+         const volumes = data.ohlcv.map((d, i) => [i, d.volume, d.close > d.open ? 1 : -1]);
+
+         // Helper for alignment
+         const tsMap = new Map();
+         data.ohlcv.forEach((d, i) => tsMap.set(d.time, i));
+         const alignData = (sourceArr, key = 'value') => {
+            const arr = new Array(dates.length).fill(null);
+            if(!sourceArr) return arr;
+            sourceArr.forEach(x => {
+                const idx = tsMap.get(x.time);
+                if (idx !== undefined) arr[idx] = x[key];
+            });
+            return arr;
+         };
+         
+         const ma5 = alignData(data.ma5);
+         const ma20 = alignData(data.ma20);
+         const ma60 = alignData(data.ma60);
+         
+         const option = {
+            backgroundColor: '#1e293b',
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'cross' },
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                borderColor: '#334155',
+                textStyle: { color: '#f8fafc' }
+            },
+            grid: [
+                { left: '3%', right: '3%', height: '60%', top: '5%' },
+                { left: '3%', right: '3%', top: '68%', height: '12%' }, // Volume
+                { left: '3%', right: '3%', top: '82%', height: '12%' }  // Oscillator
+            ],
+            xAxis: [
+                { type: 'category', data: dates, gridIndex: 0, axisLine: { lineStyle: { color: '#475569' } } },
+                { type: 'category', data: dates, gridIndex: 1, show: false },
+                { type: 'category', data: dates, gridIndex: 2, show: false }
+            ],
+            yAxis: [
+                { scale: true, gridIndex: 0, splitLine: { lineStyle: { color: '#334155' } }, axisLabel: { color: '#94a3b8' } },
+                { scale: true, gridIndex: 1, show: false },
+                { scale: true, gridIndex: 2, splitLine: { show: false }, axisLabel: { show: false }, min: 0, max: 100 }
+            ],
+            dataZoom: [{ type: 'inside', xAxisIndex: [0, 1, 2], start: 50, end: 100 }],
+            series: [
+                {
+                    name: 'Price', type: 'candlestick', data: candleData, xAxisIndex: 0, yAxisIndex: 0,
+                    itemStyle: { color: '#ef4444', color0: '#22c55e', borderColor: '#ef4444', borderColor0: '#22c55e' }
+                },
+                { name: 'MA5', type: 'line', data: ma5, smooth: true, showSymbol: false, lineStyle: { width: 1, color: '#22d3ee' } },
+                { name: 'MA20', type: 'line', data: ma20, smooth: true, showSymbol: false, lineStyle: { width: 1, color: '#f59e0b' } },
+                { name: 'MA60', type: 'line', data: ma60, smooth: true, showSymbol: false, lineStyle: { width: 1, color: '#3b82f6' } },
+                {
+                    name: 'Volume', type: 'bar', data: volumes, xAxisIndex: 1, yAxisIndex: 1,
+                    itemStyle: { color: (params) => params.value[2] > 0 ? 'rgba(239, 68, 68, 0.5)' : 'rgba(34, 197, 94, 0.5)' }
+                }
+            ]
+         };
+         
+         // Add Stochastics if available
+         if(data.stoch_k && data.stoch_d) {
+             const k = alignData(data.stoch_k);
+             const d = alignData(data.stoch_d);
+             option.series.push(
+                { name: 'Stoch K', type: 'line', data: k, xAxisIndex: 2, yAxisIndex: 2, showSymbol: false, lineStyle: { width: 1, color: '#e879f9' } },
+                { name: 'Stoch D', type: 'line', data: d, xAxisIndex: 2, yAxisIndex: 2, showSymbol: false, lineStyle: { width: 1, color: '#fb7185' } }
+             );
+         }
+
+         window.chartGlobal.setOption(option);
+    }
+  </script>
+
+  <script>
+    // --- SIDEBAR HOVER & PIN LOGIC ---
+    document.addEventListener("DOMContentLoaded", function() {
+        const sidebar = document.getElementById('sidebar-wrapper');
+        if(!sidebar) return;
+        const toggles = sidebar.querySelectorAll('[data-bs-toggle="collapse"]');
+        
+        toggles.forEach(toggle => {
+            const targetId = toggle.getAttribute('href') || toggle.getAttribute('data-bs-target');
+            if(!targetId) return;
+            const collapseEl = document.querySelector(targetId);
+            if(!collapseEl) return;
+            
+            const bsCollapse = new bootstrap.Collapse(collapseEl, { toggle: false });
+            
+            // State
+            let isHovering = false; // Tracks hover on ANY (toggle or list)
+            let isPinned = false;   // Tracks if user clicked to fix it
+            let closeTimeout = null;
+
+            // Check initial state (if page loaded with menu open, treat as pinned?)
+            if(collapseEl.classList.contains('show')) {
+                isPinned = true;
+            }
+
+            // --- HELPER: OPEN ---
+            const openMenu = () => {
+                if(closeTimeout) clearTimeout(closeTimeout);
+                if(!collapseEl.classList.contains('show')) {
+                    bsCollapse.show();
+                }
+            };
+
+            // --- HELPER: CLOSE (Delayed) ---
+            const closeMenu = () => {
+                if(closeTimeout) clearTimeout(closeTimeout);
+                closeTimeout = setTimeout(() => {
+                    if(!isHovering && !isPinned) {
+                        bsCollapse.hide();
+                    }
+                }, 300); // 300ms delay for smooth transition
+            };
+
+            // --- EVENTS: HOVER (Toggle) ---
+            toggle.addEventListener('mouseenter', () => {
+                isHovering = true;
+                openMenu();
+            });
+            toggle.addEventListener('mouseleave', () => {
+                isHovering = false;
+                closeMenu();
+            });
+
+            // --- EVENTS: HOVER (Menu Content) ---
+            collapseEl.addEventListener('mouseenter', () => {
+                isHovering = true;
+                openMenu(); // Ensure it stays open
+            });
+            collapseEl.addEventListener('mouseleave', () => {
+                isHovering = false;
+                closeMenu();
+            });
+
+            // --- EVENTS: CLICK (Pinning Logic) ---
+            toggle.addEventListener('click', (e) => {
+                // Determine current state based on visual class or internal check
+                const isOpen = collapseEl.classList.contains('show') || collapseEl.classList.contains('collapsing');
+                
+                if (isOpen) {
+                    if (!isPinned) {
+                        // Case: It's Open (via Hover) but NOT Pinned.
+                        // User clicked to "Fix" it.
+                        // ACTION: Prevent Bootstrap default (Collapse), Set Pinned.
+                        e.preventDefault();
+                        e.stopPropagation(); // Stop bubbling just in case
+                        isPinned = true;
+                        // Optional: Visual Feedback? e.g. toggle.classList.add('text-primary');
+                    } else {
+                        // Case: It's Open AND Pinned.
+                        // User clicked to Close/Unpin.
+                        // ACTION: Allow Bootstrap default (Collapse), Unpin.
+                        isPinned = false;
+                        // Bootstrap handles the toggle (hide).
+                    }
+                } else {
+                    // Case: It's Closed.
+                    // User clicked to Open.
+                    // ACTION: Allow Bootstrap default (Show), Set Pinned.
+                    isPinned = true;
+                    // Bootstrap handles the toggle (show).
+                }
+            });
+            
+            // Safety: Update `isPinned` state if closed by other means (e.g. accordion behavior if enabled?)
+            // Not strictly necessary if we don't have accordion parent set, but good practice.
+            collapseEl.addEventListener('hidden.bs.collapse', () => {
+                isPinned = false; 
+            });
+        });
+    });
+  </script>
+
+  <!-- GLOBAL CHART MODAL HTML -->
+  <div class="modal fade" id="chartModalGlobal" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(10px);">
+      <div class="modal-dialog modal-xl modal-dialog-centered">
+          <div class="modal-content glass-card border-0 shadow-2xl" style="background: rgba(15, 15, 15, 0.98); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border: 1px solid #333;">
+              
+              <!-- Header -->
+              <div class="modal-header border-bottom border-secondary border-opacity-25 py-3">
+                  <div class="d-flex align-items-center gap-3">
+                      <h4 class="modal-title text-white fw-bold brand-font mb-0" id="chartModalTitleGlobal">Analysis</h4>
+                      <div id="chartLoadingGlobal" class="spinner-border text-primary spinner-sm" role="status" style="display: none;">
+                          <span class="visually-hidden">Loading...</span>
+                      </div>
+                  </div>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              
+              <!-- Chart Section (Full Height) -->
+              <div class="p-2" style="height: 700px; position: relative;">
+                   <div id="chart-main-global" style="width: 100%; height: 100%;"></div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

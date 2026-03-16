@@ -1,0 +1,94 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block content %}
+<div style="display: flex; gap: 20px; align-items: flex-start;">
+    <!-- Sidebar: Tables -->
+    <div class="module" style="width: 250px; flex-shrink: 0; padding: 0; border: 1px solid #E6E9ED; background: white; border-radius: 5px; overflow: hidden;">
+        <div style="padding: 10px 15px; background: #f8f9fc; border-bottom: 1px solid #E6E9ED; font-weight: 700; color: #2A3F54;">
+            Database Tables
+        </div>
+        <div style="max-height: 600px; overflow-y: auto;">
+            <ul style="list-style: none; padding: 0; margin: 0;">
+                {% for table in tables %}
+                <li style="border-bottom: 1px solid #f1f1f1;">
+                    <a href="#" onclick="insertSql('{{ table }}'); return false;" style="display: block; padding: 8px 15px; color: #5A738E; text-decoration: none; font-size: 0.9rem; transition: background 0.2s;">
+                        <i class="bi bi-table me-2" style="font-size: 0.8rem; opacity: 0.7;"></i> {{ table }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 20px;">
+        <!-- SQL Editor -->
+        <div class="module" style="padding: 0; border: 1px solid #E6E9ED; background: white; border-radius: 5px; overflow: hidden;">
+            <div style="padding: 10px 15px; background: #2A3F54; color: white; font-weight: 700; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <span>SQL Query Editor</span>
+                    <a href="{% url 'updatedata:index' %}" style="font-size: 0.75rem; background: rgba(255,255,255,0.2); color: white; padding: 2px 8px; border-radius: 4px; text-decoration: none; font-weight: 500;">
+                        <i class="bi bi-arrow-left"></i> Back
+                    </a>
+                </div>
+                <span style="font-size: 0.8rem; opacity: 0.7;">MySQL</span>
+            </div>
+            <form method="post" style="margin: 0;">
+                {% csrf_token %}
+                <textarea id="sqlInput" name="sql" rows="10" style="width: 100%; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 14px; padding: 15px; border: none; background: #1e1e1e; color: #d4d4d4; line-height: 1.5; resize: vertical; outline: none;">{{ sql }}</textarea>
+                <div style="padding: 10px 15px; background: #f8f9fc; border-top: 1px solid #E6E9ED; text-align: right;">
+                    <button type="submit" class="button" style="background: #36b9cc; color: white; border: none; padding: 8px 20px; border-radius: 3px; font-weight: 600; cursor: pointer;">
+                        <i class="bi bi-play-fill"></i> Run Query
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results -->
+        {% if columns %}
+        <div class="module" style="padding: 0; border: 1px solid #E6E9ED; background: white; border-radius: 5px; overflow: hidden;">
+            <div style="padding: 10px 15px; background: #f8f9fc; border-bottom: 1px solid #E6E9ED; font-weight: 700; color: #2A3F54;">
+                Query Results <span style="font-weight: 400; color: #999; font-size: 0.8rem; margin-left: 10px;">{{ results|length }} rows</span>
+            </div>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="background: #f1f1f1;">
+                            {% for col in columns %}
+                            <th style="padding: 10px 15px; text-align: left; border-bottom: 2px solid #ddd; color: #5A738E; font-weight: 700; white-space: nowrap;">{{ col }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in results %}
+                        <tr style="border-bottom: 1px solid #eee;">
+                            {% for cell in row %}
+                            <td style="padding: 8px 15px; color: #333; white-space: nowrap;">{{ cell }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function insertSql(tableName) {
+    var textarea = document.getElementById('sqlInput');
+    textarea.value = "SELECT * FROM " + tableName + " LIMIT 10;";
+}
+</script>
+
+<style>
+    /* Hover effect for sidebar links */
+    .module ul li a:hover {
+        background: #f0f0f0;
+        color: #2A3F54 !important;
+    }
+</style>
+{% endblock %}
+

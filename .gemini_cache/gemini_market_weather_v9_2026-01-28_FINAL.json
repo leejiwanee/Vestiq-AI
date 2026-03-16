@@ -1,0 +1,170 @@
+{
+  "en": {
+    "title": "Yields Up, Metals Shine, While Main Street Gets a Reality Check",
+    "summary": "Today's market narrative is a tale of two cities: a soaring commodity complex driven by precious metals and oil, juxtaposed with rising bond yields and a cautious undertone from corporate America. Major U.S. indices largely held steady, but the small-cap Russell 2000 lagged, hinting at some underlying nervousness.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6978.03",
+        "comment": "Barely budged, clinging to recent gains."
+      },
+      {
+        "label": "Nasdaq Composite",
+        "value": "23857.45",
+        "comment": "A modest uplift, showing some resilience."
+      },
+      {
+        "label": "Russell 2000",
+        "value": "2653.55",
+        "comment": "Small caps stumbled, signaling broader growth concerns."
+      },
+      {
+        "label": "Bitcoin",
+        "value": "87958.53",
+        "comment": "Took a step back after recent surges."
+      }
+    ],
+    "macro": {
+      "title": "Macro Vibes",
+      "points": [
+        "<b>Treasury Yields Climb</b>: Bond markets saw yields tick higher across the curve today, with the 10-year Treasury yield (^TNX) rising by +0.66% to 4.25%, potentially signaling sticky inflation concerns or a shift in rate hike expectations.",
+        "<b>Commodities Catch Fire</b>: Gold (GC) and Silver (SI) were absolute rockets, surging +9.48% and +11.35% respectively, with Copper (HG) and Crude Oil (CL) also posting significant gains. This powerful rally suggests a renewed focus on inflation hedges or underlying industrial demand.",
+        "<b>Corporate Caution & Cost Cutting</b>: Despite overall flat major indices, news like Home Depot's layoffs and return-to-office mandate, coupled with Carvana's significant stock drop after short-seller accusations, highlights a more challenging or cost-conscious corporate environment, particularly in consumer-facing sectors."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "Materials",
+        "change": "High",
+        "comment": "Precious metals and copper led the charge, signaling strong demand or inflation hedging."
+      },
+      {
+        "name": "Energy",
+        "change": "High",
+        "comment": "Crude oil's solid climb fueled sector performance, benefiting producers."
+      },
+      {
+        "name": "Industrials",
+        "change": "Moderate",
+        "comment": "Benefited from commodity tailwinds and specific positive company forecasts (Southwest Airlines)."
+      },
+      {
+        "name": "Consumer Discretionary",
+        "change": "Low",
+        "comment": "Hit by layoffs at Home Depot and Carvana's woes, hinting at consumer spending pressures."
+      },
+      {
+        "name": "Real Estate",
+        "change": "Low",
+        "comment": "Rising bond yields typically present headwinds for the rate-sensitive real estate sector."
+      },
+      {
+        "name": "Technology",
+        "change": "Mixed",
+        "comment": "Despite Nasdaq's small gain, rising yields and crypto weakness weighed on growth-oriented tech names, particularly smaller caps."
+      }
+    ],
+    "themes": [
+      {
+        "name": "Inflation Hedge Play",
+        "change": "Strong",
+        "comment": "Gold and Silver saw massive inflows, suggesting investors are seeking safe havens amidst economic uncertainty and rising yields."
+      },
+      {
+        "name": "Rising Rate Environment",
+        "change": "Continues",
+        "comment": "Treasury yields continued their ascent, impacting growth valuations and borrowing costs across the economy."
+      },
+      {
+        "name": "Small-Cap Underperformance",
+        "change": "Weak",
+        "comment": "Russell 2000 lagged, indicating a preference for larger, more stable assets over smaller, more growth-dependent companies."
+      }
+    ]
+  },
+  "ko": {
+    "title": "금리 상승, 원자재 반짝… '메인 스트리트'에 현실 직시의 시간",
+    "summary": "오늘 시장은 양극단의 서사를 보여주었습니다. 귀금속과 유가가 주도하는 원자재 시장의 급등세와 함께 채권 금리 상승, 그리고 기업들의 신중한 기조가 뚜렷했습니다. 미국 주요 지수들은 대체로 보합세를 유지했지만, 소형주 중심의 러셀 2000 지수는 부진하여 기저에 깔린 불안감을 시사했습니다.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6978.03",
+        "comment": "거의 움직임 없이 최근 상승세를 유지."
+      },
+      {
+        "label": "나스닥 종합",
+        "value": "23857.45",
+        "comment": "소폭 상승하며 회복력을 보임."
+      },
+      {
+        "label": "러셀 2000",
+        "value": "2653.55",
+        "comment": "소형주들이 휘청이며 전반적인 성장 우려를 시사."
+      },
+      {
+        "label": "비트코인",
+        "value": "87958.53",
+        "comment": "최근 급등 후 한발 물러서는 모습."
+      }
+    ],
+    "macro": {
+      "title": "매크로 경제",
+      "points": [
+        "<b>국채 금리 상승</b>: 오늘 채권 시장에서는 전반적으로 금리가 상승했습니다. 10년물 국채 금리(^TNX)는 4.25%로 +0.66% 오르며, 지속적인 인플레이션 우려나 금리 인상 기대감의 변화를 시사할 수 있습니다.",
+        "<b>원자재 시장 활활</b>: 금(GC)과 은(SI)은 각각 +9.48%, +11.35% 급등하며 폭발적인 상승세를 보였고, 구리(HG)와 서부 텍사스산 원유(CL) 역시 상당한 상승폭을 기록했습니다. 이러한 강력한 랠리는 인플레이션 헤지나 근원적인 산업 수요에 대한 새로운 관심을 나타냅니다.",
+        "<b>기업들의 신중한 접근 및 비용 절감</b>: 주요 지수들이 대체로 보합세를 유지했음에도 불구하고, 홈디포의 해고 및 주 5일 사무실 출근 복귀 소식, 그리고 공매도 세력의 비난 이후 카바나 주가 급락 등은 특히 소비재 부문에서 더욱 도전적이거나 비용 효율성에 초점을 맞춘 기업 환경을 시사합니다."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "소재 (Materials)",
+        "change": "높음",
+        "comment": "귀금속과 구리가 상승을 주도하며 강한 수요나 인플레이션 헤지 수요를 시사했습니다."
+      },
+      {
+        "name": "에너지 (Energy)",
+        "change": "높음",
+        "comment": "원유 가격의 견고한 상승이 섹터 실적을 견인하며 생산 기업들에게 이점을 제공했습니다."
+      },
+      {
+        "name": "산업재 (Industrials)",
+        "change": "보통",
+        "comment": "원자재 상승의 긍정적 영향과 특정 기업(사우스웨스트 항공)의 긍정적인 전망으로부터 수혜를 입었습니다."
+      },
+      {
+        "name": "경기 소비재 (Consumer Discretionary)",
+        "change": "낮음",
+        "comment": "홈디포의 해고와 카바나의 부진으로 타격을 입었으며, 소비자 지출 압력을 암시합니다."
+      },
+      {
+        "name": "부동산 (Real Estate)",
+        "change": "낮음",
+        "comment": "금리 상승은 일반적으로 금리에 민감한 부동산 섹터에 역풍으로 작용합니다."
+      },
+      {
+        "name": "기술 (Technology)",
+        "change": "혼조",
+        "comment": "나스닥의 소폭 상승에도 불구하고, 금리 상승과 암호화폐 약세는 성장 지향적인 기술주, 특히 소형주에 부담을 주었습니다."
+      }
+    ],
+    "themes": [
+      {
+        "name": "인플레이션 헤지 플레이",
+        "change": "강세",
+        "comment": "금리와 경제 불확실성 속에서 금과 은에 막대한 자금이 유입되며 안전자산 선호 심리를 보여주었습니다."
+      },
+      {
+        "name": "금리 상승 환경",
+        "change": "지속",
+        "comment": "국채 금리가 계속 상승하여 성장주 가치 평가와 경제 전반의 차입 비용에 영향을 미쳤습니다."
+      },
+      {
+        "name": "소형주 저조한 실적",
+        "change": "약세",
+        "comment": "러셀 2000 지수가 부진하여 소형 성장주보다는 더 크고 안정적인 자산에 대한 선호도를 나타냈습니다."
+      }
+    ]
+  },
+  "last_updated": "2026-01-28 10:24 PM EST",
+  "last_updated_ts": "2026-01-28T22:24:00.215818-05:00"
+}

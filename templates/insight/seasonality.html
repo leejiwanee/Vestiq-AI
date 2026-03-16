@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load i18n %}
+
+{% block title %}Seasonality Explorer{% endblock %}
+
+{% block content %}
+<style>
+    body { background-color: #f8f9fa; }
+    .page-header { background: white; border-bottom: 1px solid #e5e7eb; padding: 24px 0; margin-bottom: 24px; }
+    .stat-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); padding: 20px; text-align: center; }
+    .stat-value { font-size: 1.5rem; font-weight: 700; }
+    .stat-label { font-size: 0.875rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; }
+    .chart-container { position: relative; height: 350px; width: 100%; background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); }
+</style>
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="fw-bold mb-1 text-dark">🗓️ {% trans "Seasonality Explorer" %}</h3>
+                <p class="text-muted mb-0 small">{% trans "Historical Monthly Returns Analysis (20 Years)" %}</p>
+            </div>
+            <form class="d-flex" method="GET">
+                <input class="form-control me-2" type="search" name="ticker" placeholder="{% trans "Ticker (e.g. SPY)" %}" value="{{ ticker }}" aria-label="Search">
+                <button class="btn btn-primary" type="submit">{% trans "Analyze" %}</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="container pb-5">
+    {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    {% if monthly_stats %}
+    <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+            <div class="stat-card">
+                <div class="stat-label">{% trans "Best Month" %}</div>
+                <div class="stat-value text-success">{{ best_month.month }} (+{{ best_month.avg }}%)</div>
+                <div class="small text-muted">{% trans "Win Rate" %}: {{ best_month.win_rate }}%</div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="stat-card">
+                <div class="stat-label">{% trans "Worst Month" %}</div>
+                <div class="stat-value text-danger">{{ worst_month.month }} ({{ worst_month.avg }}%)</div>
+                <div class="small text-muted">{% trans "Win Rate" %}: {{ worst_month.win_rate }}%</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="chart-container mb-4">
+        <canvas id="seasonalityChart"></canvas>
+    </div>
+    
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white fw-bold">{% trans "Monthly Statistics" %}</div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>{% trans "Month" %}</th>
+                        <th class="text-end">{% trans "Avg Return" %}</th>
+                        <th class="text-end">{% trans "Win Rate (% Positive)" %}</th>
+                        <th class="text-end">{% trans "Years Analyzed" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in monthly_stats %}
+                    <tr>
+                        <td class="fw-bold">{{ m.month }}</td>
+                        <td class="text-end fw-bold {% if m.avg > 0 %}text-success{% else %}text-danger{% endif %}">
+                            {% if m.avg > 0 %}+{% endif %}{{ m.avg }}%
+                        </td>
+                        <td class="text-end">
+                            <div class="d-flex align-items-center justify-content-end gap-2">
+                                <span>{{ m.win_rate }}%</span>
+                                <div class="progress" style="width: 60px; height: 6px;">
+                                    <div class="progress-bar {% if m.win_rate >= 50 %}bg-success{% else %}bg-danger{% endif %}" role="progressbar" style="width: {{ m.win_rate }}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-end text-muted">{{ m.count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('seasonalityChart');
+    if (ctx) {
+        const labels = JSON.parse('{{ monthly_labels|safe }}');
+        const values = JSON.parse('{{ monthly_values|safe }}');
+        const winRates = JSON.parse('{{ win_rates|safe }}');
+        
+        // Color based on value
+        const bgColors = values.map(v => v >= 0 ? 'rgba(16, 185, 129, 0.7)' : 'rgba(239, 68, 68, 0.7)');
+        const borderColors = values.map(v => v >= 0 ? 'rgba(16, 185, 129, 1)' : 'rgba(239, 68, 68, 1)');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '{% trans "Average Return (%)" %}',
+                    data: values,
+                    backgroundColor: bgColors,
+                    borderColor: borderColors,
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: function(context) {
+                                return '{% trans "Win Rate" %}: ' + winRates[context.dataIndex] + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#f3f4f6' },
+                        title: { display: true, text: '{% trans "Average Return (%)" %}' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

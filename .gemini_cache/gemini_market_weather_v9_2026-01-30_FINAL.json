@@ -1,0 +1,172 @@
+{
+  "en": {
+    "title": "A Dip, a Dollar, and a Dash of Doubt: Markets Pull Back, VIX Rises",
+    "summary": "The bulls hit the brakes today, as major indices dipped across the board, led lower by small caps and tech. A surging dollar and a commodities slump added to the market's unease, while the VIX gave us a friendly reminder that volatility is never far off.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6939.03 (-0.43%)",
+        "comment": "Taking a breather after its recent run, feeling the broader market jitters."
+      },
+      {
+        "label": "Nasdaq",
+        "value": "23461.82 (-0.94%)",
+        "comment": "Tech heavyweights felt the strain, pulling the index down significantly."
+      },
+      {
+        "label": "Russell 2000",
+        "value": "2613.74 (-1.55%)",
+        "comment": "Small caps got hit hardest, signaling broader caution and risk aversion."
+      },
+      {
+        "label": "Bitcoin",
+        "value": "83998.13 (-0.67%)",
+        "comment": "Crypto also saw red, following the broader market's cautious mood."
+      }
+    ],
+    "macro": {
+      "title": "Macro Vibes",
+      "points": [
+        "<b>Increased Volatility</b>: The VIX spiked over 3%, reflecting a general increase in market uncertainty rather than specific macro catalysts from today's headlines. Sometimes, markets just get the jitters!",
+        "<b>Strong Dollar Flexes Muscles</b>: The Dollar Index surged nearly 1%, putting pressure on risk assets and contributing to the slide in some commodities. When the dollar is strong, other assets often feel the squeeze.",
+        "<b>Bond Yields Creep Up</b>: 10-year and 30-year Treasury yields saw a slight uptick, perhaps hinting at shifting rate expectations or a cautious eye on inflation down the road.",
+        "<b>Commodities Take a Hit</b>: Gold and silver, typically safe havens, took a significant tumble, possibly due to the strong dollar and profit-taking after recent gains. Talk about a plot twist!"
+      ]
+    },
+    "sectors": [
+      {
+        "name": "Healthcare/Pharma",
+        "change": "Positive News",
+        "comment": "Eli Lilly's expansion plans and Medicare coverage optimism for obesity drugs generated buzz, suggesting potential resilience."
+      },
+      {
+        "name": "Financials",
+        "change": "Positive News",
+        "comment": "American Express's focus on high-spenders indicates confidence in the premium consumer segment."
+      },
+      {
+        "name": "Energy",
+        "change": "Slightly Up",
+        "comment": "Crude oil managed a modest gain, offering a rare green spot in an otherwise down market."
+      },
+      {
+        "name": "Precious Metals",
+        "change": "Significant Dip",
+        "comment": "Gold and silver got hammered, losing their shine amidst a stronger dollar and risk-off sentiment."
+      },
+      {
+        "name": "Small Caps",
+        "change": "Worst Performer",
+        "comment": "The Russell 2000's steep drop shows investors are shying away from smaller, potentially riskier companies."
+      },
+      {
+        "name": "Technology",
+        "change": "Notable Dip",
+        "comment": "Nasdaq's significant decline suggests tech stocks were among those most sensitive to today's cautious mood."
+      }
+    ],
+    "themes": [
+      {
+        "name": "Obesity Drug Boom",
+        "change": "Expanding",
+        "comment": "Eli Lilly's big moves signal a game-changing market for weight-loss treatments."
+      },
+      {
+        "name": "Meme Stock Mania 2.0?",
+        "change": "Reviving Interest",
+        "comment": "Ryan Cohen's 'megadeal' comments stirred up chatter around GameStop, hinting at another meme-stock spectacle."
+      },
+      {
+        "name": "Premium Consumer Power",
+        "change": "Targeted Growth",
+        "comment": "American Express continues to court the wealthy, betting on the resilience of high-spending consumers."
+      }
+    ]
+  },
+  "ko": {
+    "title": "하락, 강달러, 그리고 불확실성: 시장 숨 고르기, 변동성 확대",
+    "summary": "오늘 시장은 브레이크를 밟았습니다. 소형주와 기술주 주도로 주요 지수들이 전반적으로 하락했으며, 달러 강세와 원자재 약세가 시장의 불안감을 가중시켰습니다. VIX 지수는 변동성이 언제든 돌아올 수 있음을 상기시켜주었습니다.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6939.03 (-0.43%)",
+        "comment": "최근의 상승 랠리 이후 숨 고르기에 들어갔으며, 광범위한 시장 불안감을 반영했습니다."
+      },
+      {
+        "label": "나스닥",
+        "value": "23461.82 (-0.94%)",
+        "comment": "기술 대기업들이 압박을 느끼며 지수를 크게 끌어내렸습니다."
+      },
+      {
+        "label": "러셀 2000",
+        "value": "2613.74 (-1.55%)",
+        "comment": "소형주가 가장 큰 타격을 받으며 광범위한 경계심과 위험 회피 심리를 나타냈습니다."
+      },
+      {
+        "label": "비트코인",
+        "value": "83998.13 (-0.67%)",
+        "comment": "암호화폐도 시장의 조심스러운 분위기를 따라 하락세를 보였습니다."
+      }
+    ],
+    "macro": {
+      "title": "매크로 경제",
+      "points": [
+        "<b>변동성 증가</b>: VIX 지수가 3% 이상 급등했습니다. 이는 오늘의 헤드라인에서 나타난 특정 거시적 촉매제보다는 전반적인 시장 불확실성 증가를 반영합니다. 때때로 시장은 그저 초조함을 느낄 뿐입니다!",
+        "<b>달러 강세 과시</b>: 달러 인덱스가 거의 1% 급등하여 위험 자산에 압력을 가하고 일부 원자재 가격 하락에 기여했습니다. 달러가 강할 때 다른 자산들은 종종 압박을 받습니다.",
+        "<b>채권 금리 상승</b>: 10년물 및 30년물 국채 금리가 소폭 상승했으며, 이는 금리 기대치의 변화나 미래 인플레이션에 대한 신중한 시선을 암시할 수 있습니다.",
+        "<b>원자재 하락</b>: 통상적인 안전자산으로 여겨지는 금과 은이 강달러와 최근 상승 후 차익 실현으로 인해 크게 하락했습니다. 정말 예상 밖의 전개였죠!"
+      ]
+    },
+    "sectors": [
+      {
+        "name": "헬스케어/제약",
+        "change": "긍정적 뉴스",
+        "comment": "일라이 릴리의 확장 계획과 비만 치료제 메디케어 적용에 대한 낙관론이 화제를 모으며 잠재적인 회복력을 시사했습니다."
+      },
+      {
+        "name": "금융",
+        "change": "긍정적 뉴스",
+        "comment": "아메리칸 익스프레스가 고액 소비자에 초점을 맞추는 것은 프리미엄 소비 부문에 대한 자신감을 보여줍니다."
+      },
+      {
+        "name": "에너지",
+        "change": "소폭 상승",
+        "comment": "원유가 소폭 상승하며 전반적인 하락장 속에서 드문 긍정적인 지표를 보였습니다."
+      },
+      {
+        "name": "귀금속",
+        "change": "큰 폭 하락",
+        "comment": "금과 은은 강달러와 위험 회피 심리 속에서 광채를 잃으며 크게 하락했습니다."
+      },
+      {
+        "name": "소형주",
+        "change": "최악의 성과",
+        "comment": "러셀 2000의 급락은 투자자들이 더 작고 잠재적으로 위험한 기업들로부터 멀어지고 있음을 보여줍니다."
+      },
+      {
+        "name": "기술",
+        "change": "주목할 만한 하락",
+        "comment": "나스닥의 상당한 하락은 기술주들이 오늘의 조심스러운 분위기에 가장 민감하게 반응했음을 시사합니다."
+      }
+    ],
+    "themes": [
+      {
+        "name": "비만 치료제 열풍",
+        "change": "확장",
+        "comment": "일라이 릴리의 대규모 움직임은 체중 감량 치료제 시장의 판도를 바꿀 가능성을 시사합니다."
+      },
+      {
+        "name": "밈 주식 광풍 2.0?",
+        "change": "관심 부활",
+        "comment": "라이언 코헨의 '메가딜' 발언은 게임스톱에 대한 소문을 불러일으키며 또 다른 밈 주식 열풍을 예고했습니다."
+      },
+      {
+        "name": "프리미엄 소비자 파워",
+        "change": "타겟 성장",
+        "comment": "아메리칸 익스프레스는 고액 소비자를 계속 유치하며 고액 지출 소비자의 회복력에 베팅하고 있습니다."
+      }
+    ]
+  },
+  "last_updated": "2026-01-30 11:36 PM EST",
+  "last_updated_ts": "2026-01-30T23:36:30.185721-05:00"
+}

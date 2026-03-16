@@ -1,0 +1,174 @@
+{
+  "en": {
+    "title": "Stateside Surge: Autos & Offices Spark Optimism While Oil Dips",
+    "summary": "U.S. markets are flexing their muscles today, riding high on surprisingly strong auto sales and a robust rebound in Manhattan's commercial real estate. While bond yields nudged up and volatility took a breather, global commodities presented a mixed picture, with oil taking a significant dip and precious metals shining bright.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6944.82 (+0.62%)",
+        "comment": "Solid gains for the broad market, indicating general optimism."
+      },
+      {
+        "label": "Nasdaq Composite",
+        "value": "23547.17 (+0.65%)",
+        "comment": "Tech and growth stocks keep pace, adding to the positive momentum."
+      },
+      {
+        "label": "Russell 2000",
+        "value": "2582.90 (+1.37%)",
+        "comment": "Small caps are stealing the show, signaling broad market confidence and a risk-on appetite."
+      },
+      {
+        "label": "Bitcoin",
+        "value": "92651.04 (-1.31%)",
+        "comment": "The digital king takes a slight breather after recent runs, cooling off a bit."
+      }
+    ],
+    "macro": {
+      "title": "Macro Vibes",
+      "points": [
+        "<b>Consumer Resilience</b>: Strong annual U.S. vehicle sales reported by Ford and GM, alongside Stellantis' Jeep marking its first increase in seven years, signal robust consumer spending and a healthy domestic economy.",
+        "<b>Commercial Real Estate Rebound</b>: Manhattan office leasing hitting its strongest point in six years during Q4 suggests a significant recovery in urban commercial real estate, hinting at renewed business activity and confidence.",
+        "<b>Bond Yields Creep Up</b>: U.S. Treasury yields across the curve (^TNX, ^TYX, ^FVX, ^IRX) have seen slight increases, reflecting evolving expectations for interest rates or economic growth, though not dramatically shifting market sentiment today.",
+        "<b>Oil's Slippery Slope</b>: Crude oil (CL) experienced a notable drop of over 3.5%, potentially indicating concerns about global demand or shifts in supply dynamics.",
+        "<b>Private Equity Pressure</b>: The news of private equity management fees hitting a new low in 2025 suggests increasing competition, investor demands for lower costs, or a tougher fundraising environment in the alternative asset space."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "Metals & Mining",
+        "change": "+4.47% (Silver)",
+        "comment": "Precious and industrial metals are surging, with silver leading the charge."
+      },
+      {
+        "name": "Automotive",
+        "change": "Significant Sales Growth",
+        "comment": "Strong U.S. sales reports from Ford, GM, and Stellantis drive optimism."
+      },
+      {
+        "name": "Real Estate (Commercial)",
+        "change": "Strongest Leasing in 6 Years",
+        "comment": "Manhattan office market shows a robust recovery, boosting the sector."
+      },
+      {
+        "name": "Energy",
+        "change": "-3.55% (Crude Oil)",
+        "comment": "Oil prices took a hit, dragging down energy-related stocks."
+      },
+      {
+        "name": "Cryptocurrency (Bitcoin)",
+        "change": "-1.31%",
+        "comment": "Bitcoin saw a pullback, though other digital assets like Ethereum fared better."
+      },
+      {
+        "name": "Financial Services (Alternative Assets)",
+        "change": "Fee Pressure",
+        "comment": "Private equity fee news hints at headwinds for certain financial segments."
+      }
+    ],
+    "themes": [
+      {
+        "name": "U.S. Consumer Strength",
+        "change": "Positive",
+        "comment": "Auto sales data points to resilient consumer spending."
+      },
+      {
+        "name": "AI Integration & Innovation",
+        "change": "Positive",
+        "comment": "Vista Equity's 'agentic factory' highlights ongoing AI development in enterprise solutions."
+      },
+      {
+        "name": "Urban Commercial Recovery",
+        "change": "Positive",
+        "comment": "Manhattan office leasing signals a comeback for major city business hubs."
+      }
+    ]
+  },
+  "ko": {
+    "title": "미국 증시 활황: 자동차 판매 급증, 맨해튼 오피스 임대 시장 6년만에 최고, 유가는 하락",
+    "summary": "오늘 미국 시장은 놀라운 자동차 판매 실적과 맨해튼 상업용 부동산 시장의 강력한 회복세에 힘입어 강세를 보였습니다. 채권 수익률은 소폭 상승하고 변동성은 진정되었지만, 글로벌 상품 시장은 유가가 크게 하락하고 귀금속이 빛나는 등 혼조세를 나타냈습니다.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6944.82 (+0.62%)",
+        "comment": "광범위한 시장의 견고한 상승세는 전반적인 낙관론을 나타냅니다."
+      },
+      {
+        "label": "나스닥 종합",
+        "value": "23547.17 (+0.65%)",
+        "comment": "기술 및 성장주도 상승세를 유지하며 긍정적인 모멘텀에 기여했습니다."
+      },
+      {
+        "label": "러셀 2000",
+        "value": "2582.90 (+1.37%)",
+        "comment": "소형주가 가장 돋보이며 광범위한 시장 신뢰와 위험 선호 심리를 보여주었습니다."
+      },
+      {
+        "label": "비트코인",
+        "value": "92651.04 (-1.31%)",
+        "comment": "디지털 왕은 최근 랠리 이후 약간의 조정을 겪으며 잠시 숨을 골랐습니다."
+      }
+    ],
+    "macro": {
+      "title": "매크로 경제",
+      "points": [
+        "<b>소비자 회복력</b>: 포드와 GM이 보고한 강력한 미국 연간 자동차 판매 실적과 스텔란티스 지프의 7년 만의 첫 판매 증가는 견고한 소비 지출과 건강한 국내 경제를 시사합니다.",
+        "<b>상업용 부동산 반등</b>: 맨해튼 오피스 임대 시장이 4분기에 6년 만에 최고치를 기록했다는 소식은 도시 상업용 부동산의 상당한 회복과 비즈니스 활동 재개에 대한 기대를 불러일으킵니다.",
+        "<b>채권 수익률 상승</b>: 미국 국채 수익률은 전반적으로 소폭 상승했으며, 이는 금리 또는 경제 성장에 대한 기대치 변화를 반영하지만, 오늘 시장 심리에 큰 영향을 주지는 않았습니다.",
+        "<b>유가의 미끄러짐</b>: 원유(CL) 가격은 3.5% 이상 크게 하락했으며, 이는 글로벌 수요에 대한 우려 또는 공급 역학의 변화를 시사할 수 있습니다.",
+        "<b>사모펀드 수수료 압력</b>: 2025년에 사모펀드 운용 수수료가 역대 최저치를 기록했다는 소식은 대체 투자 시장에서 경쟁 심화, 투자자들의 비용 절감 요구, 또는 더 어려운 자금 조달 환경을 시사합니다."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "금속 및 광업 (Metals & Mining)",
+        "change": "+4.47% (은)",
+        "comment": "은 가격이 급등하면서 귀금속 및 산업 금속 부문이 강세를 보였습니다."
+      },
+      {
+        "name": "자동차 (Automotive)",
+        "change": "상당한 판매 증가",
+        "comment": "포드, GM, 스텔란티스의 강력한 미국 판매 보고서가 낙관론을 이끌었습니다."
+      },
+      {
+        "name": "부동산 (상업용) (Real Estate - Commercial)",
+        "change": "6년 만의 최고 임대 실적",
+        "comment": "맨해튼 오피스 시장의 강력한 회복세가 해당 부문에 활력을 불어넣었습니다."
+      },
+      {
+        "name": "에너지 (Energy)",
+        "change": "-3.55% (원유)",
+        "comment": "원유 가격이 하락하며 에너지 관련 주식에 부담을 주었습니다."
+      },
+      {
+        "name": "암호화폐 (비트코인) (Cryptocurrency - Bitcoin)",
+        "change": "-1.31%",
+        "comment": "비트코인은 조정을 겪었지만, 이더리움과 같은 다른 디지털 자산은 더 나은 성과를 보였습니다."
+      },
+      {
+        "name": "금융 서비스 (대체 자산) (Financial Services - Alternative Assets)",
+        "change": "수수료 압력",
+        "comment": "사모펀드 수수료 관련 소식은 특정 금융 부문에 어려움이 있음을 시사합니다."
+      }
+    ],
+    "themes": [
+      {
+        "name": "미국 소비자 강세 (U.S. Consumer Strength)",
+        "change": "긍정적",
+        "comment": "자동차 판매 데이터는 회복력 있는 소비자 지출을 나타냅니다."
+      },
+      {
+        "name": "AI 통합 및 혁신 (AI Integration & Innovation)",
+        "change": "긍정적",
+        "comment": "Vista Equity의 '에이전틱 팩토리'는 기업 솔루션의 AI 개발 지속을 강조합니다."
+      },
+      {
+        "name": "도시 상업 회복 (Urban Commercial Recovery)",
+        "change": "긍정적",
+        "comment": "맨해튼 오피스 임대는 주요 도시 비즈니스 허브의 부활을 알립니다."
+      }
+    ]
+  },
+  "last_updated": "2026-01-06 11:39 PM EST",
+  "last_updated_ts": "2026-01-06T23:39:31.404064-05:00"
+}

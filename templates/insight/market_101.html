@@ -1,0 +1,581 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% trans "Macro Insights Pro" %} | Vestiq{% endblock %}
+
+{% block content %}
+<style>
+    /* --- VESTIQ PRO TERMINAL THEME --- */
+    :root {
+        --terminal-bg: #0b1120;
+        --panel-bg: rgba(30, 41, 59, 0.4); 
+        --panel-border: rgba(255, 255, 255, 0.08);
+        --glass-bg: rgba(255, 255, 255, 0.03);
+        --accent-blue: #38bdf8;
+        --accent-purple: #c084fc;
+        --accent-green: #4ade80;
+        --accent-red: #f87171;
+        --accent-gold: #facc15;
+        --text-primary: #ffffff;
+        --text-secondary: rgba(255, 255, 255, 0.6);
+    }
+
+    body {
+        background: var(--terminal-bg) !important;
+        color: var(--text-primary) !important;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    /* Typography */
+    h1, h2, h3, h4, .text-primary-custom { color: var(--text-primary) !important; }
+    .text-muted-custom { color: var(--text-secondary) !important; font-size: 0.85rem; }
+    .display-number { font-family: 'JetBrains Mono', monospace; letter-spacing: -1px; }
+
+    /* Layout Components */
+    .glass-panel {
+        background: var(--glass-bg);
+        border: 1px solid var(--panel-border);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 8px;
+        padding: 20px;
+        height: 100%;
+        transition: all 0.2s ease;
+    }
+    
+    .glass-panel:hover {
+        border-color: rgba(255,255,255,0.15);
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    /* AI Terminal Box */
+    .ai-terminal {
+        background: linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(11, 17, 32, 0.95));
+        border: 1px solid var(--accent-purple);
+        border-radius: 6px;
+        padding: 16px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.9rem;
+        color: var(--accent-purple);
+        position: relative;
+        overflow: hidden;
+        min-height: 80px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 0 15px rgba(192, 132, 252, 0.1);
+    }
+    
+    .ai-terminal::before {
+        content: "AI_MARKET_PULSE_V2.0";
+        position: absolute;
+        top: 4px;
+        right: 8px;
+        font-size: 0.6rem;
+        opacity: 0.5;
+        letter-spacing: 1px;
+    }
+
+    .typing-cursor::after {
+        content: '▋';
+        animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* KPI Badge */
+    .kpi-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--panel-border);
+    }
+    .kpi-badge.up { color: var(--accent-green); background: rgba(74, 222, 128, 0.1); border-color: rgba(74, 222, 128, 0.2); }
+    .kpi-badge.down { color: var(--accent-red); background: rgba(248, 113, 113, 0.1); border-color: rgba(248, 113, 113, 0.2); }
+
+    /* Sidebar Navigation */
+    .nav-sidebar {
+        background: rgba(15, 23, 42, 0.6);
+        border-right: 1px solid var(--panel-border);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        padding-top: 20px;
+    }
+
+    .nav-item-custom {
+        padding: 12px 20px;
+        cursor: pointer;
+        color: var(--text-secondary);
+        border-left: 2px solid transparent;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .nav-item-custom:hover {
+        color: var(--text-primary);
+        background: rgba(255,255,255,0.02);
+    }
+    
+    .nav-item-custom.active {
+        color: var(--accent-blue);
+        background: rgba(56, 189, 248, 0.08);
+        border-left-color: var(--accent-blue);
+    }
+    
+    .nav-header {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.4);
+        padding: 20px 20px 8px;
+        letter-spacing: 1px;
+        font-weight: 700;
+    }
+
+    /* Tab Content - Chart Stage */
+    .chart-section { display: none; animation: fadeIn 0.4s ease; }
+    .chart-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+</style>
+
+<!-- HEADER AREA with AI Pulse -->
+<div class="row mb-4 align-items-center">
+    <div class="col-md-5">
+        <h2 class="fw-bold mb-1">{% trans "Macro Insights Pro" %} <span style="font-size:0.5em; vertical-align:top; color:var(--accent-blue);">BETA</span></h2>
+        <p class="text-muted-custom mb-0">{% trans "Advanced Macroeconomic Intelligence Platform" %}</p>
+    </div>
+    <div class="col-md-7">
+        <!-- MACRO MATRIX -->
+        {% if macro_matrix %}
+        <div class="glass-panel p-0" style="overflow: hidden; border: 1px solid var(--panel-border);">
+            <div style="background: rgba(15, 23, 42, 0.4); padding: 10px 15px; border-bottom: 1px solid var(--panel-border); font-size: 0.8rem; font-weight: 700; color: var(--accent-blue); letter-spacing: 1px;">
+                VESTIQ MACRO MATRIX
+            </div>
+            <table class="table table-borderless mb-0" style="color: #ffffff; font-size: 0.85rem; background-color: transparent;">
+                <thead>
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.75rem;">
+                        <th class="ps-3 bg-transparent" style="color: #ffffff !important;">CATEGORY</th>
+                        <th class="bg-transparent" style="color: #ffffff !important;">INDICATOR</th>
+                        <th class="bg-transparent" style="color: #ffffff !important;">SIGNAL</th>
+                        <th class="bg-transparent" style="color: #ffffff !important;">SUMMARY</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in macro_matrix %}
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <td class="ps-3 py-3 fw-bold bg-transparent" style="color: #ffffff;">{{ item.category }}</td>
+                        <td class="py-3 bg-transparent" style="color: #e2e8f0;">{{ item.indicator }}</td>
+                        <td class="py-3 bg-transparent">
+                            {% if item.signal == 'BULLISH' %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2">
+                                    <i class="bi bi-arrow-up-circle-fill me-1"></i> {{ item.status }}
+                                </span>
+                            {% elif item.signal == 'BEARISH' %}
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2">
+                                    <i class="bi bi-exclamation-triangle-fill me-1"></i> {{ item.status }}
+                                </span>
+                            {% else %}
+                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2">
+                                    <i class="bi bi-dash-circle-fill me-1"></i> {{ item.status }}
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3 bg-transparent" style="color: #f1f5f9; font-style: italic;">{{ item.summary }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="ai-terminal">
+            <span class="typing-cursor" id="ai-text">{% trans "Initializing Vestiq Market Intelligence..." %}</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- TOP KPI ROW: Market Breadth & Correlations -->
+<div class="row g-3 mb-4">
+    <!-- Breadth -->
+    <div class="col-md-3">
+        <div class="glass-panel d-flex flex-column justify-content-center">
+            <div class="text-muted-custom text-uppercase fs-7 mb-1">{% trans "Sector Breadth" %}</div>
+            <div class="d-flex align-items-baseline gap-2">
+                <span class="fs-3 fw-bold display-number {% if breadth_score > 50 %}text-success{% else %}text-danger{% endif %}">{{ breadth_score }}%</span>
+                <span class="small text-muted-custom">{% trans "Sectors Advancing" %}</span>
+            </div>
+            <div class="progress mt-2" style="height: 4px; background: rgba(255,255,255,0.1);">
+                <div class="progress-bar {% if breadth_score > 50 %}bg-success{% else %}bg-danger{% endif %}" role="progressbar" style="width: {{ breadth_score }}%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pulse: VIX -->
+    <div class="col-md-3">
+        <div class="glass-panel">
+            <div class="d-flex justify-content-between">
+                <div class="text-muted-custom text-uppercase fs-7">VIX Index</div>
+                {% for p in pulse_data %}{% if p.id == 'vix' %}
+                <span class="kpi-badge {% if p.change_val < 0 %}up{% else %}down{% endif %}">{{ p.change }}</span>
+                {% endif %}{% endfor %}
+            </div>
+            {% for p in pulse_data %}{% if p.id == 'vix' %}
+            <div class="fs-3 fw-bold display-number mt-1">{{ p.value }}</div>
+            <div class="small text-muted-custom">{% trans "Market Volatility" %}</div>
+            {% endif %}{% endfor %}
+        </div>
+    </div>
+
+    <!-- Pulse: 10Y Yield -->
+    <div class="col-md-3">
+        <div class="glass-panel">
+            <div class="d-flex justify-content-between">
+                <div class="text-muted-custom text-uppercase fs-7">10Y Yield</div>
+                {% for p in pulse_data %}{% if p.id == 'yield10' %}
+                <span class="kpi-badge {% if p.change_val < 0 %}up{% else %}down{% endif %}">{{ p.change }}</span>
+                {% endif %}{% endfor %}
+            </div>
+             {% for p in pulse_data %}{% if p.id == 'yield10' %}
+            <div class="fs-3 fw-bold display-number mt-1 text-warning">{{ p.value }}%</div>
+            <div class="small text-muted-custom">{% trans "Risk Free Rate" %}</div>
+            {% endif %}{% endfor %}
+        </div>
+    </div>
+    
+    <!-- Correlation (Asset vs Gold) -->
+    <div class="col-md-3">
+        <div class="glass-panel">
+            <div class="text-muted-custom text-uppercase fs-7 mb-2">{% trans "Cross-Asset Correlations (SPY)" %}</div>
+            <div class="d-flex flex-column gap-1 small">
+                {% for c in correlations %}
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted-custom">{{ c.ticker }}</span>
+                    <span class="fw-bold {% if c.corr > 0.5 %}text-warning{% elif c.corr < -0.5 %}text-info{% else %}text-secondary{% endif %}">{{ c.corr }}</span>
+                </div>
+                {% empty %}
+                <span class="text-muted">{% trans "Data Loading..." %}</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN CONTENT AREA -->
+<div class="glass-panel p-0 overflow-hidden" style="min-height: 600px;">
+    <div class="row g-0 h-100">
+        
+        <!-- SIDEBAR -->
+        <div class="col-lg-2 border-end border-secondary border-opacity-10">
+            <div class="nav-sidebar">
+                <div class="nav-header">{% trans "Monetary Policy" %}</div>
+                <div class="nav-item-custom active" onclick="switchTab('fed_battle', this)"><i class="bi bi-bank2"></i> {% trans "Fed Battle" %}</div>
+                <div class="nav-item-custom" onclick="switchTab('inflation_deep', this)"><i class="bi bi-graph-up-arrow"></i> {% trans "Inflation Deep" %}</div>
+                <div class="nav-item-custom" onclick="switchTab('liquidity', this)"><i class="bi bi-cash-coin"></i> {% trans "Liquidity" %}</div>
+                
+                <div class="nav-header">{% trans "Cycle Indicators" %}</div>
+                <div class="nav-item-custom" onclick="switchTab('recession', this)"><i class="bi bi-exclamation-triangle"></i> {% trans "Recession Watch" %}</div>
+                <div class="nav-item-custom" onclick="switchTab('housing', this)"><i class="bi bi-house"></i> {% trans "Housing" %}</div>
+                
+                <div class="nav-header">{% trans "Real Economy" %}</div>
+                <div class="nav-item-custom" onclick="switchTab('labor_demand', this)"><i class="bi bi-people"></i> {% trans "Labor & Wages" %}</div>
+                <div class="nav-item-custom" onclick="switchTab('production', this)"><i class="bi bi-gear"></i> {% trans "Production" %}</div>
+                <div class="nav-item-custom" onclick="switchTab('consumer_health', this)"><i class="bi bi-cart"></i> {% trans "Consumer" %}</div>
+            </div>
+        </div>
+
+        <!-- CHART STAGE -->
+        <div class="col-lg-10 p-4">
+            
+            <!-- TEMPLATE FOR SECTIONS -->
+            {% for key, data in charts.items %}
+            <div id="section-{{ key }}" class="chart-section {% if key == 'fed_battle' %}active{% endif %}">
+                
+                <!-- Section Header with KPIs -->
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <h3 class="fw-bold mb-1">{{ data.series_a_name }} vs {{ data.series_b_name }}</h3>
+                        <div class="d-flex gap-4 mt-3">
+                            <!-- KPI A -->
+                            <div>
+                                <div class="text-muted-custom small text-uppercase mb-1">{{ data.series_a_name }}</div>
+                                <div class="d-flex align-items-baseline gap-2">
+                                    <span class="fs-4 fw-bold display-number">{{ data.kpi_a.current|floatformat:2 }}</span>
+                                    {% if data.kpi_a.change != 0 %}
+                                    <span class="kpi-badge {% if data.kpi_a.change > 0 %}up{% else %}down{% endif %}">
+                                        {% if data.kpi_a.change > 0 %}+{% endif %}{{ data.kpi_a.pct_change|floatformat:1 }}%
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <!-- KPI B -->
+                            <div>
+                                <div class="text-muted-custom small text-uppercase mb-1">{{ data.series_b_name }}</div>
+                                <div class="d-flex align-items-baseline gap-2">
+                                    <span class="fs-4 fw-bold display-number">{{ data.kpi_b.current|floatformat:2 }}</span>
+                                     {% if data.kpi_b.change != 0 %}
+                                    <span class="kpi-badge {% if data.kpi_b.change > 0 %}up{% else %}down{% endif %}">
+                                        {% if data.kpi_b.change > 0 %}+{% endif %}{{ data.kpi_b.pct_change|floatformat:1 }}%
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart Container -->
+                <div id="chart-{{ key }}" style="height: 450px; width: 100%;"></div>
+
+                <!-- Interpretation & Analysis -->
+                {% if data.explanation %}
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="glass-panel p-3 h-100">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-info-circle text-primary-custom me-2"></i>
+                                <h5 class="mb-0 fs-6 text-uppercase fw-bold text-primary-custom" style="letter-spacing:1px;">Why It Matters</h5>
+                            </div>
+                            <ul class="mb-0 ps-3 small text-muted-custom" style="line-height: 1.6;">
+                                {% for point in data.explanation.importance %}
+                                <li class="mb-1">{{ point }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="glass-panel p-3 h-100">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-lightbulb text-warning me-2"></i>
+                                <h5 class="mb-0 fs-6 text-uppercase fw-bold text-warning" style="letter-spacing:1px;">How to Interpret</h5>
+                            </div>
+                            <ul class="mb-0 ps-3 small text-muted-custom" style="line-height: 1.6;">
+                                {% for point in data.explanation.interpretation %}
+                                <li class="mb-1">{{ point }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+
+<!-- DATA PAYLOADS -->
+{{ charts.fed_battle|json_script:"data-fed" }}
+{{ charts.inflation_deep|json_script:"data-inflation" }} <!-- Fixed ID match -->
+{{ charts.recession|json_script:"data-recession" }}
+{{ charts.production|json_script:"data-production" }}
+{{ charts.housing|json_script:"data-housing" }}
+{{ charts.labor_demand|json_script:"data-labor" }}
+{{ charts.consumer_health|json_script:"data-consumer" }}
+{{ charts.liquidity|json_script:"data-liquidity" }}
+
+<!-- AI Commentary Data -->
+{{ ai_commentary|json_script:"ai-data" }}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const chartInstances = {};
+    const aiMessages = JSON.parse(document.getElementById('ai-data').textContent || '[]');
+
+    // --- AI Terminal Typer ---
+    function typeWriter(text, elementId, speed = 30) {
+        let i = 0;
+        const target = document.getElementById(elementId);
+        target.innerHTML = '';
+        function type() {
+            if (i < text.length) {
+                target.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(type, speed);
+            }
+        }
+        type();
+    }
+
+    if (aiMessages.length > 0) {
+        let msgIndex = 0;
+        function cycleMessages() {
+            typeWriter(aiMessages[msgIndex], 'ai-text');
+            msgIndex = (msgIndex + 1) % aiMessages.length;
+            setTimeout(cycleMessages, 8000); // Change every 8s
+        }
+        setTimeout(cycleMessages, 1000);
+    }
+
+    // --- Tab Switching ---
+    function switchTab(key, navEl) {
+        document.querySelectorAll('.nav-item-custom').forEach(el => el.classList.remove('active'));
+        navEl.classList.add('active');
+        document.querySelectorAll('.chart-section').forEach(el => el.classList.remove('active'));
+
+        const target = document.getElementById('section-' + key);
+        if(target) {
+            target.classList.add('active');
+            const cid = 'chart-' + key;
+            if(chartInstances[cid]) chartInstances[cid].resize();
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        
+        // --- PRO THEME CONFIG ---
+        const proTheme = {
+            textStyle: { fontFamily: 'Inter, sans-serif', fontSize: 12 },
+            grid: { top: 50, right: 30, bottom: 40, left: 50, containLabel: true, borderColor: 'rgba(255,255,255,0.1)' },
+            tooltip: { 
+                trigger: 'axis', 
+                backgroundColor: 'rgba(15, 23, 42, 0.95)', 
+                borderColor: 'rgba(255,255,255,0.1)', 
+                borderWidth: 1, 
+                padding: [12, 16],
+                textStyle: { color: '#f8fafc', fontSize: 13 },
+                formatter: function (params) {
+                    let res = `<div style="font-weight:600; margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:4px;">${params[0].name}</div>`;
+                    params.forEach(p => {
+                        const color = p.color?.colorStops ? p.color.colorStops[0].color : p.color; 
+                        res += `<div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:4px;">
+                                    <span style="font-size:12px; color:rgba(255,255,255,0.7);"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${color};margin-right:6px;"></span>${p.seriesName}</span>
+                                    <span style="font-weight:700; color:#fff;">${p.value.toLocaleString()}</span>
+                                </div>`;
+                    });
+                    return res;
+                }
+            }
+        };
+
+        // --- GRADIENTS ---
+        const gradCyan = { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{offset: 0, color: 'rgba(6, 182, 212, 0.5)'}, {offset: 1, color: 'rgba(6, 182, 212, 0.0)'}] };
+        const gradViolet = { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{offset: 0, color: 'rgba(139, 92, 246, 0.5)'}, {offset: 1, color: 'rgba(139, 92, 246, 0.0)'}] };
+        const gradEmerald = { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{offset: 0, color: 'rgba(16, 185, 129, 0.5)'}, {offset: 1, color: 'rgba(16, 185, 129, 0.0)'}] };
+        const gradAmber = { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{offset: 0, color: 'rgba(245, 158, 11, 0.5)'}, {offset: 1, color: 'rgba(245, 158, 11, 0.0)'}] };
+
+        function getChartData(id) { try { return JSON.parse(document.getElementById(id).textContent); } catch(e) { return null; } }
+
+        function init(key, scriptId, colorTheme = 'cyan') {
+            const data = getChartData(scriptId);
+            const dom = document.getElementById('chart-' + key);
+            if(!dom) return;
+
+            // Handle No Data
+            if(!data || !data.has_data) {
+                dom.innerHTML = `<div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+                                    <i class="bi bi-exclamation-circle fs-2 mb-2"></i>
+                                    <span>{% trans "Data Unavailable" %}</span>
+                                 </div>`;
+                return;
+            }
+
+            const chart = echarts.init(dom);
+            
+            // Choose Theme Colors
+            let mainColor = '#06b6d4'; // Cyan default
+            let mainGrad = gradCyan;
+            let secColor = '#94a3b8'; // Slate for secondary
+
+            if (colorTheme === 'violet') { mainColor = '#8b5cf6'; mainGrad = gradViolet; }
+            if (colorTheme === 'emerald') { mainColor = '#10b981'; mainGrad = gradEmerald; }
+            if (colorTheme === 'amber') { mainColor = '#f59e0b'; mainGrad = gradAmber; }
+
+            const series = [];
+            
+            // Series A (Main Area)
+            series.push({
+                 name: data.series_a_name, 
+                 data: data.series_a_data, 
+                 type: 'line', 
+                 smooth: true, 
+                 showSymbol: false,
+                 symbolSize: 6,
+                 itemStyle: { color: mainColor },
+                 lineStyle: { width: 3, color: mainColor }, 
+                 areaStyle: { color: mainGrad }
+            });
+
+             // Series B (Dashed Comparison)
+            series.push({
+                 name: data.series_b_name, 
+                 data: data.series_b_data, 
+                 type: 'line', 
+                 smooth: true, 
+                 showSymbol: false,
+                 itemStyle: { color: secColor },
+                 lineStyle: { width: 3, color: secColor, type: 'dashed' }
+            });
+
+            // Series C (Optional Extra)
+             if(data.series_c_data) {
+                series.push({
+                     name: data.series_c_name, 
+                     data: data.series_c_data, 
+                     type: 'line', 
+                     smooth: true, 
+                     showSymbol: false,
+                     itemStyle: { color: '#f43f5e' },
+                     lineStyle: { width: 3, color: '#f43f5e' } // Rose
+                });
+            }
+
+             chart.setOption({
+                ...proTheme,
+                legend: { 
+                    textStyle: { color: '#e0e0e0', fontSize: 13, fontWeight: 'bold' }, 
+                    top: 0,
+                    icon: 'circle',
+                    itemGap: 20
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: { 
+                    type: 'category', 
+                    data: data.dates, 
+                    axisLine: { lineStyle: { color: '#334155' } }, 
+                    axisLabel: { 
+                        show: true, 
+                        color: '#64748b',
+                        formatter: function(value) { return value.substring(0, 4); }, // Just show Year? Or Date?
+                        interval: 'auto'
+                    },
+                    boundaryGap: false
+                },
+                yAxis: { 
+                    type: 'value', 
+                    splitLine: { lineStyle: { color: 'rgba(255,255,255,0.03)' } },
+                    axisLabel: { color: '#64748b' }
+                },
+                series: series
+            });
+            chartInstances['chart-' + key] = chart;
+        }
+
+        // Initialize Charts with Themes
+        init('fed_battle', 'data-fed', 'cyan');
+        init('recession', 'data-recession', 'amber'); // Warning signals -> Amber
+        init('liquidity', 'data-liquidity', 'violet'); // Money -> Violet
+        init('inflation_deep', 'data-inflation', 'emerald'); // Inflation -> Emerald/Red
+        init('housing', 'data-housing', 'cyan');
+        init('labor_demand', 'data-labor', 'violet');
+        init('consumer_health', 'data-consumer', 'amber');
+        init('production', 'data-production', 'emerald');
+
+        window.addEventListener('resize', () => { Object.values(chartInstances).forEach(c => c.resize()); });
+    });
+</script>
+{% endblock %}

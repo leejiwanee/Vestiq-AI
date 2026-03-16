@@ -1,0 +1,251 @@
+#set page(
+  paper: "a4",
+  margin: (x: 1.5cm, y: 1.5cm),
+)
+#set text(
+  font: ("NanumGothic", "Helvetica", "Arial"),
+  size: 10pt,
+  lang: "ko",
+  fill: rgb("#334155") 
+)
+
+// --- Design System ---
+#let bg_slate = rgb("#f8fafc")
+#let border_slate = rgb("#e2e8f0")
+#let text_slate = rgb("#475569")
+#let text_dark = rgb("#0f172a")
+
+#let color_primary = rgb("#2563eb") // Blue
+#let color_success = rgb("#16a34a") // Green
+#let color_danger = rgb("#dc2626")  // Red
+#let color_accent = rgb("#8b5cf6")  // Violet
+
+#let card(content) = block(
+  fill: bg_slate,
+  stroke: border_slate,
+  inset: 1em,
+  radius: 6pt,
+  width: 100%,
+  content
+)
+
+#let badge(content, bg_color, text_color) = box(
+  fill: bg_color,
+  inset: (x: 6pt, y: 3pt),
+  radius: 4pt,
+  text(fill: text_color, size: 8pt, weight: "bold", content)
+)
+
+// --- Header ---
+#grid(
+  columns: (1fr, auto),
+  align(horizon)[
+    #text(size: 28pt, weight: "bold", fill: text_dark)[{{ symbol }}]
+    #h(0.5em)
+    #text(size: 14pt, fill: text_slate)[{{ company_name }}] \
+    #v(0.3em)
+    #text(size: 9pt, fill: text_slate)[AI Report | Generated: {{ generated_at|date:"Y-m-d H:i" }}]
+  ],
+  align(horizon + right)[
+    #text(size: 16pt, weight: "bold", fill: color_primary)[Vestiq AI]
+  ]
+)
+#line(length: 100%, stroke: 2pt + text_dark)
+#v(1em)
+
+// --- Market Snapshot ---
+#grid(
+  columns: (1fr, 1fr, 1fr),
+  gutter: 1em,
+  card[
+    #align(center)[
+      #text(size: 9pt, fill: text_slate)[Close Price] \
+      #v(0.2em)
+      #text(size: 16pt, weight: "bold", fill: text_dark)[{{ stats.close|floatformat:2 }}]
+    ]
+  ],
+  card[
+    #align(center)[
+      #text(size: 9pt, fill: text_slate)[Price Change] \
+      #v(0.2em)
+      #let pct = {{ stats.price_change_pct|default:0 }}
+      #text(size: 16pt, weight: "bold", fill: if pct > 0 { color_success } else if pct < 0 { color_danger } else { text_dark })[
+        #if pct > 0 { "+" }#pct%
+      ]
+    ]
+  ],
+  card[
+    #align(center)[
+      #text(size: 9pt, fill: text_slate)[Volume Change] \
+      #v(0.2em)
+      #let vol = {{ stats.vol_change_pct|default:0 }}
+      #text(size: 16pt, weight: "bold", fill: if vol > 0 { color_success } else if vol < 0 { color_danger } else { text_dark })[
+         #if vol > 0 { "+" }#vol%
+      ]
+    ]
+  ]
+)
+#v(1.5em)
+
+// --- Fair Value Hero ---
+#if "{{ ai_report.fair_value.price }}" != "" [
+  #block(
+    fill: rgb("#eff6ff"), // Light Blue Bg
+    stroke: (left: 4pt + color_primary),
+    inset: 1.5em,
+    width: 100%,
+    radius: 4pt
+  )[
+     #grid(
+       columns: (2fr, 3fr),
+       gutter: 1em,
+       [
+         #text(size: 11pt, weight: "bold", fill: color_primary)[GEMINI FAIR VALUE] \
+         #v(0.5em)
+         #text(size: 32pt, weight: "bold", fill: text_dark)[{{ ai_report.fair_value.price|floatformat:2 }}] \
+         #v(0.2em)
+         #badge(
+           "{{ ai_report.fair_value.label }}", 
+           rgb("#dbeafe"), 
+           color_primary
+         )
+         #h(0.5em)
+         #text(size: 10pt)[(Upside: {{ ai_report.fair_value.diff_pct|floatformat:1 }}%)]
+       ],
+       align(horizon)[
+         #text(style: "italic", size: 10pt, fill: text_slate)[
+           "{{ ai_report.fair_value.rationale }}"
+         ]
+       ]
+     )
+  ]
+  #v(2em)
+]
+
+// --- Overview ---
+#if "{{ ai_report.overview }}" != "" [
+  #text(size: 14pt, weight: "bold", fill: text_dark)[📌 Company Overview]
+  #v(0.5em)
+  {{ ai_report.overview }}
+  #v(2em)
+]
+
+// --- Financial Grid (2x2) ---
+#text(size: 14pt, weight: "bold", fill: text_dark)[💰 Financial Integrity]
+#v(0.8em)
+#grid(
+  columns: (1fr, 1fr),
+  rows: (auto, auto),
+  gutter: 1em,
+  
+  // 1. Verdict
+  card[
+    #text(weight: "bold", fill: color_accent)[⚖️ AI Verdict]
+    #line(length: 100%, stroke: 0.5pt + border_slate)
+    #if "{{ ai_report.financial_analysis.verdict.title }}" != "" [
+      #strong[{{ ai_report.financial_analysis.verdict.title }}] \
+    ]
+    #text(size: 9pt)[{{ ai_report.financial_analysis.verdict.content }}]
+  ],
+
+  // 2. Valuation
+  card[
+    #text(weight: "bold", fill: color_success)[💵 Valuation]
+    #line(length: 100%, stroke: 0.5pt + border_slate)
+    #grid(
+      columns: (1fr, 1fr),
+      [#text(size:8pt)[P/E Ratio] \ #strong[{{ ai_report.financial_analysis.valuation.pe_ratio|default:"-" }}]],
+      [#text(size:8pt)[P/B Ratio] \ #strong[{{ ai_report.financial_analysis.valuation.pb_ratio|default:"-" }}]]
+    )
+    #v(0.5em)
+    #text(size: 9pt)[{{ ai_report.financial_analysis.valuation.assessment }}]
+  ],
+
+  // 3. Earnings
+  card[
+    #text(weight: "bold", fill: rgb("#d97706"))[📈 Growth & Earnings]
+    #line(length: 100%, stroke: 0.5pt + border_slate)
+    #text(size:8pt)[Rev: {{ ai_report.financial_analysis.earnings.revenue|default:"-" }} | EPS: {{ ai_report.financial_analysis.earnings.eps|default:"-" }}]
+    #v(0.3em)
+    #text(size: 9pt)[{{ ai_report.financial_analysis.earnings.recent_earnings_summary }}]
+  ],
+
+  // 4. Health
+  card[
+    #text(weight: "bold", fill: rgb("#059669"))[🛡️ Financial Health]
+    #line(length: 100%, stroke: 0.5pt + border_slate)
+    #text(size:8pt)[Cash: {{ ai_report.financial_analysis.health.cash|default:"-" }}] \
+    #text(size:8pt)[Debt/Eq: {{ ai_report.financial_analysis.health.debt_to_equity|default:"-" }}]
+  ]
+)
+#v(2em)
+
+// --- Positives & Negatives (Columns) ---
+#grid(
+  columns: (1fr, 1fr),
+  gutter: 1.5em,
+  [
+    #text(size: 13pt, weight: "bold", fill: color_success)[✅ Strength & Opportunities]
+    #v(0.5em)
+    {% for item in ai_report.positives %}
+      #block(inset: (left: 0.5em), stroke: (left: 2pt + color_success))[
+        #text(size: 9pt)[{{ item }}]
+      ]
+      #v(0.5em)
+    {% endfor %}
+  ],
+  [
+    #text(size: 13pt, weight: "bold", fill: color_danger)[⚠ Risks & Weaknesses]
+    #v(0.5em)
+    {% for item in ai_report.negatives %}
+      #block(inset: (left: 0.5em), stroke: (left: 2pt + color_danger))[
+        #text(size: 9pt)[{{ item }}]
+      ]
+      #v(0.5em)
+    {% endfor %}
+  ]
+)
+#v(2em)
+
+// --- Bottom Grid (Checklist & Tech) ---
+#grid(
+  columns: (1fr, 1fr),
+  gutter: 1.5em,
+  [
+      #text(size: 12pt, weight: "bold", fill: text_dark)[📝 Investment Checklist]
+      #v(0.5em)
+      #list(
+        {% for item in ai_report.checklist %}
+          [#text(size:9pt)[{{ item }}]],
+        {% empty %}
+          [No checklist items.],
+        {% endfor %}
+      )
+  ],
+  [
+      #text(size: 12pt, weight: "bold", fill: color_primary)[📉 Technical Commentary]
+      #v(0.5em)
+      #list(
+        {% for item in ai_report.technical %}
+           [#text(size:9pt)[{{ item }}]],
+        {% empty %}
+           [No technical data.],
+        {% endfor %}
+      )
+  ]
+)
+#v(2em)
+
+// --- Conclusion (Full Width) ---
+#if "{{ ai_report.conclusion }}" != "" [
+  #block(
+    fill: rgb("#f3f4f6"),
+    stroke: (top: 2pt + text_dark),
+    inset: 1.5em,
+    width: 100%,
+  )[
+    #text(size: 14pt, weight: "bold", fill: text_dark)[💡 Final Conclusion]
+    #v(0.5em)
+    #text(size: 10pt)[{{ ai_report.conclusion }}]
+  ]
+]

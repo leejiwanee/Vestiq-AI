@@ -1,0 +1,172 @@
+{
+  "en": {
+    "title": "Commodities Shine, Tech Stumbles as Political Winds Stir Volatility",
+    "summary": "Equity markets presented a mixed bag today; while commodities enjoyed a robust rally and small caps showed resilience, tech shares struggled under pressure. The VIX ticked up, signaling investor unease as political headlines introduce a fresh layer of uncertainty into the corporate landscape.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6969.01",
+        "comment": "Slightly down, reflecting broader market caution."
+      },
+      {
+        "label": "Nasdaq Composite",
+        "value": "23685.12",
+        "comment": "Tech underperformance continues as growth stocks face headwinds."
+      },
+      {
+        "label": "Russell 2000",
+        "value": "2654.78",
+        "comment": "Small caps show surprising strength amidst market jitters."
+      },
+      {
+        "label": "Bitcoin",
+        "value": "82312.00",
+        "comment": "Significant crypto correction, mirroring broader risk-off sentiment in speculative assets."
+      }
+    ],
+    "macro": {
+      "title": "Macro Vibes",
+      "points": [
+        "<b>Political Uncertainty Fuels VIX</b>: The VIX, our fear gauge, saw a notable rise (+3.24%). This uptick in volatility can be directly linked to headlines regarding 'Trump's ICE tactics forcing CEOs to choose between staying silent and risking White House backlash,' injecting political and regulatory risk into corporate decision-making and fostering broader market apprehension.",
+        "<b>Commodity Rally Heats Up</b>: Gold (+1.05%), Silver (+1.09%), Copper (+3.67%), and Crude Oil (+2.39%) all posted significant gains. This broad-based surge in commodities suggests potential inflationary pressures or increased demand, possibly hinting at a flight to tangible assets.",
+        "<b>Bond Yields Take a Breather</b>: US Treasury yields across the curve, including the 10-year (^TNX -0.56%) and 30-year (^TYX -0.12%), moved lower. This could indicate a defensive shift by investors seeking safer havens, or perhaps a revised outlook on future interest rate trajectories amidst market uncertainty.",
+        "<b>Dollar Strength Emerges</b>: The US Dollar Index (DXY) inched up (+0.07%), leading to a weaker Euro (EURUSD -0.53%) and a stronger Yen (JPY +0.50%). This signals a flight to the perceived safety of the dollar, aligning with increased market volatility and a cautious global sentiment."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "Energy",
+        "change": "+2.39% (Crude Oil)",
+        "comment": "Fueled by surging crude oil prices."
+      },
+      {
+        "name": "Materials",
+        "change": "+3.67% (Copper)",
+        "comment": "Boosted by strong gains in industrial and precious metals."
+      },
+      {
+        "name": "Precious Metals",
+        "change": "+1.05% (Gold)",
+        "comment": "A classic safe-haven play amidst rising uncertainty."
+      },
+      {
+        "name": "Technology",
+        "change": "-0.72% (Nasdaq)",
+        "comment": "Under pressure as higher growth and speculative assets face selling."
+      },
+      {
+        "name": "Growth Stocks",
+        "change": "Mixed",
+        "comment": "Broader growth-oriented equities felt the pinch of rising volatility."
+      },
+      {
+        "name": "Cryptocurrencies (Asset Class)",
+        "change": "-7.71% (Bitcoin)",
+        "comment": "Significant correction, reflecting a broader risk-off mood."
+      }
+    ],
+    "themes": [
+      {
+        "name": "Commodity Supercycle Chatter",
+        "change": "Up",
+        "comment": "Industrial and precious metals, alongside oil, show strong upward momentum."
+      },
+      {
+        "name": "Tech/Crypto Risk-Off",
+        "change": "Down",
+        "comment": "Nasdaq's dip combined with a sharp crypto sell-off indicates caution in speculative assets."
+      },
+      {
+        "name": "Political Risk Premium",
+        "change": "Up",
+        "comment": "Rising VIX and specific political headlines highlight increased corporate and market uncertainty."
+      }
+    ]
+  },
+  "ko": {
+    "title": "정치적 바람이 변동성을 흔들며, 원자재는 빛나고 기술주는 휘청",
+    "summary": "오늘 주식 시장은 엇갈린 모습을 보였습니다. 원자재가 강세를 보이고 소형주가 회복력을 보여준 반면, 기술주는 압력을 받으며 고전했습니다. VIX 지수가 상승하여, 정치적 헤드라인이 기업 환경에 새로운 불확실성을 더하면서 투자자들의 불안감을 나타냈습니다.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6969.01",
+        "comment": "시장의 전반적인 신중함을 반영하며 소폭 하락했습니다."
+      },
+      {
+        "label": "나스닥 종합",
+        "value": "23685.12",
+        "comment": "성장주가 역풍에 직면하면서 기술주 약세가 지속됩니다."
+      },
+      {
+        "label": "러셀 2000",
+        "value": "2654.78",
+        "comment": "시장 혼란 속에서도 소형주가 놀라운 강세를 보였습니다."
+      },
+      {
+        "label": "비트코인",
+        "value": "82312.00",
+        "comment": "투기 자산의 광범위한 위험 회피 심리를 반영하며 암호화폐가 크게 조정되었습니다."
+      }
+    ],
+    "macro": {
+      "title": "매크로 경제",
+      "points": [
+        "<b>정치적 불확실성이 VIX를 자극</b>: 공포 지표인 VIX가 눈에 띄게 상승(+3.24%)했습니다. 이러한 변동성 증가는 '트럼프의 ICE 전술이 CEO들에게 침묵하거나 백악관의 반발 위험을 감수하도록 강요'한다는 헤드라인과 직접적으로 연결될 수 있으며, 기업 의사 결정에 정치적 및 규제적 위험을 주입하고 광범위한 시장 불안을 야기했습니다.",
+        "<b>원자재 랠리 심화</b>: 금(+1.05%), 은(+1.09%), 구리(+3.67%), 원유(+2.39%) 모두 상당한 상승세를 보였습니다. 이러한 광범위한 원자재 급등은 잠재적인 인플레이션 압력 또는 수요 증가를 시사하며, 실물 자산으로의 이동 가능성을 암시합니다.",
+        "<b>채권 금리 하락</b>: 10년물(^TNX -0.56%) 및 30년물(^TYX -0.12%) 국채 금리를 포함한 모든 만기의 미국 국채 금리가 하락했습니다. 이는 투자자들이 더 안전한 피난처를 찾거나, 시장 불확실성 속에서 향후 금리 경로에 대한 전망이 수정되었음을 나타낼 수 있습니다.",
+        "<b>달러 강세 부상</b>: 미국 달러 지수(DXY)가 소폭 상승(+0.07%)하여 유로화 약세(EURUSD -0.53%)와 엔화 강세(JPY +0.50%)로 이어졌습니다. 이는 시장 변동성 증가 및 신중한 글로벌 정서와 맞물려 달러의 안정성으로 자금이 유입되었음을 시사합니다."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "에너지",
+        "change": "+2.39% (원유)",
+        "comment": "급등하는 원유 가격에 힘입었습니다."
+      },
+      {
+        "name": "원자재",
+        "change": "+3.67% (구리)",
+        "comment": "산업용 및 귀금속의 강한 상승세로 활기를 띠었습니다."
+      },
+      {
+        "name": "귀금속",
+        "change": "+1.05% (금)",
+        "comment": "불확실성 증가 속에서 고전적인 안전자산 선호 현상입니다."
+      },
+      {
+        "name": "기술주",
+        "change": "-0.72% (나스닥)",
+        "comment": "고성장 및 투기성 자산 매도세에 압력을 받았습니다."
+      },
+      {
+        "name": "성장주",
+        "change": "혼조세",
+        "comment": "광범위한 성장 지향 주식들이 변동성 증가의 영향을 받았습니다."
+      },
+      {
+        "name": "암호화폐 (자산군)",
+        "change": "-7.71% (비트코인)",
+        "comment": "광범위한 위험 회피 분위기를 반영하며 상당한 조정을 겪었습니다."
+      }
+    ],
+    "themes": [
+      {
+        "name": "원자재 슈퍼사이클",
+        "change": "상승",
+        "comment": "산업용 및 귀금속, 원유가 강한 상승 모멘텀을 보였습니다."
+      },
+      {
+        "name": "기술주/암호화폐 위험 회피",
+        "change": "하락",
+        "comment": "나스닥 하락과 암호화폐 급락은 투기성 자산에 대한 신중함을 나타냅니다."
+      },
+      {
+        "name": "정치적 위험 프리미엄",
+        "change": "상승",
+        "comment": "상승하는 VIX와 특정 정치적 헤드라인은 기업 및 시장 불확실성 증가를 강조합니다."
+      }
+    ]
+  },
+  "last_updated": "2026-01-29 09:06 PM EST",
+  "last_updated_ts": "2026-01-29T21:06:46.312211-05:00"
+}

@@ -1,0 +1,140 @@
+{
+  "en": {
+    "title": "Zen and the Art of Zero Percent: Markets Hold Their Breath While Crypto Soars",
+    "summary": "US markets are locked in a surprisingly tranquil zero-percent dance today, keeping major indices perfectly flat. Meanwhile, Europe saw some upside, Asian markets were mixed, and crypto assets went on a spectacular rally. Corporate headlines paint a picture of selective struggles in retail and real estate, but also niche resilience in luxury autos.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6848.30 (+0.00%)",
+        "comment": "The benchmark is perfectly still, a rare moment of market pause."
+      },
+      {
+        "label": "Nasdaq",
+        "value": "23221.95 (+0.00%)",
+        "comment": "Tech-heavy index mirrors the broader market's quietude."
+      },
+      {
+        "label": "Russell 2000",
+        "value": "2491.89 (+0.00%)",
+        "comment": "Small caps also taking a breather, showing no directional cues."
+      },
+      {
+        "label": "Bitcoin",
+        "value": "90798.80 (+2.33%)",
+        "comment": "The digital asset continues its ascent, outshining traditional markets."
+      }
+    ],
+    "macro": {
+      "title": "Macro Vibes",
+      "points": [
+        "<b>Housing Affordability Woes</b>: Home prices might be easing, but steep down payments remain a significant barrier for buyers, indicating continued pressure on the housing market and consumer liquidity.",
+        "<b>Consumer Discretionary Headwinds</b>: News of Saks Global's potential bankruptcy and restaurant chain closures points to ongoing challenges in the consumer discretionary sector, reflecting cautious spending or intense competition.",
+        "<b>Deregulatory Tailwinds for Niche Industries</b>: Stellantis' re-launch of a $100,000 Ram TRX pickup amidst industry deregulation suggests specific sectors or high-end segments might benefit from a loosening regulatory environment."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "Consumer Discretionary",
+        "change": "Implied Negative",
+        "comment": "Saks' bankruptcy prep and restaurant closures signal sector weakness."
+      },
+      {
+        "name": "Real Estate",
+        "change": "Implied Negative",
+        "comment": "Housing affordability challenges persist, dampening buyer enthusiasm."
+      },
+      {
+        "name": "Luxury Autos",
+        "change": "Implied Positive",
+        "comment": "Stellantis' high-end truck resurrection points to resilience in the luxury segment."
+      }
+    ],
+    "themes": [
+      {
+        "name": "Digital Asset Boom",
+        "change": "Strong Up",
+        "comment": "Bitcoin and Ethereum ignite, showcasing strong investor interest in the crypto space."
+      },
+      {
+        "name": "Retail & Consumer Strain",
+        "change": "Challenging",
+        "comment": "From high-end retail to casual dining, headlines suggest a challenging environment for consumer-facing businesses."
+      },
+      {
+        "name": "Housing Market Stickiness",
+        "change": "Stagnant",
+        "comment": "Despite slight price moderation, the barrier of down payments continues to slow market activity."
+      }
+    ]
+  },
+  "ko": {
+    "title": "고요 속 폭풍전야? 미국 시장 '제로' 정지, 암호화폐는 급등!",
+    "summary": "오늘 미국 시장은 놀랍도록 평온한 제로 움직임을 보이며 주요 지수들이 완벽히 보합세를 유지했습니다. 반면 유럽은 상승세를, 아시아는 혼조세를 보였고, 암호화폐 자산은 화려한 랠리를 펼쳤습니다. 기업 뉴스들은 소매 및 부동산 분야의 특정 어려움을 시사하지만, 럭셔리 자동차 시장의 틈새 복원력도 엿보입니다.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6848.30 (+0.00%)",
+        "comment": "미국 벤치마크 지수가 완벽히 정지, 시장의 희귀한 일시정지 순간입니다."
+      },
+      {
+        "label": "나스닥",
+        "value": "23221.95 (+0.00%)",
+        "comment": "기술주 중심 나스닥도 광범위한 시장의 고요함을 반영합니다."
+      },
+      {
+        "label": "러셀 2000",
+        "value": "2491.89 (+0.00%)",
+        "comment": "소형주 지수 역시 숨고르기 중, 방향성 신호는 없습니다."
+      },
+      {
+        "label": "비트코인",
+        "value": "90798.80 (+2.33%)",
+        "comment": "디지털 자산은 전통 시장을 압도하며 계속 상승세를 이어갑니다."
+      }
+    ],
+    "macro": {
+      "title": "매크로 경제",
+      "points": [
+        "<b>주택 구매력 난항</b>: 주택 가격이 다소 완화되고 있음에도 불구하고, 높은 계약금은 구매자들에게 여전히 상당한 장벽으로 작용하며 주택 시장과 소비자 유동성에 지속적인 압박을 가하고 있습니다.",
+        "<b>소비자 재량 지출의 역풍</b>: 삭스 글로벌의 파산 준비 보도와 레스토랑 체인 폐점 소식은 소비 심리 위축 또는 치열한 경쟁을 반영하며 소비자 재량 지출 부문의 지속적인 도전을 시사합니다.",
+        "<b>틈새 산업의 규제 완화 호재</b>: 스텔란티스의 10만 달러 램 TRX 픽업트럭 재출시는 산업 규제 완화 속에서 특정 부문이나 고가 시장이 혜택을 볼 수 있음을 암시합니다."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "소비재 재량",
+        "change": "하락 시사",
+        "comment": "삭스의 파산 준비와 레스토랑 폐업은 해당 부문의 약세를 시사합니다."
+      },
+      {
+        "name": "부동산",
+        "change": "하락 시사",
+        "comment": "주택 구매력 문제가 지속되며 구매 심리를 위축시키고 있습니다."
+      },
+      {
+        "name": "고급 자동차",
+        "change": "상승 시사",
+        "comment": "스텔란티스의 고가 트럭 부활은 럭셔리 부문의 회복력을 보여줍니다."
+      }
+    ],
+    "themes": [
+      {
+        "name": "디지털 자산 급등",
+        "change": "강한 상승",
+        "comment": "비트코인과 이더리움이 불타오르며 암호화폐 시장에 대한 강한 투자자 관심을 보여줍니다."
+      },
+      {
+        "name": "소매 및 소비자 압박",
+        "change": "어려움",
+        "comment": "고급 소매업부터 캐주얼 다이닝까지, 헤드라인은 소비자 대상 사업의 어려운 환경을 시사합니다."
+      },
+      {
+        "name": "주택 시장의 경직성",
+        "change": "정체",
+        "comment": "가격이 다소 완화되었음에도 불구하고, 계약금 장벽이 시장 활동을 계속 둔화시키고 있습니다."
+      }
+    ]
+  },
+  "last_updated": "2026-01-02 12:26 PM EST",
+  "last_updated_ts": "2026-01-02T12:26:47.616964-05:00"
+}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}{{ row.symbol }} Details{% endblock %}
+{% block content %}
+<h3>{{ row.symbol }} — {{ row.company }}</h3>
+<p>Close: {{ row.close }}</p>
+<p>Volume: {{ row.volume }}</p>
+<p>Prev Volume: {{ row.prev_volume }}</p>
+<p>Δ Volume %: {{ row.vol_change_pct|floatformat:1 }}%</p>
+<a href="{% url 'scanner:dashboard' %}" class="btn btn-outline-secondary">← Back to Scanner</a>
+{% endblock %}

@@ -1,0 +1,676 @@
+{% extends 'base.html' %}
+{% load i18n humanize static %}
+
+{% block title %}VESTIQ — Sovereign{% endblock %}
+
+{% block extra_head %}
+<!-- Google Fonts for elegant typography -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<style>
+/* 
+   ================================================================
+   VESTIQ SOVEREIGN V10 - DYNAMIC LAYOUT REDESIGN
+   ================================================================
+*/
+:root {
+    --navy-deep: #0A1929;
+    --navy-light: #132F4C;
+    --violet-primary: #7C3AED;
+    --violet-light: #A78BFA;
+    --white: #FFFFFF;
+    --gray-50: #F8FAFC;
+    --gray-100: #F1F5F9;
+    --gray-200: #E2E8F0;
+    --gray-600: #475569;
+    --emerald: #10B981;
+    --amber: #F59E0B;
+    --red: #EF4444;
+    
+    --radius-lg: 20px;
+    --radius-md: 14px;
+    --radius-sm: 10px;
+}
+
+/* GLOBAL */
+body {
+    background: var(--navy-deep);
+    color: var(--white);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* BACKGROUND VISUAL LAYER */
+.visual-bg {
+    position: fixed;
+    top: 0; right: 0;
+    width: 50%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.15;
+    background: radial-gradient(circle at 70% 30%, rgba(124, 58, 237, 0.2), transparent 70%);
+}
+
+.visual-bg img {
+    position: absolute;
+    top: 15%;
+    right: -5%;
+    width: 80%;
+    height: auto;
+    opacity: 0.4;
+    filter: blur(2px);
+    animation: float 8s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(2deg); }
+}
+
+/* BASE OVERRIDES */
+nav.top-navbar, .top-navbar {
+    background: transparent !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+}
+
+#sidebar-wrapper {
+    background: var(--navy-deep) !important;
+    border-right: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+footer {
+    background: var(--navy-deep) !important;
+    border-top: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+/* CONTAINER */
+.sovereign-wrap {
+    max-width: 95%;
+    margin: 0 auto;
+    padding: 0px 3% 80px; /* Reduced top padding from 30px to 0 */
+    position: relative;
+    z-index: 1;
+}
+
+/* HERO - CENTER TOP VERTICAL LAYOUT */
+.hero-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Reduced gap */
+    margin-bottom: 50px;
+    padding: 10px 0 40px; /* Reduced top padding from 30px to 10px */
+    text-align: center;
+}
+
+.hero-logo {
+    width: 500px; /* Reduced from 700px */
+    height: 500px; /* Reduced from 700px */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    position: relative;
+    margin-top: -20px; /* Slight negative margin to pull it up further if needed */
+}
+
+.hero-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: brightness(1.1) contrast(1.1) saturate(1.1) drop-shadow(0 0 60px rgba(124, 58, 237, 0.8));
+}
+
+.hero-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: -40px; /* Pull text closer to logo */
+}
+
+.hero-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 7rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 0;
+    color: var(--white);
+    text-shadow: 0 2px 20px rgba(124, 58, 237, 0.2);
+}
+
+.hero-slogan {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.4rem;
+    font-weight: 400;
+    color: var(--gray-200);
+    letter-spacing: 0.03em;
+}
+
+.hero-slogan-accent {
+    color: var(--violet-light);
+    font-weight: 500;
+    font-family: 'Cormorant Garamond', serif;
+}
+
+/* MAIN GRID - DYNAMIC LAYOUT */
+.dynamic-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    grid-auto-rows: minmax(300px, auto);
+}
+
+/* PANEL STYLES */
+.panel {
+    background: rgba(19, 47, 76, 0.25);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    backdrop-filter: blur(12px);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.panel:hover {
+    border-color: rgba(124, 58, 237, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+}
+
+.panel::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 100px; height: 100px;
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.1), transparent);
+    pointer-events: none;
+}
+
+/* PANEL HEADER */
+.p-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.p-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--white);
+}
+
+.p-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 50px;
+    background: rgba(124, 58, 237, 0.2);
+    color: var(--violet-light);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+/* GRID SPANS */
+.span-1 { grid-column: span 1; }
+.span-2 { grid-column: span 2; }
+.span-3 { grid-column: span 3; }
+.row-span-2 { grid-row: span 2; }
+
+/* GAUGES - MODERN RING */
+.gauge-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 20px 0;
+}
+
+.gauge-ring {
+    position: relative;
+    width: 160px;
+    height: 160px;
+}
+
+.gauge-ring svg {
+    transform: rotate(-90deg);
+}
+
+.ring-bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.04);
+    stroke-width: 18;
+}
+
+.ring-fill {
+    fill: none;
+    stroke-width: 18;
+    stroke-linecap: round;
+    transition: stroke-dasharray 1s ease;
+}
+
+.gauge-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.gauge-value {
+    font-size: 3.8rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.gauge-label {
+    font-size: 0.7rem;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 8px;
+}
+
+/* DATA ROWS */
+.data-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.data-row {
+    display: grid;
+    grid-template-columns: 2fr 1.3fr 1fr;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.data-row:hover {
+    background: rgba(124, 58, 237, 0.08);
+}
+
+.dr-name {
+    font-weight: 500;
+    color: var(--white);
+    font-size: 1.15rem;
+}
+
+.dr-price {
+    font-weight: 600;
+    color: var(--gray-200);
+    font-size: 1.2rem;
+    letter-spacing: -0.01em;
+}
+
+.dr-change {
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 6px 12px;
+    border-radius: 7px;
+    text-align: center;
+    letter-spacing: -0.01em;
+}
+
+.dr-change.up {
+    color: var(--emerald);
+    background: rgba(16, 185, 129, 0.12);
+}
+
+.dr-change.down {
+    color: var(--red);
+    background: rgba(239, 68, 68, 0.12);
+}
+
+/* REMOVED SPARKLINES FOR CLEANER LOOK */
+
+/* TIMELINE */
+.timeline {
+    position: relative;
+    padding-left: 18px;
+}
+
+.timeline-line {
+    position: absolute;
+    left: 5px; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--violet-primary) 0%, transparent 100%);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 14px;
+    padding-left: 14px;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -15px; top: 4px;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--violet-primary);
+    box-shadow: 0 0 8px var(--violet-primary);
+}
+
+.timeline-time {
+    font-size: 0.68rem;
+    color: var(--gray-600);
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+}
+
+.timeline-content {
+    font-size: 0.95rem;
+    color: var(--gray-200);
+    line-height: 1.6;
+    margin-top: 4px;
+}
+
+/* LOGO WATERMARK */
+.panel-watermark {
+    position: absolute;
+    bottom: -20px;
+    right: -20px;
+    width: 100px;
+    height: 100px;
+    opacity: 0.03;
+    pointer-events: none;
+}
+
+.panel-watermark img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1400px) {
+    .dynamic-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .span-3, .span-2 {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 900px) {
+    .hero-section {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        text-align: center;
+    }
+    .hero-logo {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto;
+    }
+    .hero-brand {
+        font-size: 2.5rem;
+    }
+    .hero-slogan {
+        font-size: 1.1rem;
+    }
+    .hero-metrics {
+        justify-content: center;
+    }
+    .dynamic-grid {
+        grid-template-columns: 1fr;
+    }
+    .span-3, .span-2, .span-1 {
+        grid-column: span 1;
+    }
+    .data-row {
+        grid-template-columns: 2fr 1.2fr 1fr;
+    }
+}
+</style>
+
+<!-- ─── Linear Elegance / Editorial Layout ─── -->
+
+<div class="container-fluid px-0">
+    
+    <!-- 1. Ticker Strip (Classic Luxury Finance) -->
+    <div class="ticker-wrap border-bottom border-dark bg-black py-2">
+        <div class="ticker">
+            {% for item in macro_stats.US_Indices|slice:":5" %}
+            <div class="ticker__item">
+                <span class="fw-bold text-white">{{ item.title }}</span>
+                <span class="ms-2" style="font-family: 'DM Mono', monospace; color: var(--accent-gold);">{{ item.price|floatformat:0|intcomma }}</span>
+                <span class="ms-1 small {% if item.pct >= 0 %}text-success{% else %}text-danger{% endif %}">
+                    {% if item.pct >= 0 %}+{% endif %}{{ item.pct|floatformat:2 }}%
+                </span>
+            </div>
+            {% endfor %}
+            {% for item in macro_stats.Global|slice:":5" %}
+            <div class="ticker__item">
+                <span class="fw-bold text-white">{{ item.title }}</span>
+                <span class="ms-2" style="font-family: 'DM Mono', monospace; color: var(--accent-gold);">{{ item.price|floatformat:0|intcomma }}</span>
+                <span class="ms-1 small {% if item.pct >= 0 %}text-success{% else %}text-danger{% endif %}">
+                    {% if item.pct >= 0 %}+{% endif %}{{ item.pct|floatformat:2 }}%
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <style>
+        .ticker-wrap { width: 100%; overflow: hidden; white-space: nowrap; }
+        .ticker { display: inline-block; animation: ticker 40s linear infinite; }
+        .ticker__item { display: inline-block; padding: 0 2rem; font-size: 0.8rem; letter-spacing: 0.05em; border-right: 1px solid #222; }
+        @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
+        
+        .hero-title { font-size: 5rem; line-height: 0.9; letter-spacing: -0.03em; background: linear-gradient(180deg, #fff 0%, #888 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .editorial-line { width: 100%; height: 1px; background: linear-gradient(90deg, transparent, var(--accent-gold), transparent); opacity: 0.5; margin: 2rem 0; }
+        
+        .stat-huge { font-size: 3.5rem; font-weight: 200; font-family: 'Cinzel', serif; color: var(--accent-gold); line-height: 1; }
+        .card-editorial { background: transparent; border: 1px solid #1a1a1a; padding: 2rem; transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .card-editorial:hover { border-color: var(--accent-gold); background: rgba(212, 175, 55, 0.02); }
+        .card-editorial::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent-gold); transform: scaleY(0); transition: transform 0.3s ease; transform-origin: top; }
+        .card-editorial:hover::before { transform: scaleY(1); }
+    </style>
+
+    <!-- 2. Hero Section (Asymmetric / "Cover Page") -->
+    <!-- 2. Hero Section (Centered / "Cover Page") -->
+    <div class="container-fluid px-5 py-5" style="min-height: 80vh; display: flex; align-items: center; justify-content: center;">
+        <div class="d-flex flex-column align-items-center justify-content-center text-center w-100">
+            
+            <!-- Logo -->
+            <div class="mb-4">
+                 <img src="{% static 'img/vestiq_signature.png' %}" alt="Vestiq Art" style="width: 280px; filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.2)); opacity: 1;">
+            </div>
+
+            <!-- Title & Slogan -->
+            <h1 class="hero-title mb-2">VESTIQ</h1>
+            <p class="display-6 fst-italic mb-4" style="font-family: 'Cinzel', serif; color: var(--accent-gold); letter-spacing: 0.05em;">
+                Truly Unique, That's Vestiq
+            </p>
+            
+            <!-- Sentiment & Stats (Moved to Hero) -->
+            <div class="d-flex flex-wrap justify-content-center gap-5 mb-5 p-4 rounded-4" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(5px);">
+                
+                <!-- Vestiq Sentiment -->
+                <div class="text-center px-4">
+                    <div class="text-muted small text-uppercase ls-1 mb-2" style="font-size: 0.75rem;">Market Sentiment (Vestiq)</div>
+                    <div class="d-flex flex-column align-items-center gap-2">
+                        <div class="d-flex align-items-end gap-2">
+                             <span class="stat-huge" style="font-size: 2.8rem;">{{ weather.score|default:"--" }}</span>
+                             <span class="mb-2 fw-bold text-white ls-1 text-uppercase">{{ weather.status|default:"NEUTRAL" }}</span>
+                        </div>
+                        <!-- Pretty Bar -->
+                        <div class="position-relative overflow-hidden rounded-pill" style="width: 180px; height: 8px; background: rgba(255,255,255,0.1);">
+                            <div class="h-100 rounded-pill" style="width: {{ weather.score|default:50 }}%; background: linear-gradient(90deg, #D4AF37, #F59E0B); box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="width: 1px; background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.2), transparent);"></div>
+
+                <!-- Fear & Greed -->
+                <div class="text-center px-4">
+                    <div class="text-muted small text-uppercase ls-1 mb-2" style="font-size: 0.75rem;">CNN Fear & Greed</div>
+                    <div class="d-flex flex-column align-items-center gap-2">
+                        <div class="d-flex align-items-end gap-2">
+                             <span class="stat-huge" style="font-size: 2.8rem; color: {% if fg.value >= 75 %}#22c55e{% elif fg.value <= 25 %}#ef4444{% else %}#f59e0b{% endif %};">{{ fg.value|default:"--" }}</span>
+                             <span class="mb-2 fw-bold text-white ls-1 text-uppercase">{{ fg.label|default:"Neutral" }}</span>
+                        </div>
+                        <!-- Pretty Bar -->
+                        <div class="position-relative overflow-hidden rounded-pill" style="width: 180px; height: 8px; background: rgba(255,255,255,0.1);">
+                            <div class="h-100 rounded-pill" style="width: {{ fg.value|default:50 }}%; background: {% if fg.value >= 75 %}#22c55e{% elif fg.value <= 25 %}#ef4444{% else %}#f59e0b{% endif %}; box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);"></div>
+                        </div>
+                        <div class="text-muted small mt-1" style="font-size: 0.65rem;">{{ fg.last_updated|default:"" }}</div>
+                    </div>
+                </div>
+
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="editorial-line"></div>
+
+    <!-- 3. Editorial Grid (Masonry / Varied) -->
+    <div class="container-fluid px-5 pb-5">
+        <div class="row g-0">
+            
+            <!-- A. The "Lead Story" (AI Feed) - Wide -->
+            <div class="col-12 mb-5">
+                <div class="card-editorial h-100 border-0">
+                    <div class="row">
+                        <!-- Removed border-end to fix "cut off" look, added more spacing -->
+                        <div class="col-md-3 pe-5">
+                            <h2 class="text-white mb-3" style="font-weight: 400;">Intelligence <br> Feed</h2>
+                            <p class="text-muted small">Real-time synthesis of global market narratives driven by Generative AI.</p>
+                            <span class="badge rounded-0 mt-3" style="border: 1px solid var(--accent-gold); color: var(--accent-gold); background: transparent;">GEMINI 2.5 FLASH</span>
+                        </div>
+                        <div class="col-md-9 ps-md-5 border-start border-dark">
+                             <div id="ai-box" style="min-height: 250px;">
+                                <div id="ai-load" class="d-flex flex-column justify-content-center h-100 text-muted py-4">
+                                    <div class="spinner-border text-light mb-3" role="status" style="width: 1.5rem; height: 1.5rem; border-width: 1px;"></div>
+                                    <span class="small text-uppercase ls-1">Curating Insights...</span>
+                                </div>
+                                <div id="aiContentWrapper" style="display: none;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- B. The "Numbers" (Market Data) - Expanded 3 Columns -->
+            
+            <!-- Column 1: Indices (US & Global) -->
+            <div class="col-lg-4 p-4">
+                <div class="d-flex flex-column gap-4">
+                    <!-- US Indices -->
+                    <div>
+                        <h5 class="text-muted text-uppercase ls-1 mb-3" style="font-size: 0.75rem;">US Indices</h5>
+                        <div class="d-flex flex-column gap-2">
+                            {% for item in macro_stats.US_Indices %}
+                            {% include 'home/partials/ticker_row.html' with item=item %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <!-- Global -->
+                    <div>
+                        <h5 class="text-muted text-uppercase ls-1 mb-3" style="font-size: 0.75rem;">Global Markets</h5>
+                        <div class="d-flex flex-column gap-2">
+                             {% for item in macro_stats.Global %}
+                             {% include 'home/partials/ticker_row.html' with item=item %}
+                             {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 2: Rates & FX -->
+            <div class="col-lg-4 p-4 border-start border-dark">
+                 <div class="d-flex flex-column gap-4">
+                    <!-- Rates -->
+                    <div>
+                        <h5 class="text-muted text-uppercase ls-1 mb-3" style="font-size: 0.75rem;">key Rates</h5>
+                        <div class="d-flex flex-column gap-2">
+                            {% for item in macro_stats.Rates %}
+                            {% include 'home/partials/ticker_row.html' with item=item %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <!-- Currencies -->
+                    <div>
+                        <h5 class="text-muted text-uppercase ls-1 mb-3" style="font-size: 0.75rem;">Currencies</h5>
+                        <div class="d-flex flex-column gap-2">
+                             {% for item in macro_stats.Currencies %}
+                             {% include 'home/partials/ticker_row.html' with item=item %}
+                             {% endfor %}
+                        </div>
+                    </div>
+                 </div>
+            </div>
+            
+            <!-- Column 3: Commodities & Crypto -->
+            <div class="col-lg-4 p-4 border-start border-dark">
+                 <div class="d-flex flex-column gap-4">
+                    <!-- Commodities -->
+                    <div>
+                        <h5 class="text-muted text-uppercase ls-1 mb-3" style="font-size: 0.75rem;">Commodities</h5>
+                        <div class="d-flex flex-column gap-2">
+                            {% for item in macro_stats.Commodities %}
+                            {% include 'home/partials/ticker_row.html' with item=item %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <!-- Crypto -->
+                    <div>
+                        <h5 class="text-muted text-uppercase ls-1 mb-3" style="font-size: 0.75rem;">Crypto Assets</h5>
+                        <div class="d-flex flex-column gap-2">
+                            {% for item in macro_stats.Crypto %}
+                            {% include 'home/partials/ticker_row.html' with item=item %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                 </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <!-- Bottom Brand Mark -->
+    <div class="py-5 text-center bg-black border-top border-dark">
+         <img src="{% static 'img/vestiq_linear_logo.png' %}" alt="Vestiq" style="height: 40px; opacity: 0.5;">
+    </div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetch("{% url 'home:gemini_market_summary' %}")
+        .then(res => res.text())
+        .then(html => {
+            const loader = document.getElementById('ai-load');
+            if(loader) {
+                loader.classList.remove('d-flex'); // Remove flex to allow display:none
+                loader.style.display = 'none';
+            }
+            const wrapper = document.getElementById('aiContentWrapper');
+            if(wrapper) {
+                wrapper.innerHTML = html;
+                wrapper.style.display = 'block';
+            }
+        })
+        .catch(err => console.error(err));
+});
+</script>
+
+{% endblock %}

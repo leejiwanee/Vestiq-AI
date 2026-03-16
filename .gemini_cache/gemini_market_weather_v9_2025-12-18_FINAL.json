@@ -1,0 +1,172 @@
+{
+  "en": {
+    "title": "Markets Ride High on Cannabis Buzz & Value Diners, But Nike Takes a Hit!",
+    "summary": "U.S. equities charged ahead today, led by tech, as investors digested a mixed bag of corporate news and a groundbreaking policy shift. While certain consumer giants faced headwinds, optimism bloomed around new regulatory landscapes and resilient consumer spending in other segments.",
+    "snapshot": [
+      {
+        "label": "The S&P 500",
+        "value": "+0.79%",
+        "comment": "Rallying back with broad strength, shrugging off some corporate blues."
+      },
+      {
+        "label": "The Nasdaq",
+        "value": "+1.38%",
+        "comment": "Tech leading the charge once again, proving its resilience."
+      },
+      {
+        "label": "The Russell 2000",
+        "value": "+0.62%",
+        "comment": "Small caps join the party, showing broader market health beyond just the giants."
+      },
+      {
+        "label": "Bitcoin",
+        "value": "-0.72%",
+        "comment": "A slight dip for digital gold, taking a breather as traditional assets shine."
+      }
+    ],
+    "macro": {
+      "title": "Macro Vibes",
+      "points": [
+        "<b>Treasury Yields Retreat</b>: All major US Treasury yields saw a modest decline today. While equities were up, this could reflect continued demand for fixed income or easing inflation concerns, providing some tailwind for growth stocks.",
+        "<b>Cannabis Reform Ignites Sector</b>: President Trump's executive order reclassifying cannabis has sent ripples through the market, signaling a potential new era for the industry and significant regulatory tailwinds for companies in the space.",
+        "<b>Consumer Spending Bifurcation</b>: While companies like Darden Restaurants are seeing success with \"value plays\" and Chipotle is innovating with protein-focused menus, Nike's significant decline due to plunging China sales highlights a challenging and complex consumer landscape for some international brands.",
+        "<b>Volatility Calms Down</b>: The VIX, often called the market's fear gauge, showed a noticeable decrease today. This suggests a calming investor sentiment amidst the positive equity performance, a classic \"risk-on\" indicator."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "Cannabis/Healthcare",
+        "change": "Significant potential upside",
+        "comment": "Soaring on the back of Trump's executive order reclassifying cannabis."
+      },
+      {
+        "name": "Restaurants/Hospitality",
+        "change": "Positive sentiment",
+        "comment": "Boosted by Darden's strong outlook and Chipotle's innovative menu."
+      },
+      {
+        "name": "Industrials/Materials",
+        "change": "Moderate gains",
+        "comment": "Reflected in the uptick of copper (HG) prices, indicating industrial demand."
+      },
+      {
+        "name": "Apparel/Retail",
+        "change": "Under pressure",
+        "comment": "Hit hard by Nike's significant drop due to China sales woes and tariff impacts."
+      },
+      {
+        "name": "Airlines/Travel",
+        "change": "Mixed to Negative",
+        "comment": "American Airlines' policy change on basic economy miles puts a damper on the sector."
+      },
+      {
+        "name": "Cryptocurrency",
+        "change": "Slightly down",
+        "comment": "BTC and ETH saw minor pullbacks, not participating in the broader market rally today."
+      }
+    ],
+    "themes": [
+      {
+        "name": "Cannabis Legalization Momentum",
+        "change": "Strong positive shift",
+        "comment": "A major policy move creating new investment opportunities."
+      },
+      {
+        "name": "Consumer Value & Innovation",
+        "change": "Resilient",
+        "comment": "Darden's value strategy and Chipotle's menu drive success in a competitive landscape."
+      },
+      {
+        "name": "Growth/Tech Resilience",
+        "change": "Leading the charge",
+        "comment": "Nasdaq's robust performance despite individual stock headwinds underscores investor confidence."
+      }
+    ]
+  },
+  "ko": {
+    "title": "대마초 합법화 소식에 시장 활짝, 나이키는 울상!",
+    "summary": "오늘 미국 증시는 기술주를 필두로 강세를 보이며, 기업별 희비와 획기적인 정책 변화를 소화했습니다. 일부 거대 소비재 기업은 역풍을 맞았지만, 새로운 규제 환경과 견고한 소비 지출에 대한 낙관론이 시장을 이끌었습니다.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "+0.79%",
+        "comment": "일부 기업 소식에도 불구하고 폭넓은 강세로 다시 랠리."
+      },
+      {
+        "label": "나스닥",
+        "value": "+1.38%",
+        "comment": "기술주가 다시 한번 선두를 달리며 탄력성을 증명했습니다."
+      },
+      {
+        "label": "러셀 2000",
+        "value": "+0.62%",
+        "comment": "소형주도 파티에 합류, 거대 기업을 넘어 시장 전반의 건강성을 보여줘."
+      },
+      {
+        "label": "비트코인",
+        "value": "-0.72%",
+        "comment": "디지털 금의 약간의 하락, 전통 자산이 빛을 발하는 동안 숨 고르기."
+      }
+    ],
+    "macro": {
+      "title": "매크로 경제",
+      "points": [
+        "<b>국채 수익률 하락</b>: 오늘 미국 주요 국채 수익률이 모두 소폭 하락했습니다. 주식 시장이 상승했지만, 이는 고정 수입에 대한 지속적인 수요 또는 인플레이션 우려 완화를 반영하며 성장주에 약간의 순풍을 제공할 수 있습니다.",
+        "<b>대마초 개혁 산업 점화</b>: 트럼프 대통령의 대마초 재분류 행정 명령은 시장에 파장을 일으키며, 이 산업에 잠재적인 새 시대와 중요한 규제적 순풍을 예고합니다.",
+        "<b>소비 지출 양극화</b>: 다든 레스토랑이 '가치 전략'으로 성공을 거두고 치폴레가 단백질 중심 메뉴로 혁신하는 반면, 나이키의 중국 판매 급감으로 인한 상당한 하락은 일부 국제 브랜드에게 도전적이고 복잡한 소비 환경을 강조합니다.",
+        "<b>변동성 진정</b>: 시장의 공포 지수로 불리는 VIX 지수가 오늘 눈에 띄게 하락했습니다. 이는 긍정적인 주식 실적 속에서 투자 심리가 진정되었음을 시사하며, 전형적인 '위험 선호' 지표입니다."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "대마초/헬스케어",
+        "change": "상당한 잠재적 상승",
+        "comment": "트럼프의 대마초 재분류 행정 명령에 힘입어 급등."
+      },
+      {
+        "name": "레스토랑/외식",
+        "change": "긍정적 심리",
+        "comment": "다든의 강력한 전망과 치폴레의 혁신적인 메뉴에 힘입어 상승."
+      },
+      {
+        "name": "산업재/원자재",
+        "change": "완만한 상승",
+        "comment": "구리(HG) 가격 상승에서 볼 수 있듯이, 산업 수요를 나타냅니다."
+      },
+      {
+        "name": "의류/소매",
+        "change": "압력 하락",
+        "comment": "나이키의 중국 판매 부진과 관세 영향으로 인한 상당한 하락으로 큰 타격을 받았습니다."
+      },
+      {
+        "name": "항공/여행",
+        "change": "혼조세",
+        "comment": "아메리칸 항공의 기본 이코노미 마일리지 정책 변경이 해당 부문에 찬물을 끼얹었습니다."
+      },
+      {
+        "name": "암호화폐",
+        "change": "소폭 하락",
+        "comment": "BTC와 ETH는 소폭 하락하며 오늘 전반적인 시장 랠리에 참여하지 못했습니다."
+      }
+    ],
+    "themes": [
+      {
+        "name": "대마초 합법화 모멘텀",
+        "change": "강력한 긍정적 변화",
+        "comment": "새로운 투자 기회를 창출하는 주요 정책 변화."
+      },
+      {
+        "name": "소비자 가치 및 혁신",
+        "change": "회복력 있는",
+        "comment": "다든의 가치 전략과 치폴레의 메뉴는 경쟁 환경에서 성공을 이끌고 있습니다."
+      },
+      {
+        "name": "성장/기술주 회복력",
+        "change": "선두를 달리는",
+        "comment": "나스닥의 견고한 성과는 개별 주식의 역풍에도 불구하고 투자자 신뢰를 강조합니다."
+      }
+    ]
+  },
+  "last_updated": "2025-12-18 06:41 PM EST",
+  "last_updated_ts": "2025-12-18T18:41:26.099395-05:00"
+}

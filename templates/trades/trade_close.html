@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load i18n humanize %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">{% trans "Close Position" %} - {{ object.ticker }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <strong>{% trans "Position Details:" %}</strong><br>
+                        {% trans "Buy Date:" %} {{ object.buy_date }}<br>
+                        {% trans "Buy Price:" %} ${{ object.buy_price|intcomma }}<br>
+                        {% trans "Invested:" %} ${{ object.invested_amount|intcomma }}<br>
+                        {% trans "Quantity:" %} {{ quantity|floatformat:4 }}
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="id_sell_date" class="form-label">{% trans "Sell Date" %}</label>
+                            <input type="date" name="sell_date" class="form-control" id="id_sell_date" value="{{ form.sell_date.value|date:'Y-m-d' }}" required>
+                            {% if form.sell_date.errors %}
+                            <div class="text-danger small">{{ form.sell_date.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_sell_price" class="form-label">{% trans "Sell Price" %}</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" name="sell_price" step="0.01" class="form-control" id="id_sell_price" value="{{ form.sell_price.value|default:'' }}" required>
+                            </div>
+                            {% if form.sell_price.errors %}
+                            <div class="text-danger small">{{ form.sell_price.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">{% trans "Pre-filled with current market price if available." %}</div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">{% trans "Confirm Sell" %}</button>
+                            <a href="{% url 'trade_list' %}" class="btn btn-outline-secondary">{% trans "Cancel" %}</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

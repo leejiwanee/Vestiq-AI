@@ -1,0 +1,1530 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}Backtest Lab{% endblock %}
+
+{% block extra_head %}
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<!-- Flatpickr -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<!-- ECharts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+
+<style>
+    /* Page Specific Styles */
+    :root {
+        --bt-bg: #0f172a;
+        --bt-panel: #1e293b;
+        --bt-border: rgba(255,255,255,0.08);
+        --bt-primary: #3b82f6;
+    }
+    
+    body {
+        font-family: 'Outfit', sans-serif !important;
+        background: var(--bt-bg) !important;
+    }
+
+    /* Layout */
+    .lab-container {
+        display: flex;
+        height: calc(100vh - 70px); /* Subtract Navbar height */
+        overflow: hidden;
+    }
+
+    /* Sidebar */
+    .lab-sidebar {
+        width: 320px;
+        background: rgba(30, 41, 59, 0.4);
+        border-right: 1px solid var(--bt-border);
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    /* Main Content */
+    .lab-content {
+        flex: 1;
+        padding: 32px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    /* Cards */
+    .bt-stat-card {
+        background: var(--bt-panel);
+        border: 1px solid var(--bt-border);
+        border-radius: 16px;
+        padding: 24px;
+        flex: 1;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .bt-label { font-size: 0.9rem; color: #94a3b8; font-weight: 500; margin-bottom: 8px; }
+    .bt-val { font-size: 2rem; font-weight: 700; color: white; letter-spacing: -0.5px; }
+    .bt-icon-box {
+        width: 54px; height: 54px;
+        border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.4rem;
+    }
+
+    .bt-panel {
+        background: var(--bt-panel);
+        border: 1px solid var(--bt-border);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Table */
+    .bt-th {
+        padding: 14px 16px;
+        text-align: left;
+        color: #94a3b8;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--bt-border);
+    }
+    .bt-td {
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(255,255,255,0.03);
+        color: #cbd5e1;
+        vertical-align: middle;
+    }
+    
+    /* Form Elements */
+    .bt-input-group {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid var(--bt-border);
+        border-radius: 12px;
+        padding: 12px;
+        display: flex; align-items: center; gap: 10px;
+    }
+    
+    /* Flatpickr Dark Overrides (Local) */
+    .flatpickr-calendar { background: #1e293b !important; border: 1px solid var(--bt-border) !important; }
+    .flatpickr-day { color: #cbd5e1 !important; }
+    .flatpickr-day.selected { background: #3b82f6 !important; border-color: #3b82f6 !important; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="lab-container">
+    
+    <!-- SIDEBAR: SETTINGS -->
+    <div class="lab-sidebar">
+        <div style="margin-bottom: 40px;">
+            <div style="font-size: 1.5rem; font-weight: 700; color: white; display: flex; align-items: center; gap: 10px;">
+                <i class="bi bi-flask-fill" style="color: #4ade80;"></i> Backtest Lab
+            </div>
+            <div style="color: #64748b; font-size: 0.9rem; margin-top: 6px;">
+                Simulate Vestiq strategies with historical data.
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 32px;">
+            <!-- Date Selection -->
+            <div>
+                <label style="display:block; color:#94a3b8; font-size:0.8rem; font-weight:700; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;">
+                    DATE
+                </label>
+                <div class="bt-input-group">
+                    <i class="bi bi-calendar-event" style="color:#3b82f6;"></i>
+                    <input type="text" id="bt-date-range" placeholder="Select Date"
+                           style="background:transparent; border:none; color:white; font-family:'Outfit'; font-size:0.95rem; width:100%; outline:none;">
+                </div>
+            </div>
+
+            <!-- Investment Amount -->
+            <div>
+                <label style="display:block; color:#94a3b8; font-size:0.8rem; font-weight:700; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;">
+                    INVESTMENT ($)
+                </label>
+                <div class="bt-input-group">
+                    <i class="bi bi-currency-dollar" style="color:#3b82f6;"></i>
+                    <input type="number" id="bt-capital" value="10000" step="1000"
+                           style="background:transparent; border:none; color:white; font-family:'Outfit'; font-size:0.95rem; width:100%; outline:none;">
+                </div>
+            </div>
+
+            <!-- Hold Period -->
+            <div>
+                <label style="display:block; color:#94a3b8; font-size:0.8rem; font-weight:700; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;">
+                    MAX HOLDING PERIOD
+                </label>
+                <div class="bt-panel" style="padding: 20px; background: rgba(15,23,42,0.4);">
+                    <div style="display:flex; justify-content:space-between; align-items:end; margin-bottom: 12px;">
+                        <span id="bt-hold-days-val" style="font-size:2rem; font-weight:700; color:#38bdf8;">5</span>
+                        <span style="color:#64748b; margin-bottom: 6px;">Days</span>
+                    </div>
+                    <input type="range" id="bt-hold-days" min="1" max="10" value="5" style="width:100%; accent-color:#38bdf8;">
+                    <div style="display:flex; justify-content:space-between; margin-top: 8px; font-size: 0.8rem; color: #475569;">
+                        <span>1 Day</span>
+                        <span>10 Days</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="runBacktest()" id="btn-run-bt"
+                    style="width:100%; background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color:white; border:none; padding:18px; border-radius:16px; font-weight:700; cursor:pointer; font-size:1.1rem; transition:0.2s; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4); margin-top: auto;">
+                <i class="bi bi-play-fill" style="font-size:1.4rem;"></i> Run Simulation
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT: RESULTS -->
+    <div class="lab-content">
+        
+        <!-- Loading State -->
+        <div id="bt-loading" style="display:none; height:100%; align-items:center; justify-content:center; flex-direction:column;">
+            <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;"></div>
+            <div style="margin-top:24px; color:#94a3b8; font-size:1.2rem; font-weight: 300;">Analyzing Market Data...</div>
+        </div>
+        
+        <!-- Empty State -->
+        <div id="bt-empty" style="display:none; height:100%; align-items:center; justify-content:center; flex-direction:column; opacity: 0.5;">
+            <i class="bi bi-bar-chart-line" style="font-size: 5rem; color: #334155;"></i>
+            <div style="margin-top:20px; color:#64748b; font-size:1.2rem;">Select parameters and run simulation</div>
+        </div>
+
+        <!-- Results Dashboard -->
+        <div id="bt-results" style="display:flex; flex-direction:column; gap:24px; animation:fadeIn 0.5s ease;">
+            
+            <!-- 1. Stats Row -->
+            <div style="display:flex; gap:24px;">
+                <!-- Return -->
+                <div class="bt-stat-card">
+                    <div style="display:flex; justify-content:space-between; align-items:start;">
+                        <div>
+                            <div class="bt-label">Cumulative Return</div>
+                            <div class="bt-val" id="bt-cum-ret">0.0%</div>
+                        </div>
+                        <div class="bt-icon-box" style="background:rgba(59, 130, 246, 0.1); color:#3b82f6;">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                    </div>
+                </div>
+                <!-- Win Rate -->
+                <div class="bt-stat-card">
+                    <div style="display:flex; justify-content:space-between; align-items:start;">
+                        <div>
+                            <div class="bt-label">Win Rate</div>
+                            <div class="bt-val" id="bt-win-rate">0.0%</div>
+                        </div>
+                        <div class="bt-icon-box" style="background:rgba(34, 197, 94, 0.1); color:#4ade80;">
+                            <i class="bi bi-check-lg"></i>
+                        </div>
+                    </div>
+                </div>
+                <!-- Trades -->
+                <div class="bt-stat-card">
+                    <div style="display:flex; justify-content:space-between; align-items:start;">
+                        <div>
+                            <div class="bt-label">Total Trades</div>
+                            <div class="bt-val" id="bt-total-trades">0</div>
+                        </div>
+                        <div class="bt-icon-box" style="background:rgba(251, 191, 36, 0.1); color:#fbbf24;">
+                            <i class="bi bi-layers-fill"></i>
+                        </div>
+                    </div>
+                </div>
+                <!-- Avg Return -->
+                 <div class="bt-stat-card">
+                    <div style="display:flex; justify-content:space-between; align-items:start;">
+                        <div>
+                            <div class="bt-label">Total P&L ($)</div>
+                            <div class="bt-val" id="bt-total-pnl">$0</div>
+                        </div>
+                        <div class="bt-icon-box" style="background:rgba(168, 85, 247, 0.1); color:#a855f7;">
+                            <i class="bi bi-wallet2"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Best Strategy (Replaces Best Pick for better summary) -->
+                 <div class="bt-stat-card" style="border-color: rgba(251, 191, 36, 0.3); background: rgba(251, 191, 36, 0.05);">
+                    <div style="display:flex; justify-content:space-between; align-items:start;">
+                        <div>
+                            <div class="bt-label" style="color:#fbbf24;">Best Strategy</div>
+                            <div class="bt-val" id="bt-best-strat" style="font-size:1.4rem;">-</div>
+                            <div id="bt-best-strat-ret" style="font-size:0.9rem; color:#fcd34d;"></div>
+                        </div>
+                        <div class="bt-icon-box" style="background:rgba(251, 191, 36, 0.1); color:#fbbf24;">
+                            <i class="bi bi-trophy-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Chart Section -->
+            <div class="bt-panel" style="min-height: 400px; display: flex; flex-direction: column;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <div style="font-size: 1.2rem; font-weight:700; color:white; display:flex; align-items:center; gap:10px;">
+                        <i class="bi bi-bar-chart-fill" style="color: #3b82f6;"></i> Return Distribution
+                    </div>
+                    <div style="font-size:0.8rem; color:#94a3b8; background:rgba(255,255,255,0.05); padding:6px 12px; border-radius:12px;">
+                        Performance by Stock
+                    </div>
+                </div>
+                <div id="bt-chart" style="width:100%; flex: 1;"></div>
+            </div>
+            
+            <!-- Hide Empty Chart Message if needed -->
+            <div id="bt-chart-empty" style="display:none; text-align:center; color:#64748b; padding: 40px;">
+                Not enough data points for a curve on a single day.
+            </div>
+
+            <!-- 3. Rankings Row -->
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px; align-items: start;">
+                
+                <!-- Top 5 Stocks -->
+                <div class="bt-panel">
+                    <div style="margin-bottom:16px; font-size: 1.1rem; font-weight:700; color:white; display:flex; align-items:center; gap:10px;">
+                        <i class="bi bi-stars" style="color: #f472b6;"></i> Top 5 Stocks
+                    </div>
+                    <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+                        <tbody id="bt-top-stocks"></tbody>
+                    </table>
+                </div>
+
+                <!-- Top Strategies -->
+                <div class="bt-panel">
+                    <div style="margin-bottom:16px; font-size: 1.1rem; font-weight:700; color:white; display:flex; align-items:center; gap:10px;">
+                        <i class="bi bi-lightning-charge-fill" style="color: #fbbf24;"></i> Strategy Performance
+                    </div>
+                    <div id="winning-strats-list" style="display:flex; flex-direction:column; gap:8px;"></div>
+                </div>
+            </div>
+
+            <!-- 3. Trade Log -->
+            <div class="col-12 mt-4">
+                <div class="card p-4">
+                    <h5 class="card-title mb-4">Trade Log <span id="log-date" class="ms-2 text-muted fw-normal" style="font-size: 0.9rem;"></span></h5>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle">
+                            <thead>
+                                <tr class="text-secondary" style="font-size: 0.85rem;">
+                                    <th>SYMBOL</th>
+                                    <th>STRATEGY</th>
+                                    <th>BUY DATE</th>
+                                    <th>SELL DATE</th>
+                                    <th>HOLDING</th>
+                                    <th>BUY PRICE</th>
+                                    <th>SELL PRICE</th>
+                                    <th>RETURN (%)</th>
+                                    <th>RETURN ($)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bt-trades-body">
+                                <tr>
+                                    <td colspan="9" class="text-center py-5 text-muted">
+                                        Select a date and run the simulation.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PREMIUM ANALYTICS MODAL (Final Vestiq Design) -->
+<div class="modal fade" id="stockCardModal" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(10px);">
+  <div class="modal-dialog modal-fullscreen modal-dialog-centered" style="margin:0;">
+      <div class="modal-content border-0 shadow-2xl" style="background: #0f172a; border: 1px solid rgba(148, 163, 184, 0.2); box-shadow: 0 0 50px rgba(0,0,0,0.8); border-radius: 1rem;">
+          
+          <!-- Modal Header (Vestiq Pick Style) -->
+          <div class="modal-header border-bottom border-gray-800 py-3" style="background: rgba(15, 23, 42, 0.95); display: flex; justify-content: space-between; align-items: center;">
+              <!-- Left: Title + Strategy Badge -->
+              <div class="d-flex align-items-center gap-3">
+                  <h4 class="modal-title text-white fw-bold brand-font mb-0" id="modalTitle" style="font-size:1.5rem;">Trade Details</h4>
+                  <div class="badge bg-slate-800 text-white border border-slate-700 shadow-sm fw-bold rounded-pill px-3 py-2" id="modal-strategy" style="font-size:0.8rem; letter-spacing:1px;">STRATEGY</div>
+              </div>
+              
+              <!-- Right: All Controls -->
+              <div class="d-flex align-items-center gap-3">
+                   <!-- View Toggles -->
+                   <div class="d-flex gap-2 align-items-center" id="modal-view-toggles">
+                      <button onclick="toggleModalView('info')" class="btn btn-sm btn-dark text-gray-400 hover-text-white active-view-btn" id="btn-view-info"><i class="bi bi-card-text"></i></button>
+                      <button onclick="toggleModalView('chart')" class="btn btn-sm btn-dark text-gray-400 hover-text-white" id="btn-view-chart"><i class="bi bi-file-bar-graph"></i></button>
+                   </div>
+
+                   <!-- Chart Tools (shown in chart view) -->
+                   <div id="modal-chart-tools" style="display:none;" class="d-flex align-items-center gap-2">
+                       <!-- Timeframe -->
+                       <div class="d-flex align-items-center p-1 rounded-pill border border-slate-700 bg-slate-800" style="gap:2px;">
+                          <button id="p-btn-daily" class="btn btn-sm rounded-pill text-white fw-bold px-3 py-1 shadow-sm bg-blue-600 border-0" style="font-size:0.75rem;">Daily</button>
+                          <button id="p-btn-weekly" class="btn btn-sm rounded-pill text-slate-300 px-3 py-1 border-0 hover-text-white" style="background:transparent; font-size:0.75rem;">Weekly</button>
+                       </div>
+
+                       <div class="vr bg-gray-500 mx-1" style="height: 18px; opacity: 0.5;"></div>
+
+                       <!-- Tools -->
+                       <button id="toggleStrategyBtn" class="btn btn-outline-secondary btn-sm rounded-pill border-slate-600 hover-bg-slate-700 text-white hover-text-white d-flex align-items-center gap-2 px-3">
+                           <i class="bi bi-lightbulb"></i> <span class="d-none d-xl-inline">Strategy</span>
+                       </button>
+                       <button id="toggleOptionsBtn" class="btn btn-outline-secondary btn-sm rounded-pill border-slate-600 hover-bg-slate-700 text-white hover-text-white d-flex align-items-center gap-2 px-3">
+                           <i class="bi bi-list-columns-reverse"></i> <span class="d-none d-xl-inline">Options</span>
+                       </button>
+                       <button class="btn btn-outline-secondary btn-sm rounded-pill border-slate-600 hover-bg-slate-700 text-white hover-text-white d-flex align-items-center gap-2 px-3">
+                           <i class="bi bi-newspaper"></i> <span class="d-none d-xl-inline">News</span>
+                       </button>
+
+                       <div class="vr bg-gray-500 mx-1" style="height: 18px; opacity: 0.5;"></div>
+                       
+                       <!-- Indicators Toggle -->
+                       <div style="position:relative;">
+                          <button id="toggleChartSettingsBtn" onclick="toggleChartSettings()" class="btn btn-outline-secondary btn-sm rounded-pill border-slate-600 hover-bg-slate-700 text-white hover-text-white d-flex align-items-center gap-2 px-3">
+                              <i class="bi bi-layers"></i> <span>Indicators</span>
+                          </button>
+                          <div id="chart-settings-menu" style="display:none; position:absolute; top:40px; right:0; width:220px; background:#1e293b; border:1px solid #334155; border-radius:12px; padding:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5); z-index:100; max-height:400px; overflow-y:auto;">
+                          </div>
+                       </div>
+                   </div>
+
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+          </div>
+          
+          <div class="modal-body p-0 position-relative" style="height: 100%; background:#0f172a; overflow:hidden;">
+              
+              <!-- VIEW 1: PROFILE (Grid) -->
+              <div id="modal-view-info" style="width:100%; height:100%; overflow-y:auto; padding:3rem; display:flex; flex-direction:column; background:transparent;">
+                   <div style="max-width:1100px; margin:0 auto; width:100%;">
+                       
+                       <!-- Header -->
+                       <!-- Header: Vestiq Pick Style -->
+                       <div class="d-flex align-items-center gap-4 border-bottom border-gray-200 pb-4 mb-4" style="border-color: rgba(255,255,255,0.1) !important;">
+                            <!-- Logo -->
+                            <img id="m-logo" src="" style="width:100px; height:100px; object-fit:contain; border-radius:20px; background:white; padding:8px; border:1px solid #e2e8f0; display:none; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                            
+                            <!-- Logo Placeholder -->
+                            <div id="m-logo-placeholder" style="width:100px; height:100px; border-radius:20px; background:#1e293b; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border:1px solid rgba(255,255,255,0.1); color: #64748b; font-size: 2.5rem; font-weight: 700;">
+                                <span id="logo-text"></span>
+                            </div>
+                            
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-baseline gap-3 mb-1">
+                                    <h1 id="m-symbol" class="text-white fw-bold mb-0" style="font-size:3rem; letter-spacing:-1px;"></h1>
+                                    <h3 id="m-name" class="text-secondary fw-medium mb-0 h4"></h3>
+                                </div>
+                                <div class="d-flex flex-wrap gap-2 mt-2">
+                                    <span id="m-sector" class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-10 rounded-pill px-3"></span>
+                                    <span id="m-industry" class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 rounded-pill px-3"></span>
+                                    <span id="m-cap" class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-10 rounded-pill px-3"></span>
+                                </div>
+                            </div>
+                            
+                            <!-- Header Stats (Return) -->
+                            <div class="text-end">
+                                <div class="fs-6 text-gray-400 mb-1 fw-bold text-uppercase ls-1">Return</div>
+                                <div id="m-return" class="display-5 fw-bold text-white">0.00%</div>
+                                <button onclick="toggleModalView('chart')" class="btn hover-scale d-inline-flex align-items-center gap-2 shadow-sm mt-2" style="background:#0f172a; border:1px solid #3b82f6; color:#ffffff; border-radius:12px; padding: 8px 16px; transition:all 0.2s;">
+                                    <i class="bi bi-file-bar-graph"></i> View Chart
+                                </button>
+                            </div>
+                       </div>
+                       
+                       <!-- TRADE TICKET (New Design) -->
+                       <h5 class="text-gray-400 fw-bold mb-3 text-uppercase fs-6 ls-1 px-1">Trade Journey</h5>
+                       
+                       <div class="d-flex align-items-center justify-content-between p-4 rounded-4 mb-5" style="background:#1e293b; border:1px solid #334155; position:relative; overflow:hidden; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);">
+                            <!-- Decorative Strip -->
+                            <div style="position:absolute; top:0; left:0; width:4px; height:100%; background:#3b82f6;"></div>
+
+                            <!-- Entry -->
+                            <div class="d-flex flex-column ps-3">
+                                <span class="text-uppercase text-gray-500 fw-bold mb-1" style="font-size:0.7rem; letter-spacing:1px;"><i class="bi bi-box-arrow-in-right text-primary me-1"></i> Entry</span>
+                                <div class="d-flex align-items-baseline gap-2">
+                                    <span class="text-white fw-bold fs-3" id="m-buy-price">$0.00</span>
+                                </div>
+                                <span class="text-gray-400" style="font-size:0.85rem;" id="m-buy-date">YYYY-MM-DD</span>
+                            </div>
+
+                            <!-- Journey / Duration -->
+                            <div class="d-flex flex-column align-items-center px-5 flex-grow-1">
+                                <span class="badge rounded-pill bg-slate-800 text-gray-400 mb-2 border border-slate-700 font-monospace" id="m-duration" style="font-size:0.75rem;">0 Days</span>
+                                <div style="width:100%; height:2px; background: linear-gradient(90deg, #3b82f6 0%, #334155 50%, #ef4444 100%); position:relative; opacity:0.5;">
+                                    <i class="bi bi-caret-right-fill" style="position:absolute; right:-6px; top:-5px; color:#ef4444;"></i>
+                                </div>
+                                <span class="badge mt-2" id="m-strategy-badge" style="font-size:0.75rem;">Strategy</span>
+                            </div>
+
+                            <!-- Exit -->
+                            <div class="d-flex flex-column text-end pe-4">
+                                <span class="text-uppercase text-gray-500 fw-bold mb-1" style="font-size:0.7rem; letter-spacing:1px;">Exit <i class="bi bi-box-arrow-right text-danger ms-1"></i></span>
+                                <div class="d-flex align-items-baseline gap-2 justify-content-end">
+                                    <span class="text-white fw-bold fs-3" id="m-sell-price">$0.00</span>
+                                </div>
+                                <span class="text-gray-400" style="font-size:0.85rem;" id="m-sell-date">YYYY-MM-DD</span>
+                            </div>
+
+                            <!-- P/L Result -->
+                            <div class="d-flex flex-column align-items-end ps-4 border-start border-slate-700" style="min-width:180px;">
+                                <span class="text-uppercase text-gray-500 fw-bold mb-1" style="font-size:0.7rem; letter-spacing:1px;">Profit/Loss</span>
+                                <span class="fw-bold fs-2 lh-1 mb-1" id="m-profit-pct" style="color:#4ade80;">+0.00%</span>
+                                <span class="fw-medium text-gray-400" id="m-profit-val">$0.00</span>
+                            </div>
+                       </div>
+                       
+                       <!-- Key Statistics (From Vestiq Pick) -->
+                       <h5 class="text-gray-400 fw-bold mb-3 text-uppercase fs-6 ls-1 px-1">Key Statistics</h5>
+                       <div class="row g-3 mb-5">
+                           <!-- Market Cap -->
+                           <div class="col-6 col-md-3">
+                               <div class="p-4 rounded-4 h-100 position-relative group hover-shadow transition-all" style="background:#1e293b; border:1px solid #334155;"> 
+                                   <div class="text-gray-400 small text-uppercase fw-bold mb-2 d-flex align-items-center gap-2">
+                                       <i class="bi bi-pie-chart-fill text-primary"></i> Market Cap
+                                   </div> 
+                                   <div id="p-cap-val" class="text-white fw-bold fs-5">-</div> 
+                               </div>
+                           </div>
+                           <!-- PBR / ROE -->
+                           <div class="col-6 col-md-3">
+                               <div class="p-4 rounded-4 h-100 position-relative group hover-shadow transition-all" style="background:#1e293b; border:1px solid #334155;"> 
+                                   <div class="text-gray-400 small text-uppercase fw-bold mb-2 d-flex align-items-center gap-2">
+                                       <i class="bi bi-bar-chart-fill text-info"></i> Valuations
+                                   </div> 
+                                   <div class="d-flex gap-3">
+                                       <div><span class="text-gray-500 small">PBR</span> <span id="p-pbr" class="text-white fw-bold">-</span></div>
+                                       <div><span class="text-gray-500 small">ROE</span> <span id="p-roe" class="text-white fw-bold">-</span></div>
+                                   </div>
+                               </div>
+                           </div>
+                           <!-- Beta -->
+                           <div class="col-6 col-md-3">
+                               <div class="p-4 rounded-4 h-100 position-relative group hover-shadow transition-all" style="background:#1e293b; border:1px solid #334155;"> 
+                                   <div class="text-gray-400 small text-uppercase fw-bold mb-2 d-flex align-items-center gap-2">
+                                       <i class="bi bi-activity text-warning"></i> Beta (5Y)
+                                   </div> 
+                                   <div id="p-beta" class="text-white fw-bold fs-5">-</div> 
+                               </div>
+                           </div>
+                           <!-- PE -->
+                           <div class="col-6 col-md-3">
+                               <div class="p-4 rounded-4 h-100 position-relative group hover-shadow transition-all" style="background:#1e293b; border:1px solid #334155;"> 
+                                   <div class="text-gray-400 small text-uppercase fw-bold mb-2 d-flex align-items-center gap-2">
+                                       <i class="bi bi-calculator text-danger"></i> PE Ratio
+                                   </div> 
+                                   <div id="p-pe" class="text-white fw-bold fs-5">-</div> 
+                               </div>
+                           </div>
+                           <!-- EPS -->
+                           <div class="col-6 col-md-3">
+                               <div class="p-4 rounded-4 h-100 position-relative group hover-shadow transition-all" style="background:#1e293b; border:1px solid #334155;"> 
+                                   <div class="text-gray-400 small text-uppercase fw-bold mb-2 d-flex align-items-center gap-2">
+                                       <i class="bi bi-cash-stack text-success"></i> EPS (TTM)
+                                   </div> 
+                                   <div id="p-eps" class="text-white fw-bold fs-5">-</div> 
+                               </div>
+                           </div>
+                           <!-- Dividend -->
+                           <div class="col-6 col-md-3">
+                               <div class="p-4 rounded-4 h-100 position-relative group hover-shadow transition-all" style="background:#1e293b; border:1px solid #334155;"> 
+                                   <div class="text-gray-400 small text-uppercase fw-bold mb-2 d-flex align-items-center gap-2">
+                                       <i class="bi bi-gift text-primary"></i> Dividend
+                                   </div> 
+                                   <div id="p-div" class="text-white fw-bold fs-5">-</div> 
+                               </div>
+                           </div>
+                           <!-- 52W Range -->
+                           <div class="col-6 col-md-3">
+                               <div class="p-4 rounded-4 h-100 position-relative group hover-shadow transition-all" style="background:#1e293b; border:1px solid #334155;"> 
+                                   <div class="text-gray-400 small text-uppercase fw-bold mb-2 d-flex align-items-center gap-2">
+                                       <i class="bi bi-arrow-down-up text-secondary"></i> 52W Range
+                                   </div> 
+                                   <div id="p-range" class="text-white fw-bold fs-6 pt-1">-</div> 
+                               </div>
+                           </div>
+                       </div>
+                       
+                       <!-- Description -->
+                       <h5 class="text-gray-400 fw-bold mb-3 text-uppercase fs-6 ls-1 px-1">About Company</h5>
+                       <div class="p-4 rounded-4 mb-5" style="background:#1e293b; border:1px solid #334155;">
+                           <p id="p-desc" class="text-gray-300 fw-medium mb-0" style="line-height:1.8; font-size:1rem; white-space: pre-line; text-align:justify; color:#cbd5e1 !important;"></p>
+                       </div>
+                       
+                   </div>
+              </div>
+
+              <!-- VIEW 2: CHART -->
+               <div id="modal-view-chart" style="display:none; width:100%; height:100%; position:relative; background:#0f172a;">
+                                      <div id="bt-chart-indicators-card" style="position:absolute; top:80px; left:20px; width:fit-content; max-width:240px; z-index:90; pointer-events:none; display:flex; flex-direction:column; gap:4px;">
+                        <!-- Populated by JS -->
+                    </div>
+                   <div id="modal-chart" style="width: 100%; height: 100%;"></div>
+               </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+<script>
+    let btPicker;
+    let btChartInstance = null; // Equity/Bar Chart
+    let chartModal = null; // Modal Stock Chart
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // Init Date Picker (Single Mode)
+        // Default to 1 week ago as requested
+        const defaultDate = new Date();
+        defaultDate.setDate(defaultDate.getDate() - 7);
+        
+        btPicker = flatpickr("#bt-date-range", {
+            dateFormat: "Y-m-d",
+            defaultDate: defaultDate,
+            theme: "dark"
+        });
+
+        // Initialize ECharts for main chart
+        const chartEl = document.getElementById('bt-chart');
+        btChartInstance = echarts.init(chartEl);
+
+        // Resize Listener
+        window.addEventListener('resize', () => {
+             if(btChartInstance) btChartInstance.resize();
+             if(chartModal) chartModal.resize();
+        });
+
+        // Run Initial Test
+        runBacktest();
+    });
+
+    // Slider Update
+    document.getElementById('bt-hold-days').addEventListener('input', function(e) {
+        document.getElementById('bt-hold-days-val').innerText = e.target.value;
+    });
+    
+    // Animate Value Helper
+    function animateValue(obj, val, suffix) {
+        if(obj) obj.innerHTML = val + suffix;
+        // Simplified for immediate update, logic available below if needed
+    }
+
+    async function runBacktest() {
+        const loadingEl = document.getElementById('bt-loading');
+        const resultsEl = document.getElementById('bt-results');
+        const emptyEl = document.getElementById('bt-empty');
+
+        resultsEl.style.display = 'none';
+        emptyEl.style.display = 'none';
+        loadingEl.style.display = 'flex';
+        
+        const validDates = btPicker.selectedDates;
+        let start_date, end_date;
+        
+        if (validDates.length > 0) {
+            // Single Date Mode: Start = End
+            const d = flatpickr.formatDate(validDates[0], "Y-m-d");
+            start_date = d;
+            end_date = d;
+        } else {
+             alert("Please select a date");
+             loadingEl.style.display = 'none';
+             return;
+        }
+        
+        const hold_days = document.getElementById('bt-hold-days').value;
+        const totalCapital = parseFloat(document.getElementById('bt-capital').value) || 10000;
+
+        try {
+            const res = await fetch("{% url 'scanner:vestiq_pick_backtest' %}", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ start_date, end_date, hold_days })
+            });
+            const data = await res.json();
+            
+            loadingEl.style.display = 'none';
+            
+            if (data.trades.length === 0) {
+                 emptyEl.style.display = 'flex';
+                 return;
+            }
+
+            resultsEl.style.display = 'flex';
+
+            // Update Log Date
+            document.getElementById('log-date').innerText = `Results for ${start_date} (${hold_days} Day Hold)`;
+            
+            // 1. Stats Calculation & Update
+            const winRateEl = document.getElementById('bt-win-rate');
+            const totalTradesEl = document.getElementById('bt-total-trades');
+            const avgRetEl = document.getElementById('bt-cum-ret'); // Using as Avg Ret place? No, ID is bt-cum-ret but label says Cumulative Return. Backend returns avg_return. Let's use avg_return.
+            
+            if(winRateEl) winRateEl.innerText = data.stats.win_rate + '%';
+            if(totalTradesEl) totalTradesEl.innerText = data.stats.total_trades;
+            if(avgRetEl) avgRetEl.innerText = (data.stats.avg_return >= 0 ? '+' : '') + data.stats.avg_return + '%';
+            if(avgRetEl) avgRetEl.style.color = data.stats.avg_return >= 0 ? '#4ade80' : '#f87171';
+
+            let totalPnL = 0;
+            const perStockCapital = data.trades.length > 0 ? (totalCapital / data.trades.length) : 0;
+            
+            // 2. Rankings Calculation
+            
+            // A. Top Stocks
+            const sortedTrades = [...data.trades].sort((a, b) => b.return_pct - a.return_pct);
+            const top5Stocks = sortedTrades.slice(0, 5);
+            
+            // B. Top Strategies
+            const stratMap = {};
+            data.trades.forEach(t => {
+                if(!stratMap[t.strategy]) stratMap[t.strategy] = { total: 0, wins: 0, sumRet: 0, name: t.strategy };
+                stratMap[t.strategy].total++;
+                if(t.return_pct > 0) stratMap[t.strategy].wins++;
+                stratMap[t.strategy].sumRet += t.return_pct;
+            });
+            
+            const stratList = Object.values(stratMap).map(s => ({
+                name: s.name,
+                avgRet: s.sumRet / s.total,
+                winRate: Math.round((s.wins / s.total) * 100)
+            })).sort((a, b) => b.avgRet - a.avgRet); // Sort by avgRet for best strategies
+            
+            const top3Strats = stratList.slice(0, 3);
+
+            // Update Best Strategy Card
+            if(stratList.length > 0) {
+                const best = stratList[0];
+                document.getElementById('bt-best-strat').innerText = best.name;
+                document.getElementById('bt-best-strat-ret').innerHTML = `Avg Return: <span style="color:${best.avgRet >= 0 ? '#4ade80' : '#f87171'}; font-weight:700;">${best.avgRet.toFixed(2)}%</span>`;
+            }
+
+            // Render Top Stocks
+            const stocksBody = document.getElementById('bt-top-stocks');
+            stocksBody.innerHTML = '';
+            top5Stocks.forEach((t, i) => {
+                const color = t.return_pct >= 0 ? '#4ade80' : '#f87171';
+                const stratColor = getStrategyColor(t.strategy);
+                stocksBody.insertAdjacentHTML('beforeend', `
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
+                        <td style="padding:12px 8px; color:#94a3b8; width:30px;">#${i+1}</td>
+                        <td style="padding:12px 8px; font-weight:700; color:white;">${t.symbol}</td>
+                        <td style="padding:12px 8px;"><span style="background:${stratColor}20; color:${stratColor}; border:1px solid ${stratColor}40; padding:3px 8px; border-radius:4px; font-size:0.75rem; font-weight:600;">${t.strategy}</span></td>
+                        <td style="padding:12px 8px; text-align:right; font-weight:700; color:${color};">${t.return_pct > 0 ? '+' : ''}${t.return_pct}%</td>
+                    </tr>
+                `);
+            });
+
+            // Winning Strategies List (Show ALL)
+            const winStratList = document.getElementById('winning-strats-list');
+            winStratList.innerHTML = '';
+            
+            if (stratList.length === 0) {
+                 winStratList.innerHTML = '<div class="text-center text-muted py-3">No strategies active</div>';
+            } else {
+                stratList.forEach((s, index) => {
+                    const rank = index + 1;
+                    let rankIcon = '';
+                    let rankClass = 'text-secondary';
+                    let borderStyle = 'border: 1px solid rgba(255,255,255,0.05);';
+                    
+                    if (rank === 1) {
+                        rankIcon = '🥇';
+                        rankClass = 'text-warning'; // Gold-ish
+                        borderStyle = 'border: 1px solid rgba(251, 191, 36, 0.3); background: rgba(251, 191, 36, 0.05);';
+                    } else if (rank === 2) {
+                        rankIcon = '🥈';
+                        rankClass = 'text-light'; // Silver
+                        borderStyle = 'border: 1px solid rgba(241, 245, 249, 0.3); background: rgba(241, 245, 249, 0.05);';
+                    } else if (rank === 3) {
+                        rankIcon = '🥉';
+                        rankClass = 'text-danger'; // Bronze-ish (using red/orange tone or custom hex)
+                        borderStyle = 'border: 1px solid rgba(251, 146, 60, 0.3); background: rgba(251, 146, 60, 0.05);';
+                    }
+
+                    const stratColor = getStrategyColor(s.name);
+                    
+                    winStratList.innerHTML += `
+                        <div class="d-flex align-items-center justify-content-between p-2 mb-2" style="${borderStyle} border-radius: 8px;">
+                            <div class="d-flex align-items-center gap-2">
+                                <div style="width: 24px; font-size: 1.2rem; text-align: center;">${rankIcon || `<span style="font-size:0.8rem; font-weight:700; color:#64748b;">${rank}</span>`}</div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width: 6px; height: 6px; border-radius: 50%; background: ${stratColor};"></div>
+                                    <span class="text-white fw-medium" style="font-size: 0.95rem;">${s.name}</span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <div class="${s.avgRet >= 0 ? 'text-success' : 'text-danger'} fw-bold" style="font-size: 0.95rem;">
+                                    ${s.avgRet >= 0 ? '+' : ''}${s.avgRet.toFixed(2)}%
+                                </div>
+                                <div class="text-secondary" style="font-size: 0.75rem;">${s.winRate}% Win</div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            // update table
+            const tbody = document.getElementById('bt-trades-body');
+            tbody.innerHTML = '';
+            
+            data.trades.forEach(t => {
+                const dollarReturn = perStockCapital * (t.return_pct / 100);
+                totalPnL += dollarReturn; // Accumulate total PnL
+                const colorClass = t.return_pct >= 0 ? 'text-success' : 'text-danger';
+                const stratColor = getStrategyColor(t.strategy);
+                
+                const tr = document.createElement('tr');
+                tr.style.cursor = 'pointer';
+                tr.onclick = function() {
+                    openStockModal(t.symbol, t.date, t.sell_date, t.buy_price, t.sell_price, t.return_pct, dollarReturn, t.strategy);
+                };
+                
+                tr.innerHTML = `
+                    <td class="fw-bold text-white">${t.symbol}</td>
+                    <td>
+                        <span class="badge" style="background: ${stratColor}20; color: ${stratColor}; border: 1px solid ${stratColor}; font-weight: 600;">
+                            ${t.strategy}
+                        </span>
+                    </td>
+                    <td class="text-secondary">${t.date}</td>
+                    <td class="text-secondary">${t.sell_date}</td>
+                    <td class="text-white">${hold_days} Days</td>
+                    <td class="text-white">$${t.buy_price.toFixed(2)}</td>
+                    <td class="text-white">$${t.sell_price.toFixed(2)}</td>
+                    <td class="${colorClass} fw-bold">${t.return_pct >= 0 ? '+' : ''}${t.return_pct.toFixed(2)}%</td>
+                    <td class="${colorClass} fw-bold">${dollarReturn >= 0 ? '+' : ''}$${dollarReturn.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Update Total P&L stat card
+            const pnlEl = document.getElementById('bt-total-pnl');
+            pnlEl.innerText = (totalPnL >= 0 ? '+' : '') + '$' + totalPnL.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            pnlEl.style.color = totalPnL >= 0 ? '#4ade80' : '#f87171';
+
+
+            // update chart (Bar Chart)
+            renderBarChart(data.trades);
+
+        } catch (e) {
+            console.error(e);
+            loadingEl.style.display = 'none';
+            alert("Simulation Failed: " + e.message);
+        }
+    }
+
+    function getStrategyColor(strategy) {
+        const s = strategy.toLowerCase();
+        
+        // Vestiq Pick Palette
+        if (s.includes('prime')) return '#3b82f6';        // Blue (User Requested)
+        if (s.includes('phoenix')) return '#f97316';      // Orange (Confirmed Correct)
+        if (s.includes('alpha')) return '#10b981';        // Emerald Green
+        if (s.includes('care')) return '#10b981';         // Green
+        if (s.includes('secret')) return '#fbbf24';       // Amber/Gold
+        
+        // Gurum Strategies (Sky Blue)
+        if (s.includes('cross') || s.includes('rocket') || s.includes('perfect') || s.includes('gurum')) {
+            return '#0ea5e9'; // Sky Blue 500
+        }
+        
+        // Directional
+        if (s.includes('buy') || s.includes('long')) return '#22c55e';
+        if (s.includes('sell') || s.includes('short')) return '#ef4444';
+        
+        // Legacy
+        if (s.includes('rsi')) return '#f59e0b';
+        
+        return '#64748b'; // Default Slate
+    }
+
+    function animateValue(id, start, end, duration) {
+        if (start === end) return;
+        const range = end - start;
+        let current = start;
+        const increment = end > start ? 1 : -1;
+        const stepTime = Math.abs(Math.floor(duration / range));
+        const obj = document.getElementById(id);
+        const timer = setInterval(function() {
+            current += increment;
+            obj.innerHTML = current;
+            if (current == end) {
+                clearInterval(timer);
+            }
+        }, stepTime);
+    }
+
+    function renderBarChart(trades) {
+        if (!trades || trades.length === 0) return;
+        
+        const chartDom = document.getElementById('bt-chart');
+        if (!btChartInstance) {
+            btChartInstance = echarts.init(chartDom);
+             window.addEventListener('resize', function() {
+                btChartInstance.resize();
+            });
+        }
+        
+        const symbols = trades.map(t => t.symbol);
+        const returns = trades.map(t => t.return_pct);
+                // --- Persistence & Checkboxes ---
+                const savedSettings = loadChartSettings();
+                
+                // Determine if Kumo strategy (simplistic here, default false or infer from markers/strategy name)
+                const isKumo = true; // Default to showing Kumo options as available
+
+                renderCheckboxes('chart-settings-menu', [
+                    { type: 'header', label: 'Moving Averages' },
+                    { name: 'MA20', label: '<span style="color:#22d3ee">MA20</span>' }, 
+                    { name: 'MA60', label: '<span style="color:#fbbf24">MA60</span>' }, 
+                    { name: 'MA120', label: '<span style="color:#a855f7">MA120</span>' }, 
+                    { name: 'MA200', label: '<span style="color:#f472b6">MA200</span>' },
+                    
+                    { type: 'separator' },
+                    { type: 'header', label: 'Bollinger Bands' },
+                    { name: 'BB Upper', label: 'Show Bands' }, 
+                    
+                    { type: 'separator' },
+                    { type: 'header', label: 'Ichimoku' },
+                    { name: 'Tenkan-Sen', label: '<span style="color:#3b82f6">Tenkan (Conv)</span>' }, 
+                    { name: 'Kijun-Sen', label: '<span style="color:#b91c1c">Kijun (Base)</span>' }, 
+                    { name: 'Senkou A', label: '<span style="color:#22c55e">Senkou A</span>' }, 
+                    { name: 'Senkou B', label: '<span style="color:#ef4444">Senkou B</span>' }, 
+                    { name: 'CloudGreen', label: 'Cloud Fill' },  
+                    { name: 'Chikou', label: '<span style="color:#84cc16">Chikou (Lag)</span>' },
+                ], isKumo);
+
+                const option = {
+                    backgroundColor: 'transparent',
+                    animation: false,
+                legend: {
+                    show: false,
+                    selected: {
+                        'MA20': getInitialVisibility('MA20', savedSettings, isKumo),
+                        'MA60': getInitialVisibility('MA60', savedSettings, isKumo),
+                        'MA120': getInitialVisibility('MA120', savedSettings, isKumo),
+                        'MA200': getInitialVisibility('MA200', savedSettings, isKumo),
+                        
+                        'BB Upper': getInitialVisibility('BB Upper', savedSettings, isKumo),
+                        'BB Lower': getInitialVisibility('BB Lower', savedSettings, isKumo),
+                        'BB Area': getInitialVisibility('BB Area', savedSettings, isKumo),
+                        
+                        'Tenkan': getInitialVisibility('Tenkan', savedSettings, isKumo),
+                        'Kijun': getInitialVisibility('Kijun', savedSettings, isKumo),
+                        'Senkou A': getInitialVisibility('Senkou A', savedSettings, isKumo),
+                        'Senkou B': getInitialVisibility('Senkou B', savedSettings, isKumo),
+                        'Chikou': getInitialVisibility('Chikou', savedSettings, isKumo),
+                        'CloudGreen': getInitialVisibility('CloudGreen', savedSettings, isKumo),
+                        'CloudRed': getInitialVisibility('CloudRed', savedSettings, isKumo),
+                    }
+                },
+                    tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                borderColor: '#334155',
+                textStyle: { color: '#e2e8f0' },
+                formatter: '{b}: <b>{c}%</b>'
+            },
+            grid: { top: 20, right: 20, bottom: 30, left: 50, containLabel: true },
+            xAxis: {
+                type: 'category',
+                data: symbols,
+                axisLine: { lineStyle: { color: '#475569' } },
+                axisLabel: { color: '#94a3b8' }
+            },
+            yAxis: {
+                type: 'value',
+                splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } },
+                axisLabel: { color: '#94a3b8', formatter: '{value}%' }
+            },
+            series: [{
+                data: returns,
+                type: 'bar',
+                barWidth: '40%',
+                itemStyle: {
+                    color: function(params) {
+                        return params.value >= 0 ? '#4ade80' : '#f87171';
+                    },
+                    borderRadius: [4, 4, 0, 0]
+                }
+            }]
+        };
+        btChartInstance.setOption(option);
+    }
+
+    function toggleModalView(view) {
+        const infoView = document.getElementById('modal-view-info');
+        const chartView = document.getElementById('modal-view-chart');
+        const backBtn = document.getElementById('modal-back-btn');
+        const toggleGroup = document.getElementById('modal-view-toggles');
+        const chartTools = document.getElementById('modal-chart-tools');
+        
+        if (view === 'chart') {
+            infoView.style.display = 'none';
+            chartView.style.display = 'block';
+            if(backBtn) backBtn.style.display = 'flex';
+            if(toggleGroup) toggleGroup.style.display = 'none';
+            if(chartTools) chartTools.style.display = 'flex';
+
+            // Render chart if not already done or just resize
+            if(currentModalParams) {
+                setTimeout(() => {
+                    renderModalChart(currentModalParams.symbol, currentModalParams.buyDate, currentModalParams.sellDate);
+                }, 50);
+            }
+        } else {
+            chartView.style.display = 'none';
+            infoView.style.display = 'flex';
+            if(backBtn) backBtn.style.display = 'none';
+            if(toggleGroup) toggleGroup.style.display = 'flex';
+            if(chartTools) chartTools.style.display = 'none';
+        }
+    }
+
+    // --- Chart Settings & Filters Logic ---
+    const CHART_SETTINGS_KEY = 'vestiq_chart_settings_v2';
+    
+    function toggleChartSettings() {
+        const menu = document.getElementById('chart-settings-menu');
+        if (menu) {
+            menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none';
+        }
+    }
+
+    // Close settings when clicking outside
+    document.addEventListener('click', function(e) {
+        const menu = document.getElementById('chart-settings-menu');
+        const btn = document.getElementById('toggleChartSettingsBtn');
+        if (menu && menu.style.display === 'block' && !menu.contains(e.target) && !btn.contains(e.target)) {
+            menu.style.display = 'none';
+        }
+    });
+    
+    function loadChartSettings() {
+        try {
+            const saved = localStorage.getItem(CHART_SETTINGS_KEY);
+            return saved ? JSON.parse(saved) : null;
+        } catch(e) { console.error("Load settings failed", e); return null; }
+    }
+    
+    function saveChartSettings() {
+        const settings = {};
+        document.querySelectorAll('#chart-settings-menu input[type="checkbox"]').forEach(cb => {
+            settings[cb.value] = cb.checked;
+        });
+        // Sync BB Logic
+        if ('BB Upper' in settings) {
+            settings['BB Lower'] = settings['BB Upper'];
+            settings['BB Area'] = settings['BB Upper'];
+        }
+        localStorage.setItem(CHART_SETTINGS_KEY, JSON.stringify(settings));
+    }
+
+    function getInitialVisibility(itemName, savedSettings, isKumo) {
+        const defaults = {
+            'MA20': true, 'MA60': true, 'MA120': true, 'MA200': true,
+            'BB Upper': false, 'BB Lower': false, 'BB Area': false,
+            'Tenkan': true, 'Kijun': true, 'Senkou A': true, 'Senkou B': true,
+            'Chikou': true, 'CloudGreen': true, 'CloudRed': true,
+            'KumoEntry': true, 'KumoStop': true,
+            'Convergence Upper': true, 'Convergence Lower': true
+        };
+        
+        if (savedSettings && itemName in savedSettings) {
+             const val = savedSettings[itemName];
+             if (val !== null && val !== undefined) return val;
+        }
+        
+        // Default behavior for Kumo items if not saved
+        const ichiKeys = ['Tenkan', 'Kijun', 'Senkou A', 'Senkou B', 'Chikou', 'CloudGreen', 'CloudRed', 'KumoEntry', 'KumoStop'];
+        if (ichiKeys.includes(itemName)) {
+            return isKumo; 
+        }
+        
+        return defaults[itemName] ?? true;
+    }
+
+    const renderCheckboxes = (containerId, items, isKumoContext) => {
+        const container = document.getElementById(containerId);
+        if(!container) return;
+        container.innerHTML = ''; 
+
+        const savedSettings = loadChartSettings();
+
+        items.forEach(item => {
+            if (item.type === 'header') {
+                const header = document.createElement('div');
+                header.style.cssText = 'font-size:0.75rem; font-weight:bold; color:#94a3b8; margin-bottom:6px; margin-top:8px; text-transform:uppercase;';
+                header.innerText = item.label;
+                container.appendChild(header);
+                return;
+            }
+            if (item.type === 'separator') {
+                const sep = document.createElement('div');
+                sep.style.cssText = 'height:1px; background:#334155; margin:6px 0;';
+                container.appendChild(sep);
+                return;
+            }
+
+            const isChecked = getInitialVisibility(item.name, savedSettings, isKumoContext);
+
+            const div = document.createElement('div');
+            div.style.cssText = 'display:flex; align-items:center; gap:8px; margin-bottom:4px; cursor:pointer;';
+            div.innerHTML = `
+                <input class="form-check-input mt-0" type="checkbox" id="chk-${item.name.replace(/\s/g,'')}" value="${item.name}" ${isChecked ? 'checked' : ''} style="cursor:pointer; width:14px; height:14px;">
+                <label class="form-check-label small" for="chk-${item.name.replace(/\s/g,'')}" style="cursor:pointer; color:#e2e8f0; font-size:0.85rem;">${item.label}</label>
+            `;
+            container.appendChild(div);
+            
+             // Toggle Logic
+            const toggle = () => {
+                 const cb = div.querySelector('input');
+                 saveChartSettings();
+                 
+                 if(btChartInstance) {
+                     const actionType = cb.checked ? 'legendSelect' : 'legendUnSelect';
+                     btChartInstance.dispatchAction({ type: actionType, name: item.name });
+                    
+                    if(item.name === 'BB Upper') {
+                        btChartInstance.dispatchAction({ type: actionType, name: 'BB Lower' });
+                        btChartInstance.dispatchAction({ type: actionType, name: 'BB Area' });
+                    }
+                 }
+            };
+            div.querySelector('input').addEventListener('change', toggle);
+        });
+    };
+
+    // --- UI Helpers ---
+    async function fetchProfileData(symbol) {
+        // Show placeholders
+        document.getElementById('m-name').innerText = 'Loading...';
+        document.getElementById('m-logo').style.display = 'none';
+        document.getElementById('m-logo-placeholder').style.display = 'flex';
+        
+        try {
+            // Re-use chart API which returns profile data
+            const res = await fetch(`/scanner/chart/${symbol}/?period=daily`);
+            const json = await res.json();
+            
+            if (json.profile) {
+                const p = json.profile;
+                document.getElementById('m-name').innerText = p.name || 'Unknown Company';
+                document.getElementById('m-sector').innerText = p.sector || 'N/A';
+                document.getElementById('m-industry').innerText = p.industry || 'N/A';
+                
+                // Description
+                document.getElementById('p-desc').innerText = p.description || 'No description available.';
+
+                // Format Market Cap
+                const cap = p.market_cap;
+                let capStr = 'N/A';
+                function fmt(n) {
+                    if (!n) return 'N/A';
+                    if (n >= 1e12) return (n / 1e12).toFixed(2) + 'T';
+                    if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+                    if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+                    return n.toLocaleString();
+                }
+                document.getElementById('m-cap').innerText = fmt(cap);
+                document.getElementById('p-cap-val').innerText = fmt(cap);
+                
+                // Other Stats
+                document.getElementById('p-pbr').innerText = p.pbr ? p.pbr.toFixed(2) : '-';
+                document.getElementById('p-roe').innerText = p.roe ? (p.roe * 100).toFixed(2) + '%' : '-';
+                document.getElementById('p-beta').innerText = p.beta ? p.beta.toFixed(2) : '-';
+                document.getElementById('p-pe').innerText = p.per ? p.per.toFixed(2) : '-';
+                document.getElementById('p-eps').innerText = p.eps ? '$' + p.eps.toFixed(2) : '-';
+                document.getElementById('p-div').innerText = p.div ? (p.div * 100).toFixed(2) + '%' : '-';
+                
+                // 52W Range
+                if (p.range_52w) {
+                    const r = p.range_52w;
+                    document.getElementById('p-range').innerHTML = `
+                        <div class="d-flex justify-content-between text-gray-400 small mb-1">
+                            <span>L: $${r.low.toFixed(2)}</span>
+                            <span>H: $${r.high.toFixed(2)}</span>
+                        </div>
+                        <div class="progress" style="height: 4px; background: #334155;">
+                            <div class="progress-bar bg-primary" role="progressbar" 
+                                style="width: ${((r.current - r.low) / (r.high - r.low)) * 100}%"></div>
+                        </div>
+                    `;
+                }
+
+                // Logo
+                if (p.logo_url) {
+                    const logo = document.getElementById('m-logo');
+                    logo.src = p.logo_url;
+                    logo.style.display = 'block';
+                    document.getElementById('m-logo-placeholder').style.display = 'none';
+                }
+            }
+        } catch (e) {
+            console.error("Profile fetch error", e);
+            document.getElementById('m-name').innerText = 'Error Loading Profile';
+        }
+    }
+
+    function updateIndicatorBoard(dataIndex) {
+        if (!chartModal) return;
+        const option = chartModal.getOption();
+        const series = option.series;
+        const container = document.getElementById('bt-chart-indicators-card');
+        if (!series || !container) return;
+
+        // Groups definition
+        const groups = {
+            'Price': { color: '#4ade80', items: ['MA20', 'MA60', 'MA120', 'MA200', 'BB Upper', 'BB Lower'] },
+            'Ichimoku': { color: '#a78bfa', items: ['Tenkan', 'Kijun', 'Chikou', 'CloudGreen', 'CloudRed'] },
+            'Momentum': { color: '#fbbf24', items: ['RSI', 'MACD', 'Signal', 'Hist'] },
+            'Stochastic': { color: '#22d3ee', items: ['Short K', 'Short D', 'Mid K', 'Mid D', 'Long K', 'Long D'] }
+        };
+
+        let html = '';
+        
+        for(const [grpName, grpCtx] of Object.entries(groups)) {
+            let grpVals = [];
+            grpCtx.items.forEach(name => {
+                const s = series.find(x => x.name === name);
+                if (s && s.data && s.data[dataIndex] !== undefined && s.data[dataIndex] !== null) {
+                    let val = s.data[dataIndex];
+                    // Handle array data (like [o, c, l, h] or [x, y])
+                    if (Array.isArray(val)) val = val[1]; // usually Y is index 1
+                    
+                    if (val !== null && val !== undefined) {
+                        grpVals.push({
+                           name: name,
+                           val: typeof val === 'number' ? val.toFixed(2) : val,
+                           color: s.itemStyle?.color || s.lineStyle?.color || '#cbd5e1'
+                        });
+                    }
+                }
+            });
+
+            if (grpVals.length > 0) {
+                 html += `
+                 <div class="p-1 rounded-2 mb-1" style="background:rgba(15, 23, 42, 0.5); border:1px solid #334155;">
+                    <div style="font-size:0.6rem; color:${grpCtx.color}; text-transform:uppercase; font-weight:800; letter-spacing:0.5px; margin-bottom:2px; padding-left:2px;">${grpName}</div>
+                    <div style="display:flex; flex-direction:column;">
+                        ${grpVals.map(v => `
+                            <div style="display:flex; justify-content:space-between; align-items:center; padding:0 2px;">
+                                <span style="color:#94a3b8; font-size:0.65rem;">${v.name}</span>
+                                <span style="font-family:monospace; color:${v.color}; font-weight:600; font-size:0.65rem;">${v.val}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                 </div>`;
+            }
+        }
+        
+        container.innerHTML = html;
+    }
+
+    async function openStockModal(symbol, buyDate, sellDate, buyPrice, sellPrice, returnPct, capitalReturn, strategy) {
+        const modalEl = document.getElementById('stockCardModal');
+        const modal = new bootstrap.Modal(modalEl);
+        
+        // Store for chart rendering
+        currentModalParams = { symbol, buyDate, sellDate };
+
+        // 1. Populate Text Info
+        document.getElementById('m-symbol').innerText = symbol;
+        document.getElementById('logo-text').innerText = symbol[0];
+        
+        // Fetch full profile (Async)
+        fetchProfileData(symbol);
+
+        // Header Return
+        const mReturn = document.getElementById('m-return');
+        mReturn.innerText = (returnPct >= 0 ? '+' : '') + parseFloat(returnPct).toFixed(2) + '%';
+        mReturn.style.color = returnPct >= 0 ? '#4ade80' : '#f87171';
+
+        // 2. Populate Trade Ticket
+        document.getElementById('m-buy-price').innerText = '$' + parseFloat(buyPrice).toFixed(2);
+        document.getElementById('m-buy-date').innerText = buyDate;
+        
+        document.getElementById('m-sell-price').innerText = '$' + parseFloat(sellPrice).toFixed(2);
+        document.getElementById('m-sell-date').innerText = sellDate;
+        
+        // Duration
+        const d1 = new Date(buyDate);
+        const d2 = new Date(sellDate);
+        const diffTime = Math.abs(d2 - d1);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        document.getElementById('m-duration').innerText = diffDays + " Days";
+
+        // Ticket Result
+        const rEl = document.getElementById('m-profit-pct');
+        const dEl = document.getElementById('m-profit-val');
+        
+        rEl.innerText = (returnPct >= 0 ? '+' : '') + parseFloat(returnPct).toFixed(2) + '%';
+        rEl.style.color = returnPct >= 0 ? '#4ade80' : '#f87171';
+        
+        dEl.innerText = (capitalReturn >= 0 ? '+' : '') + '$' + parseFloat(capitalReturn).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        dEl.className = returnPct >= 0 ? 
+            "fw-medium text-success badge bg-success bg-opacity-10 border border-success border-opacity-10 rounded-pill px-3" : 
+            "fw-medium text-danger badge bg-danger bg-opacity-10 border border-danger border-opacity-10 rounded-pill px-3";
+
+        // Strategy Badge
+        document.getElementById('m-strategy-badge').innerText = strategy;
+        
+        // Reset View
+        toggleModalView('info');
+        
+        modal.show();
+    }
+
+    async function renderModalChart(symbol, buyDate, sellDate) {
+    const chartDiv = document.getElementById('modal-chart');
+    
+    if (chartModal) {
+        chartModal.dispose();
+    }
+    chartModal = echarts.init(chartDiv);
+    chartModal.showLoading({ color: '#3b82f6', maskColor: 'rgba(15, 23, 42, 0.95)', textColor: '#94a3b8', text: 'Loading Advanced Chart...' });
+
+    try {
+        const response = await fetch(`/scanner/chart/${symbol}/?period=daily`); 
+        if (!response.ok) throw new Error("Chart API error");
+        const data = await response.json();
+        
+        if (!data.ohlcv || !data.ohlcv.length) throw new Error("No chart data");
+
+        // --- Data Prep ---
+        const dates = data.ohlcv.map(d => new Date(d.time * 1000).toISOString().split('T')[0]);
+        const candleData = data.ohlcv.map(d => [d.open, d.close, d.low, d.high]);
+        const volumeData = data.ohlcv.map(d => d.volume);
+        
+        // Helper to align data
+        const alignData = (sourceArr, key = 'value') => {
+            if(!sourceArr) return new Array(dates.length).fill(null);
+            // Assuming time match for simplicity or mapping via map
+            // Since backend loops same DF, direct map should work if length matches
+            if (sourceArr.length === dates.length) return sourceArr.map(x => x && x[key] !== undefined ? x[key] : null);
+            // Fallback map by time
+            const map = new Map();
+            sourceArr.forEach(x => map.set(x.time, x[key]));
+            return data.ohlcv.map(d => map.get(d.time) ?? null);
+        };
+        
+        const ma20 = alignData(data.ma.ma20);
+        const ma60 = alignData(data.ma.ma60);
+        const ma120 = alignData(data.ma.ma120);
+        const ma200 = alignData(data.ma.ma200);
+
+        const bb_u = alignData(data.bb.upper);
+        const bb_l = alignData(data.bb.lower);
+        const bb_diff = bb_u.map((u, i) => (u !== null && bb_l[i] !== null) ? (u - bb_l[i]) : null);
+        
+        const rsi = alignData(data.rsi, 'value');
+        const macd = alignData(data.macd.macd, 'value');
+        const macdSignal = alignData(data.macd.signal, 'value');
+        const macdHist = alignData(data.macd.diff, 'value');
+
+        const sk_s = alignData(data.stoch.s, 'k'); const sd_s = alignData(data.stoch.s, 'd');
+        const sk_m = alignData(data.stoch.m, 'k'); const sd_m = alignData(data.stoch.m, 'd');
+        const sk_l = alignData(data.stoch.l, 'k'); const sd_l = alignData(data.stoch.l, 'd');
+
+        // Ichimoku
+        const ichi = data.ichimoku || {};
+        const tenkan = ichi.tenkan || [];
+        const kijun = ichi.kijun || [];
+        const spanA = ichi.span_a || [];
+        const spanB = ichi.span_b || [];
+        const chikou = ichi.chikou || [];
+
+        // Cloud Base/Fill logic
+        const cloudBase = spanA.map((a, i) => (a !== null && spanB[i] !== null) ? Math.min(a, spanB[i]) : null);
+        const cloudGreenDiff = spanA.map((a, i) => (a !== null && spanB[i] !== null && a >= spanB[i]) ? (a - spanB[i]) : 0);
+        const cloudRedDiff = spanA.map((a, i) => (a !== null && spanB[i] !== null && spanB[i] > a) ? (spanB[i] - a) : 0);
+
+        // --- Backtest Markers ---
+        const backtestMarkers = [];
+        const buyIdx = dates.indexOf(buyDate);
+        const sellIdx = dates.indexOf(sellDate);
+        
+        if (buyIdx !== -1) {
+            backtestMarkers.push({
+                name: 'Buy', coord: [buyDate, candleData[buyIdx][2]], value: 'Buy',
+                symbol: 'arrow', symbolSize: 15, symbolRotate: 0, symbolOffset: [0, 10], 
+                itemStyle: { color: '#22c55e' }, // Green Arrow Up
+                label: { show: true, position: 'bottom', formatter: 'Buy', color: '#22c55e', fontWeight: 'bold' }
+            });
+        }
+        if (sellIdx !== -1) {
+            backtestMarkers.push({
+                name: 'Sell', coord: [sellDate, candleData[sellIdx][3]], value: 'Sell',
+                symbol: 'arrow', symbolSize: 15, symbolRotate: 180, symbolOffset: [0, -10],
+                itemStyle: { color: '#f97316' }, // Orange Arrow Down
+                label: { show: true, position: 'top', formatter: 'Sell', color: '#f97316', fontWeight: 'bold' }
+            });
+        }
+        
+        // --- Merge Vestiq Signals (from API) ---
+        if (data.markers && data.markers.length > 0) {
+            data.markers.forEach(m => {
+                // Ensure coordinate format matches simple array [date, price]
+                // API usually sends [dateStr, priceNum] which works with time axis
+                backtestMarkers.push(m);
+            });
+        }
+
+        // --- Render Checkboxes (Populate Indicators Menu) ---
+        // Ensure keys match Series Names exactly!
+        const isKumo = true; 
+        renderCheckboxes('chart-settings-menu', [
+            { type: 'header', label: 'Moving Averages' },
+            { name: 'MA20', label: '<span style="color:#22d3ee">MA20</span>' }, 
+            { name: 'MA60', label: '<span style="color:#fbbf24">MA60</span>' }, 
+            { name: 'MA120', label: '<span style="color:#a855f7">MA120</span>' }, 
+            { name: 'MA200', label: '<span style="color:#f472b6">MA200</span>' },
+            
+            { type: 'separator' },
+            { type: 'header', label: 'Bollinger Bands' },
+            { name: 'BB Upper', label: 'Show Bands' }, 
+            
+            { type: 'separator' },
+            { type: 'header', label: 'Ichimoku' },
+            { name: 'Tenkan', label: '<span style="color:#3b82f6">Tenkan (Conv)</span>' }, 
+            { name: 'Kijun', label: '<span style="color:#b91c1c">Kijun (Base)</span>' }, 
+            { name: 'Senkou A', label: '<span style="color:#22c55e">Senkou A</span>' }, 
+            { name: 'Senkou B', label: '<span style="color:#ef4444">Senkou B</span>' }, 
+            { name: 'CloudGreen', label: 'Cloud Fill' },  
+            { name: 'Chikou', label: '<span style="color:#84cc16">Chikou (Lag)</span>' },
+        ], isKumo);
+
+        const savedSettings = loadChartSettings();
+
+        const option = {
+            backgroundColor: 'transparent', animation: false,
+            tooltip: { 
+                trigger: 'axis', axisPointer: { type: 'cross', label: { show: true, backgroundColor: '#333' } },
+                backgroundColor: 'rgba(15, 23, 42, 0.95)', borderColor: '#334155', borderWidth: 1, textStyle: { color: '#f1f5f9' },
+                position: function (pos, params, dom, rect, size) {
+                    var obj = {top: 10};
+                    obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 5;
+                    return obj;
+                },
+                formatter: function (params) {
+                    if (params && params.length > 0 && params[0].dataIndex !== undefined) {
+                         // Update Indicator Board
+                         requestAnimationFrame(() => updateIndicatorBoard(params[0].dataIndex));
+                         
+                         // Simple formatted tooltip
+                         let date = params[0].axisValue;
+                         let res = `<div class="fw-bold border-bottom border-secondary mb-1 pb-1 text-white small">${date}</div>`;
+                         
+                         // Minimal tooltip (Price + Vol)
+                         const price = params.find(p => p.seriesName === 'Price');
+                         if(price && price.value) {
+                             const [o, c, l, h] = price.value.slice(1);
+                             const color = c >= o ? '#4ade80' : '#f87171';
+                             res += `<div class="d-flex gap-2 small" style="font-family:monospace;">
+                                 <span class="text-gray-400">O:</span><span style="color:${color}">${o}</span>
+                                 <span class="text-gray-400">C:</span><span style="color:${color}">${c}</span>
+                             </div>`;
+                         }
+                         return res;
+                    }
+                    return '';
+                }
+            },
+            axisPointer: { link: { xAxisIndex: 'all' }, show: true },
+            grid: [
+                { left: '3%', right: '2%', top: '1%', height: '43%', containLabel: true }, // Price
+                { left: '3%', right: '2%', top: '44.5%', height: '6%', containLabel: true }, // Vol
+                { left: '3%', right: '2%', top: '51.5%', height: '12%', containLabel: true, show: true, borderColor: '#334155', borderWidth: 1 }, // RSI
+                { left: '3%', right: '2%', top: '64.5%', height: '12%', containLabel: true, show: true, borderColor: '#334155', borderWidth: 1 }, // MACD
+                { left: '3%', right: '2%', top: '77.5%', height: '6%', containLabel: true, show: true, borderColor: '#334155', borderWidth: 1 }, // S
+                { left: '3%', right: '2%', top: '84.5%', height: '6%', containLabel: true, show: true, borderColor: '#334155', borderWidth: 1 }, // M
+                { left: '3%', right: '2%', top: '91.5%', height: '6%', containLabel: true, show: true, borderColor: '#334155', borderWidth: 1 }  // L
+            ],
+            xAxis: [
+                { type: 'category', data: dates, gridIndex: 0, show: false, axisLine:{lineStyle:{color:'#334155'}} },
+                { type: 'category', data: dates, gridIndex: 1, show: false, axisLine:{lineStyle:{color:'#334155'}} },
+                { type: 'category', data: dates, gridIndex: 2, show: false, axisLine:{lineStyle:{color:'#334155'}} },
+                { type: 'category', data: dates, gridIndex: 3, show: false, axisLine:{lineStyle:{color:'#334155'}} },
+                { type: 'category', data: dates, gridIndex: 4, show: false, axisLine:{lineStyle:{color:'#334155'}} },
+                { type: 'category', data: dates, gridIndex: 5, show: false, axisLine:{lineStyle:{color:'#334155'}} },
+                { type: 'category', data: dates, gridIndex: 6, show: true, axisLabel: { color: '#94a3b8', showMaxLabel: true }, axisLine:{lineStyle:{color:'#334155'}} }
+            ],
+            yAxis: [
+                { type: 'value', gridIndex: 0, position: 'right', scale: true, splitLine: { show: true, lineStyle: { color: '#1e293b' } }, axisLabel: { color: '#94a3b8' } },
+                { type: 'value', gridIndex: 1, position: 'right', splitLine: { show: false }, axisLabel: { show: false } },
+                { type: 'value', gridIndex: 2, min: 0, max: 100, splitLine: { show: false }, axisLabel: { show: false } }, // RSI
+                { type: 'value', gridIndex: 3, splitLine: { show: false }, axisLabel: { show: false } }, // MACD
+                { type: 'value', gridIndex: 4, min: 0, max: 100, splitLine: { show: false }, axisLabel: { show: false } },
+                { type: 'value', gridIndex: 5, min: 0, max: 100, splitLine: { show: false }, axisLabel: { show: false } },
+                { type: 'value', gridIndex: 6, min: 0, max: 100, splitLine: { show: false }, axisLabel: { show: false } }
+            ],
+            dataZoom: [
+                { type: 'inside', xAxisIndex: [0, 1, 2, 3, 4, 5, 6], start: 60, end: 100 },
+                { type: 'slider', xAxisIndex: [0, 1, 2, 3, 4, 5, 6], bottom: 0, height: 15, borderColor: 'transparent', fillerColor: 'rgba(59, 130, 246, 0.2)' }
+            ],
+            series: [
+                // Price
+                { name: 'Price', type: 'candlestick', xAxisIndex: 0, yAxisIndex: 0, data: candleData, itemStyle: { color: '#22c55e', color0: '#ef4444', borderColor: '#22c55e', borderColor0: '#ef4444' }, markPoint: { data: backtestMarkers, symbolSize: 20 }, z: 10 },
+                
+                // MAs
+                { name: 'MA20', type: 'line', xAxisIndex: 0, yAxisIndex: 0, data: ma20, showSymbol: false, itemStyle: { color: '#22d3ee' }, lineStyle: { width: 1 } },
+                { name: 'MA60', type: 'line', xAxisIndex: 0, yAxisIndex: 0, data: ma60, showSymbol: false, itemStyle: { color: '#fbbf24' }, lineStyle: { width: 1 } },
+                { name: 'MA120', type: 'line', xAxisIndex: 0, yAxisIndex: 0, data: ma120, showSymbol: false, itemStyle: { color: '#a855f7' }, lineStyle: { width: 1 } },
+                { name: 'MA200', type: 'line', xAxisIndex: 0, yAxisIndex: 0, data: ma200, showSymbol: false, itemStyle: { color: '#f472b6' }, lineStyle: { width: 1 } },
+
+                // BB
+                { name: 'BB Lower', type: 'line', xAxisIndex: 0, yAxisIndex: 0, data: bb_l, symbol:'none', lineStyle:{opacity:0}, stack:'bb', silent:true },
+                { name: 'BB Area', type: 'line', xAxisIndex: 0, yAxisIndex: 0, data: bb_diff, symbol:'none', lineStyle:{opacity:0}, areaStyle:{color:'rgba(34, 211, 238, 0.1)'}, stack:'bb', silent:true },
+                { name: 'BB Upper', type: 'line', xAxisIndex: 0, yAxisIndex: 0, data: bb_u, showSymbol: false, itemStyle:{color:'#64748b'}, lineStyle:{width:1, color:'#64748b', opacity:0.5} },
+                
+                // Ichimoku
+                { name: 'CloudBase', type: 'line', xAxisIndex: 0, yAxisIndex: 0, data: cloudBase, symbol: 'none', lineStyle: { opacity: 0 }, stack: 'cloud', silent: true },
+                { name: 'CloudGreen', type: 'line', xAxisIndex: 0, yAxisIndex: 0, data: cloudGreenDiff, symbol: 'none', lineStyle: { opacity: 0 }, stack: 'cloud', areaStyle: { color: 'rgba(34, 197, 94, 0.15)' }, silent: true },
+                { name: 'CloudRed', type: 'line', xAxisIndex: 0, yAxisIndex: 0, data: cloudRedDiff, symbol: 'none', lineStyle: { opacity: 0 }, stack: 'cloud', areaStyle: { color: 'rgba(239, 68, 68, 0.15)' }, silent: true },
+                { name: 'Tenkan', type: 'line', xAxisIndex: 0, yAxisIndex: 0, data: tenkan, showSymbol: false, itemStyle: { color: '#3b82f6' }, lineStyle: { width: 2 } },
+                { name: 'Kijun', type: 'line', xAxisIndex: 0, yAxisIndex: 0, data: kijun, showSymbol: false, itemStyle: { color: '#b91c1c' }, lineStyle: { width: 2 } },
+                { name: 'Chikou', type: 'line', xAxisIndex: 0, yAxisIndex: 0, data: chikou, showSymbol: false, itemStyle: { color: '#84cc16' }, lineStyle: { width: 4 }, connectNulls: false },
+
+                // Sub Charts
+                { name: 'Volume', type: 'bar', xAxisIndex: 1, yAxisIndex: 1, data: volumeData, itemStyle: { color: (p) => (candleData[p.dataIndex][1] >= candleData[p.dataIndex][0]) ? '#22c55e' : '#ef4444' } },
+                { name: 'RSI', type: 'line', xAxisIndex: 2, yAxisIndex: 2, data: rsi, showSymbol: false, itemStyle: { color: '#f59e0b' } },
+                { name: 'MACD', type: 'line', xAxisIndex: 3, yAxisIndex: 3, data: macd, showSymbol: false, itemStyle: { color: '#22d3ee' } },
+                { name: 'Signal', type: 'line', xAxisIndex: 3, yAxisIndex: 3, data: macdSignal, showSymbol: false, itemStyle: { color: '#fbbf24' } },
+                { name: 'Hist', type: 'bar', xAxisIndex: 3, yAxisIndex: 3, data: macdHist, itemStyle: { color: (p) => p.value > 0 ? '#22c55e' : '#ef4444' } },
+                
+                // Stochs
+                { name: 'Short K', type: 'line', xAxisIndex: 4, yAxisIndex: 4, data: sk_s, showSymbol: false, lineStyle: { width: 1, color: '#38bdf8' } },
+                { name: 'Short D', type: 'line', xAxisIndex: 4, yAxisIndex: 4, data: sd_s, showSymbol: false, lineStyle: { width: 1, color: '#fff', type:'dashed', opacity:0.5 } },
+                { name: 'Mid K', type: 'line', xAxisIndex: 5, yAxisIndex: 5, data: sk_m, showSymbol: false, lineStyle: { width: 1, color: '#facc15' } },
+                { name: 'Mid D', type: 'line', xAxisIndex: 5, yAxisIndex: 5, data: sd_m, showSymbol: false, lineStyle: { width: 1, color: '#fff', type:'dashed', opacity:0.5 } },
+                { name: 'Long K', type: 'line', xAxisIndex: 6, yAxisIndex: 6, data: sk_l, showSymbol: false, lineStyle: { width: 1, color: '#f472b6' } },
+                { name: 'Long D', type: 'line', xAxisIndex: 6, yAxisIndex: 6, data: sd_l, showSymbol: false, lineStyle: { width: 1, color: '#fff', type:'dashed', opacity:0.5 } }
+            ]
+        };
+        
+        // Auto Zoom to Trade with Context
+        if(buyIdx !== -1) {
+            const total = dates.length;
+            let startIdx = Math.max(0, buyIdx - 20); // 20 candles before buy
+            let endIdx = sellIdx !== -1 ? Math.min(total-1, sellIdx + 20) : Math.min(total-1, buyIdx + 50);
+            
+            const startPct = (startIdx / total) * 100;
+            const endPct = ((endIdx+1) / total) * 100;
+            option.dataZoom[0].start = startPct;
+            option.dataZoom[0].end = endPct;
+        }
+
+        chartModal.setOption(option);
+        chartModal.hideLoading();
+
+    } catch (e) {
+        console.error("Chart load failed", e);
+        chartModal.hideLoading();
+        chartDiv.innerHTML = '<div class="d-flex align-items-center justify-content-center h-100 text-muted">Chart data unavailable</div>';
+    }
+}
+</script>
+{% endblock %}

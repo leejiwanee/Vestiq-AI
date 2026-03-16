@@ -1,0 +1,2606 @@
+{% extends 'base.html' %}
+{% load static i18n humanize %}
+
+{% block title %}{{ symbol }} - {% trans "Company Profile" %}{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Custom number formatting function (English)
+function formatNumber(num) {
+    if (!num || isNaN(num)) return '-';
+    
+    const absNum = Math.abs(num);
+    const sign = num < 0 ? '-' : '';
+    
+    if (absNum >= 1e9) {
+        return sign + '$' + (absNum / 1e9).toFixed(2) + 'B';
+    } else if (absNum >= 1e6) {
+        return sign + '$' + (absNum / 1e6).toFixed(1) + 'M';
+    } else if (absNum >= 1e3) {
+        return sign + '$' + (absNum / 1e3).toFixed(1) + 'K';
+    } else {
+        return sign + '$' + absNum.toFixed(0);
+    }
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .glass-panel {
+        background: #1e293b;
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+    }
+    .stat-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        transition: transform 0.2s;
+    }
+    .stat-card:hover {
+        background: rgba(255,255,255,0.05);
+        transform: translateY(-2px);
+    }
+    .stat-label { color: #94a3b8; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem; }
+    .stat-value { color: #f8fafc; font-weight: 700; font-size: 1.1rem; }
+    
+    .news-item {
+        display: block;
+        background: rgba(255,255,255,0.02);
+        border-radius: 0.75rem;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+        padding: 1rem;
+    }
+    .news-item:hover {
+        background: rgba(255,255,255,0.05);
+        border-color: rgba(255,255,255,0.1);
+        transform: translateY(-2px);
+        text-decoration: none; 
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 1rem;
+        padding-left: 0.75rem;
+        border-left: 4px solid var(--primary-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row g-4 mb-4 animate__animated animate__fadeIn">
+        <!-- Main Content (Left) -->
+        <div class="col-lg-9 col-12">
+            <!-- Header -->
+            <div class="d-flex align-items-center mb-5">
+                {% if profile.image %}
+                <div class="bg-white bg-opacity-10 p-2 rounded-3 me-3 d-flex align-items-center justify-content-center shadow-lg border border-white border-opacity-10" style="width: 72px; height: 72px;">
+                    <img src="{{ profile.image }}" alt="{{ symbol }}" style="max-width: 100%; max-height: 100%;">
+                </div>
+                {% else %}
+                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-3 d-flex align-items-center justify-content-center me-3 shadow-lg" 
+                     style="width: 72px; height: 72px; font-weight: 800; font-size: 1.75rem; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);">
+                    {{ symbol|slice:":1" }}
+                </div>
+                {% endif %}
+                
+                <div>
+                    <h1 class="h2 text-white fw-bold mb-1">{{ profile.name }} <span class="text-gray-400 fs-4 fw-normal">({{ symbol }})</span></h1>
+                    <div class="text-gray-400 d-flex align-items-center gap-2">
+                        <span class="badge bg-secondary bg-opacity-25 text-gray-300 border border-secondary border-opacity-25 px-2 py-1">{{ profile.exchange }}</span>
+                        <span>{{ profile.sector|default:"-" }}</span>
+                        <span class="text-gray-600">•</span>
+                        <span>{{ profile.industry|default:"-" }}</span>
+                    </div>
+                </div>
+                
+                <div class="ms-auto text-end">
+                     <!-- Price Placeholder -->
+                     {% if profile.price %}
+                     <div class="display-6 fw-bold text-white mb-0" style="letter-spacing: -1px;">${{ profile.price|floatformat:2 }}</div>
+                     <div class="{% if profile.changes > 0 %}text-success{% else %}text-danger{% endif %} fw-bold fs-5 d-flex align-items-center justify-content-end gap-1">
+                         {% if profile.changes > 0 %}<i class="bi bi-caret-up-fill"></i>{% else %}<i class="bi bi-caret-down-fill"></i>{% endif %}
+                         {{ profile.changes|floatformat:2 }}
+                     </div>
+                     {% endif %}
+                </div>
+            </div>
+
+            <!-- About -->
+            <div class="glass-panel p-4 shadow-lg mb-4">
+                <h5 class="section-title">{% trans "About" %} {{ profile.name }}</h5>
+                <p class="text-gray-400 mb-0" style="font-size: 1rem; line-height: 1.7;">
+                    {{ profile.description|default:"No description available." }}
+                </p>
+                {% if profile.website %}
+                <a href="{{ profile.website }}" target="_blank" class="btn btn-primary mt-4 px-4 rounded-pill">
+                    {% trans "Visit Website" %} <i class="bi bi-box-arrow-up-right ms-2"></i>
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Chart -->
+            <!-- Chart with Header -->
+            <div class="glass-panel mb-4 p-0 shadow-lg overflow-hidden">
+                <div class="d-flex justify-content-between align-items-center p-3 border-bottom" style="border-color: rgba(255,255,255,0.05) !important; background: rgba(0,0,0,0.2);">
+                    <h5 class="mb-0 text-white fs-6"><i class="bi bi-graph-up me-2 text-primary"></i>Price Chart</h5>
+                    <button id="btnVestiqPick" class="btn btn-sm btn-outline-warning d-flex align-items-center gap-2" style="border-radius: 20px;">
+                        <i class="bi bi-stars"></i> Check Vestiq Pick
+                    </button>
+                </div>
+                <div class="p-3">
+                    <div id="mainChart" style="width: 100%; height: 750px;"></div>
+                </div>
+            </div>
+        <!-- Financial Dashboard (Charts & High-Level Metrics) -->
+        <div class="glass-panel mb-4 p-4 shadow-lg">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="section-title mb-0"><i class="bi bi-grid-1x2 me-2 text-primary"></i>{% trans "Financial Dashboard" %}</h5>
+                
+                <!-- Global Period Toggle -->
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-gray-400 small">{% trans "Period:" %}</span>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <input type="radio" class="btn-check" name="resPeriod" id="periodAnnual" autocomplete="off" checked onchange="togglePeriod('annual')">
+                        <label class="btn btn-outline-primary" for="periodAnnual">{% trans "Annual" %}</label>
+                        <input type="radio" class="btn-check" name="resPeriod" id="periodQuarter" autocomplete="off" onchange="togglePeriod('quarter')">
+                        <label class="btn btn-outline-primary" for="periodQuarter">{% trans "Quarterly" %}</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 1: Insight Grid (Revenue, Profit, Health) -->
+            <div class="row g-3 mb-4">
+
+                <!-- Card 2: Growth Engine -->
+                <div class="col-md-4">
+                    <div class="premium-card p-3 h-100 position-relative overflow-hidden rounded-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="text-secondary text-uppercase small fw-bold mb-0"><i class="bi bi-rocket-takeoff me-2"></i>Growth Engine</h6>
+                            <span id="badge-revenue-growth" class="badge bg-blue-500 bg-opacity-20 text-blue-300 border border-blue-500 border-opacity-20">Loading...</span>
+                        </div>
+                        <div id="chartRevenue" style="width: 100%; height: 300px;"></div>
+                        <div class="mt-2 px-2">
+                            <p id="insight-revenue" class="small text-gray-400 mb-0" style="line-height: 1.4;">📊 Analyzing revenue trends...</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 2: Profitability -->
+                <div class="col-md-4">
+                    <div class="glass-panel p-3 h-100 position-relative overflow-hidden">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="text-secondary text-uppercase small fw-bold mb-0">
+                                <i class="bi bi-wallet2 me-2"></i>Profitability & EBITDA
+                                <i class="bi bi-info-circle ms-1" data-bs-toggle="tooltip" title="EBITDA: Earnings Before Interest, Taxes, Depreciation, and Amortization. A measure of a company's overall financial performance and is used as an alternative to net income in some circumstances."></i>
+                            </h6>
+                            <span id="badge-net-margin" class="badge bg-purple-500 bg-opacity-20 text-purple-300 border border-purple-500 border-opacity-20">Loading...</span>
+                        </div>
+                        <div id="chartProfit" style="width: 100%; height: 300px;"></div>
+                        <div class="mt-2 px-2">
+                            <p id="insight-profit" class="small text-gray-400 mb-0" style="line-height: 1.4;">💰 Analyzing profitability...</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 3: Financial Health -->
+                <div class="col-md-4">
+                    <div class="glass-panel p-3 h-100 position-relative overflow-hidden">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="text-secondary text-uppercase small fw-bold mb-0"><i class="bi bi-shield-check me-2"></i>Financial Health</h6>
+                            <span id="badge-cash-position" class="badge bg-emerald-500 bg-opacity-20 text-emerald-300 border border-emerald-500 border-opacity-20">Loading...</span>
+                        </div>
+                        <div id="chartCash" style="width: 100%; height: 300px;"></div>
+                        <div class="mt-2 px-2">
+                            <p id="insight-health" class="small text-gray-400 mb-0" style="line-height: 1.4;">💪 Analyzing financial health...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW ROW: Advanced Analysis -->
+            <div class="row g-3 mb-3">
+                <!-- Chart 4: Cash Flow Dynamics -->
+                <div class="col-12 col-xl-4">
+                    <div class="card bg-dark border-0 shadow-sm h-100">
+                        <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center py-3">
+                            <h6 class="text-secondary text-uppercase small fw-bold mb-0">
+                                <i class="bi bi-piggy-bank me-2"></i>Cash Flow Dynamics
+                                <i class="bi bi-info-circle ms-1" data-bs-toggle="tooltip" title="Operating CF: Cash generated from normal business operations. Free Cash Flow (FCF): Operating Cash Flow minus Capital Expenditures (Capex). Represents the cash a company generates after accounting for cash outflows to support operations and maintain its capital assets."></i>
+                            </h6>
+                            <span class="badge bg-success bg-opacity-25 text-success border border-success" id="badge-fcf">FCF Positive</span>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="chartCashFlow" style="height: 220px; width: 100%;"></div>
+                            <div class="mt-2 px-3 pb-3">
+                                <p id="insight-cashflow" class="small text-gray-400 mb-0" style="line-height: 1.4;"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart 5: Capital Efficiency (ROE/ROIC) -->
+                <div class="col-12 col-xl-4">
+                    <div class="card bg-dark border-0 shadow-sm h-100">
+                        <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center py-3">
+                            <h6 class="text-secondary text-uppercase small fw-bold mb-0">
+                                <i class="bi bi-lightning-charge me-2"></i>Capital Efficiency
+                                <i class="bi bi-info-circle ms-1" data-bs-toggle="tooltip" title="ROE (Return on Equity): Net Income divided by Shareholders' Equity. Measures a corporation's profitability and how efficiently it generates those profits. ROA (Return on Assets): Net Income divided by Total Assets."></i>
+                            </h6>
+                            <span class="badge bg-warning bg-opacity-25 text-warning border border-warning" id="badge-roe">ROE Stable</span>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="chartEfficiency" style="height: 220px; width: 100%;"></div>
+                            <div class="mt-2 px-3 pb-3">
+                                <p id="insight-efficiency" class="small text-gray-400 mb-0" style="line-height: 1.4;"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart 6: Solvency Health (Net Debt vs EBITDA) -->
+                <div class="col-12 col-xl-4">
+                    <div class="card bg-dark border-0 shadow-sm h-100">
+                        <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center py-3">
+                            <h6 class="text-secondary text-uppercase small fw-bold mb-0">
+                                <i class="bi bi-shield-check me-2"></i>Solvency Health
+                                <i class="bi bi-info-circle ms-1" data-bs-toggle="tooltip" title="Net Debt: Total Debt minus Cash and Cash Equivalents. Compares a company's total debt to its liquid assets. Net Debt / EBITDA is a ratio used to assess a company's ability to pay back its debt."></i>
+                            </h6>
+                            <span class="badge bg-info bg-opacity-25 text-info border border-info" id="badge-netdebt">Safe Leverage</span>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="chartSolvency" style="height: 220px; width: 100%;"></div>
+                            <div class="mt-2 px-3 pb-3">
+                                <p id="insight-solvency" class="small text-gray-400 mb-0" style="line-height: 1.4;"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 1.5: Efficiency & EPS Trend -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6 col-12">
+                    <div class="glass-panel p-3 h-100 position-relative">
+                         <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="text-secondary text-uppercase small fw-bold mb-0"><i class="bi bi-graph-up-arrow me-2"></i>Margin Trends (Efficiency)</h6>
+                        </div>
+                        <div id="chartMargins" style="width: 100%; height: 250px;"></div>
+                        <div class="mt-2">
+                             <p id="insight-margins" class="small text-gray-400 mb-0" style="line-height: 1.4;"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-12">
+                    <div class="glass-panel p-3 h-100 position-relative">
+                         <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="text-secondary text-uppercase small fw-bold mb-0"><i class="bi bi-wallet2 me-2"></i>EPS Trend</h6>
+                        </div>
+                        <div id="chartQuality" style="width: 100%; height: 250px;"></div>
+                        <div class="mt-2">
+                             <p id="insight-eps" class="small text-gray-400 mb-0" style="line-height: 1.4;"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>     
+            <!-- Row 2: Business Segments (New) -->
+            <div class="row g-3">
+                <div class="col-md-6">
+                     <div class="glass-panel p-3 h-100 position-relative">
+                        <h6 class="text-secondary small fw-bold mb-2"><i class="bi bi-pie-chart me-2"></i>Product Revenue Mix</h6>
+                        <div id="productSegChart" style="width: 100%; height: 250px;"></div>
+                        <div class="mt-2 text-center">
+                             <p id="insight-product" class="small text-gray-400 mb-0" style="line-height: 1.4;"></p>
+                        </div>
+                     </div>
+                </div>
+                 <div class="col-md-6">
+                     <div class="glass-panel p-3 h-100 position-relative">
+                        <h6 class="text-secondary small fw-bold mb-2"><i class="bi bi-globe-americas me-2"></i>Geographic Revenue Mix</h6>
+                        <div id="geoSegChart" style="width: 100%; height: 250px;"></div>
+                        <div class="mt-2 text-center">
+                             <p id="insight-geo" class="small text-gray-400 mb-0" style="line-height: 1.4;"></p>
+                        </div>
+                     </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Detailed Statements (Tables Only) -->
+        <div class="glass-panel p-4 shadow-lg">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="section-title mb-0">{% trans "Detailed Statements" %}</h5>
+            </div>
+
+            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active rounded-pill px-4" id="pills-income-tab" data-bs-toggle="pill" data-bs-target="#pills-income" type="button" role="tab">{% trans "Income" %}</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill px-4" id="pills-balance-tab" data-bs-toggle="pill" data-bs-target="#pills-balance" type="button" role="tab">{% trans "Balance Sheet" %}</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill px-4" id="pills-cashflow-tab" data-bs-toggle="pill" data-bs-target="#pills-cashflow" type="button" role="tab">{% trans "Cash Flow" %}</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="pills-tabContent">
+                <!-- Income Statement -->
+                <div class="tab-pane fade show active" id="pills-income" role="tabpanel">
+                    <!-- V2 Smart Table (Income) -->
+                    {% for pType in periods %}
+                    <div class="table-responsive stmts-{{ pType }} {% if pType == 'quarter' %}d-none{% endif %}">
+                        <table class="table table-dark table-hover align-middle mb-0 financial-sheet" style="background: transparent; font-size: 0.9rem;">
+                            <thead>
+                                <tr class="text-secondary text-uppercase small border-secondary">
+                                    <th class="ps-4" style="width: 35%;">Metric</th>
+                                    <th class="text-center" style="width: 10%;">Trend</th>
+                                    {% if pType == 'annual' %}
+                                        {% for row in financial_stmts.income.annual|slice:":5" %}
+                                        <th class="text-end fw-bold text-gray-300" style="min-width: 100px;">{{ row.date|slice:":4" }}</th>
+                                        {% endfor %}
+                                    {% else %}
+                                        {% for row in financial_stmts.income.quarter|slice:":5" %}
+                                        <th class="text-end fw-bold text-gray-300" style="min-width: 100px;">{{ row.date|slice:"5:7" }}/{{ row.date|slice:"2:4" }}</th>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody class="border-secondary">
+                                <!-- Revenue -->
+                                <tr class="total-row table-active bg-opacity-10 border-top border-secondary">
+                                    <td class="ps-4 fw-bold text-white">Total Revenue</td>
+                                    <!-- Trend Arrow -->
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.income.annual.0.revenue_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.income.quarter.0.revenue_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.income.annual|slice:":5" %}
+                                        <td class="text-end fw-bold text-white">{{ row.revenue|intword }}</td>
+                                    {% endfor %}{% else %}{% for row in financial_stmts.income.quarter|slice:":5" %}
+                                        <td class="text-end fw-bold text-white">{{ row.revenue|intword }}</td>
+                                    {% endfor %}{% endif %}
+                                </tr>
+                                
+                                <!-- Cost & Gross Profit -->
+                                <tr class="text-gray-400">
+                                    <td class="ps-4 text-secondary"><i class="bi bi-dash me-1"></i>Cost of Revenue</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.income.annual.0.cost_of_revenue_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-danger small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-success small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.income.quarter.0.cost_of_revenue_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-danger small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-success small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.income.annual|slice:":5" %}<td class="text-end text-secondary">{{ row.cost_of_revenue|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.income.quarter|slice:":5" %}<td class="text-end text-secondary">{{ row.cost_of_revenue|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+
+                                <tr class="total-row table-active bg-opacity-10 border-top border-secondary">
+                                    <td class="ps-4 fw-bold text-info">Gross Profit</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.income.annual.0.gross_profit_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.income.quarter.0.gross_profit_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.income.annual|slice:":5" %}<td class="text-end fw-bold text-info">{{ row.gross_profit|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.income.quarter|slice:":5" %}<td class="text-end fw-bold text-info">{{ row.gross_profit|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+
+                                <!-- Operating Expenses Breakdown -->
+                                <tr class="text-gray-400">
+                                    <td class="ps-4"><i class="bi bi-flask me-1 text-secondary"></i>R&D Expenses</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.income.annual.0.research_and_development_expenses_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-danger small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-success small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.income.quarter.0.research_and_development_expenses_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-danger small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-success small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.income.annual|slice:":5" %}<td class="text-end text-gray-400">{{ row.rd_expenses|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.income.quarter|slice:":5" %}<td class="text-end text-gray-400">{{ row.rd_expenses|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+                                <tr class="text-gray-400">
+                                    <td class="ps-4"><i class="bi bi-briefcase me-1 text-secondary"></i>SG&A Expenses</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.income.annual.0.selling_general_and_administrative_expenses_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-danger small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-success small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.income.quarter.0.selling_general_and_administrative_expenses_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-danger small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-success small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.income.annual|slice:":5" %}<td class="text-end text-gray-400">{{ row.sga_expenses|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.income.quarter|slice:":5" %}<td class="text-end text-gray-400">{{ row.sga_expenses|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+
+                                <!-- Other Expenses -->
+                                <tr class="text-gray-400">
+                                    <td class="ps-4"><i class="bi bi-three-dots me-1 text-secondary"></i>Other Expenses</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.income.annual.0.other_expenses_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-danger small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-success small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.income.quarter.0.other_expenses_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-danger small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-success small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.income.annual|slice:":5" %}<td class="text-end text-gray-400">{{ row.other_expenses|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.income.quarter|slice:":5" %}<td class="text-end text-gray-400">{{ row.other_expenses|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+
+                                <!-- Total Operating Expenses -->
+                                <tr class="text-gray-400">
+                                    <td class="ps-4 fw-bold">Total Operating Expenses</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.income.annual.0.operating_expenses_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-danger small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-success small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.income.quarter.0.operating_expenses_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-danger small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-success small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.income.annual|slice:":5" %}<td class="text-end text-gray-400">{{ row.operating_expenses|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.income.quarter|slice:":5" %}<td class="text-end text-gray-400">{{ row.operating_expenses|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+
+                                <!-- Operating Income -->
+                                <tr class="total-row table-active bg-opacity-10 border-top border-secondary">
+                                    <td class="ps-4 fw-bold text-white">Operating Income</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.income.annual.0.operating_income_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.income.quarter.0.operating_income_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.income.annual|slice:":5" %}<td class="text-end fw-bold text-white">{{ row.op_income|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.income.quarter|slice:":5" %}<td class="text-end fw-bold text-white">{{ row.op_income|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+
+                                <!-- EBITDA -->
+                                <tr class="text-gray-300">
+                                    <td class="ps-4 fw-bold text-secondary">EBITDA</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.income.annual.0.ebitda_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.income.quarter.0.ebitda_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.income.annual|slice:":5" %}<td class="text-end fw-bold text-secondary">{{ row.ebitda|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.income.quarter|slice:":5" %}<td class="text-end fw-bold text-secondary">{{ row.ebitda|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+
+                                <!-- EBIT -->
+                                <tr class="text-gray-300">
+                                    <td class="ps-4 text-secondary">EBIT</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.income.annual.0.ebit_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.income.quarter.0.ebit_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.income.annual|slice:":5" %}<td class="text-end text-gray-300">{{ row.ebit|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.income.quarter|slice:":5" %}<td class="text-end text-gray-300">{{ row.ebit|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+
+                                <!-- Depreciation & Amortization -->
+                                <tr class="text-gray-400">
+                                    <td class="ps-4 text-secondary"><i class="bi bi-arrow-down-circle me-1"></i>Depreciation & Amortization</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.income.annual.0.depreciation_and_amortization_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-danger small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-success small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.income.quarter.0.depreciation_and_amortization_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-danger small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-success small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.income.annual|slice:":5" %}<td class="text-end text-gray-400">{{ row.depreciation_and_amortization|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.income.quarter|slice:":5" %}<td class="text-end text-gray-400">{{ row.depreciation_and_amortization|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+
+                                <!-- Interest Income -->
+                                <tr class="text-gray-300">
+                                    <td class="ps-4 text-secondary"><i class="bi bi-plus-circle me-1"></i>Interest Income</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.income.annual.0.interest_income_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.income.quarter.0.interest_income_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.income.annual|slice:":5" %}<td class="text-end text-gray-300">{{ row.interest_income|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.income.quarter|slice:":5" %}<td class="text-end text-gray-300">{{ row.interest_income|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+
+                                <!-- Interest Expense -->
+                                <tr class="text-gray-400">
+                                    <td class="ps-4 text-secondary"><i class="bi bi-dash-circle me-1"></i>Interest Expense</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.income.annual.0.interest_expense_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-danger small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-success small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.income.quarter.0.interest_expense_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-danger small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-success small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.income.annual|slice:":5" %}<td class="text-end text-gray-400">{{ row.interest_expense|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.income.quarter|slice:":5" %}<td class="text-end text-gray-400">{{ row.interest_expense|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+
+                                <!-- Total Other Income/Expenses -->
+                                <tr class="text-gray-300">
+                                    <td class="ps-4 text-secondary">Total Other Income/Expenses (Net)</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.income.annual.0.total_other_income_expenses_net_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.income.quarter.0.total_other_income_expenses_net_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.income.annual|slice:":5" %}<td class="text-end text-gray-300">{{ row.total_other_income_expenses_net|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.income.quarter|slice:":5" %}<td class="text-end text-gray-300">{{ row.total_other_income_expenses_net|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+
+                                <!-- Income Before Tax -->
+                                <tr class="total-row table-active bg-opacity-10 border-top border-secondary">
+                                    <td class="ps-4 fw-bold text-white">Income Before Tax</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.income.annual.0.income_before_tax_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.income.quarter.0.income_before_tax_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.income.annual|slice:":5" %}<td class="text-end fw-bold text-white">{{ row.income_before_tax|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.income.quarter|slice:":5" %}<td class="text-end fw-bold text-white">{{ row.income_before_tax|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+
+                                <!-- Income Tax Expense -->
+                                <tr class="text-gray-400">
+                                    <td class="ps-4 text-secondary"><i class="bi bi-dash me-1"></i>Income Tax Expense</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.income.annual.0.income_tax_expense_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-danger small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-success small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.income.quarter.0.income_tax_expense_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-danger small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-success small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.income.annual|slice:":5" %}<td class="text-end text-gray-400">{{ row.income_tax_expense|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.income.quarter|slice:":5" %}<td class="text-end text-gray-400">{{ row.income_tax_expense|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+
+                                <!-- Net Income -->
+                                <tr class="total-row table-active bg-opacity-25 border-top border-secondary" style="border-bottom: 2px solid #6c757d;">
+                                    <td class="ps-4 fw-bold text-warning">Net Income</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.income.annual.0.net_income_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.income.quarter.0.net_income_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.income.annual|slice:":5" %}<td class="text-end fw-bold text-warning">{{ row.net_income|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.income.quarter|slice:":5" %}<td class="text-end fw-bold text-warning">{{ row.net_income|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+
+                                <!-- EPS -->
+                                <tr>
+                                    <td class="ps-4 text-white text-opacity-75 small">EPS (Diluted)</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.income.annual.0.eps_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.income.quarter.0.eps_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.income.annual|slice:":5" %}<td class="text-end text-white text-opacity-75">{{ row.eps|floatformat:2 }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.income.quarter|slice:":5" %}<td class="text-end text-white text-opacity-75">{{ row.eps|floatformat:2 }}</td>{% endfor %}{% endif %}
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Balance Sheet -->
+                <div class="tab-pane fade" id="pills-balance" role="tabpanel">
+                     <div class="d-flex justify-content-between align-items-center mb-4 ps-1">
+                        <h6 class="text-secondary small fw-bold text-uppercase mb-0"><i class="bi bi-bank me-2"></i>Balance Sheet Details</h6>
+                        <span class="badge bg-dark border border-secondary text-gray-400">Assets vs Liabilities</span>
+                    </div>
+
+                    {% for pType in periods %}
+                    <div class="table-responsive stmts-{{ pType }} {% if pType == 'quarter' %}d-none{% endif %}">
+                        <table class="table table-dark table-hover align-middle mb-0 financial-sheet" style="background: transparent; font-size: 0.9rem;">
+                            <thead>
+                                <tr class="text-secondary text-uppercase small border-secondary">
+                                    <th class="ps-4" style="width: 35%;">Metric</th>
+                                    <th class="text-center" style="width: 10%;">Trend</th>
+                                    {% if pType == 'annual' %}
+                                        {% for row in financial_stmts.balance.annual|slice:":5" %}
+                                        <th class="text-end fw-bold text-gray-300" style="min-width: 100px;">{{ row.date|slice:":4" }}</th>
+                                        {% endfor %}
+                                    {% else %}
+                                        {% for row in financial_stmts.balance.quarter|slice:":5" %}
+                                        <th class="text-end fw-bold text-gray-300" style="min-width: 100px;">{{ row.date|slice:"5:7" }}/{{ row.date|slice:"2:4" }}</th>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody class="border-secondary">
+                                <!-- Assets -->
+                                <tr class="total-row">
+                                    <td class="ps-4 fw-bold text-white">Total Assets</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.balance.annual.0.total_assets_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.balance.quarter.0.total_assets_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.balance.annual|slice:":5" %}<td class="text-end fw-bold text-white">{{ row.total_assets|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.balance.quarter|slice:":5" %}<td class="text-end fw-bold text-white">{{ row.total_assets|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+                                <tr>
+                                    <td class="ps-5 text-gray-400">Cash & Equivalents</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.balance.annual.0.cash_and_cash_equivalents_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.balance.quarter.0.cash_and_cash_equivalents_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.balance.annual|slice:":5" %}<td class="text-end text-gray-400">{{ row.cash|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.balance.quarter|slice:":5" %}<td class="text-end text-gray-400">{{ row.cash|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+                                <tr>
+                                    <td class="ps-5 text-gray-400">Total Current Assets</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.balance.annual.0.total_current_assets_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.balance.quarter.0.total_current_assets_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.balance.annual|slice:":5" %}<td class="text-end text-gray-400">{{ row.total_current_assets|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.balance.quarter|slice:":5" %}<td class="text-end text-gray-400">{{ row.total_current_assets|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+
+                                <!-- Liabilities -->
+                                <!-- Liabilities -->
+                                <tr class="total-row table-active bg-opacity-10 border-top border-secondary">
+                                    <td class="ps-4 fw-bold text-white">Total Liabilities</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.balance.annual.0.total_liabilities_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-danger small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-success small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.balance.quarter.0.total_liabilities_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-danger small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-success small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.balance.annual|slice:":5" %}<td class="text-end fw-bold">{{ row.total_liabilities|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.balance.quarter|slice:":5" %}<td class="text-end fw-bold">{{ row.total_liabilities|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+                                <tr>
+                                    <td class="ps-5 text-gray-400">Total Debt</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.balance.annual.0.total_debt_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-danger small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-success small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.balance.quarter.0.total_debt_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-danger small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-success small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.balance.annual|slice:":5" %}<td class="text-end text-gray-400">{{ row.total_debt|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.balance.quarter|slice:":5" %}<td class="text-end text-gray-400">{{ row.total_debt|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+                                
+                                <!-- Equity -->
+                                <tr>
+                                    <td class="ps-5 text-gray-400">Retained Earnings</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.balance.annual.0.retained_earnings_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.balance.quarter.0.retained_earnings_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.balance.annual|slice:":5" %}<td class="text-end text-gray-400">{{ row.retained_earnings|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.balance.quarter|slice:":5" %}<td class="text-end text-gray-400">{{ row.retained_earnings|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+                                <tr class="total-row border-top border-2 border-success table-active bg-opacity-25">
+                                    <td class="ps-4 fw-bold text-success">Total Equity</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.balance.annual.0.total_stockholders_equity_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.balance.quarter.0.total_stockholders_equity_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.balance.annual|slice:":5" %}<td class="text-end fw-bold text-success">{{ row.total_equity|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.balance.quarter|slice:":5" %}<td class="text-end fw-bold text-success">{{ row.total_equity|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Cash Flow -->
+                <div class="tab-pane fade" id="pills-cashflow" role="tabpanel">
+                     <div class="d-flex justify-content-between align-items-center mb-4 ps-1">
+                        <h6 class="text-secondary small fw-bold text-uppercase mb-0"><i class="bi bi-cash-stack me-2"></i>Cash Flow Details</h6>
+                        <span class="badge bg-dark border border-secondary text-gray-400">Operating & Free Cash Flow</span>
+                    </div>
+
+                    {% for pType in periods %}
+                    <div class="table-responsive stmts-{{ pType }} {% if pType == 'quarter' %}d-none{% endif %}">
+                        <table class="table table-dark table-hover align-middle mb-0 financial-sheet" style="background: transparent; font-size: 0.9rem;">
+                            <thead>
+                                <tr class="text-secondary text-uppercase small border-secondary">
+                                    <th class="ps-4" style="width: 35%;">Metric</th>
+                                    <th class="text-center" style="width: 10%;">Trend</th>
+                                    {% if pType == 'annual' %}
+                                        {% for row in financial_stmts.cashflow.annual|slice:":5" %}
+                                        <th class="text-end fw-bold text-gray-300" style="min-width: 100px;">{{ row.date|slice:":4" }}</th>
+                                        {% endfor %}
+                                    {% else %}
+                                        {% for row in financial_stmts.cashflow.quarter|slice:":5" %}
+                                        <th class="text-end fw-bold text-gray-300" style="min-width: 100px;">{{ row.date|slice:"5:7" }}/{{ row.date|slice:"2:4" }}</th>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody class="border-secondary">
+                                <!-- OPERATING -->
+                                <tr class="table-active bg-opacity-10"><td colspan="10" class="ps-4 fw-bold text-info small">OPERATING ACTIVITIES</td></tr>
+                                <tr>
+                                    <td class="ps-4 text-gray-300">Net Income</td>
+                                    <td class="text-center"></td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.cashflow.annual|slice:":5" %}<td class="text-end text-gray-300">{{ row.net_income|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.cashflow.quarter|slice:":5" %}<td class="text-end text-gray-300">{{ row.net_income|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+                                <tr>
+                                    <td class="ps-4 text-gray-300">Depreciation & Amort.</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.cashflow.annual.0.depreciation_and_amortization_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.cashflow.quarter.0.depreciation_and_amortization_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.cashflow.annual|slice:":5" %}<td class="text-end text-gray-300">{{ row.depreciation_and_amortization|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.cashflow.quarter|slice:":5" %}<td class="text-end text-gray-300">{{ row.depreciation_and_amortization|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+                                <tr>
+                                    <td class="ps-4 text-gray-300">Stock Based Comp</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.cashflow.annual.0.stock_based_compensation_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.cashflow.quarter.0.stock_based_compensation_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.cashflow.annual|slice:":5" %}<td class="text-end text-gray-300">{{ row.stock_based_compensation|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.cashflow.quarter|slice:":5" %}<td class="text-end text-gray-300">{{ row.stock_based_compensation|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+                                <tr>
+                                    <td class="ps-4 text-gray-300">Working Capital Change</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.cashflow.annual.0.change_in_working_capital_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.cashflow.quarter.0.change_in_working_capital_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.cashflow.annual|slice:":5" %}<td class="text-end text-gray-300">{{ row.change_in_working_capital|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.cashflow.quarter|slice:":5" %}<td class="text-end text-gray-300">{{ row.change_in_working_capital|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+                                <tr class="total-row border-top border-secondary">
+                                    <td class="ps-4 fw-bold text-white">Cash from Operating</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.cashflow.annual.0.net_cash_provided_by_operating_activities_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.cashflow.quarter.0.net_cash_provided_by_operating_activities_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.cashflow.annual|slice:":5" %}<td class="text-end fw-bold text-white">{{ row.net_cash_provided_by_operating_activities|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.cashflow.quarter|slice:":5" %}<td class="text-end fw-bold text-white">{{ row.net_cash_provided_by_operating_activities|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+                                
+                                <!-- INVESTING -->
+                                <tr><td colspan="10" style="height: 10px;"></td></tr>
+                                <tr class="table-active bg-opacity-10"><td colspan="10" class="ps-4 fw-bold text-warning small">INVESTING ACTIVITIES</td></tr>
+                                <tr>
+                                    <td class="ps-4 text-gray-300">Capital Expenditure</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.cashflow.annual.0.capital_expenditure_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.cashflow.quarter.0.capital_expenditure_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.cashflow.annual|slice:":5" %}<td class="text-end text-gray-300">{{ row.capital_expenditure|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.cashflow.quarter|slice:":5" %}<td class="text-end text-gray-300">{{ row.capital_expenditure|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+                                <tr>
+                                    <td class="ps-4 text-gray-300">Acquisitions</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.cashflow.annual.0.acquisitions_net_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.cashflow.quarter.0.acquisitions_net_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.cashflow.annual|slice:":5" %}<td class="text-end text-gray-300">{{ row.acquisitions_net|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.cashflow.quarter|slice:":5" %}<td class="text-end text-gray-300">{{ row.acquisitions_net|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+                                <tr>
+                                    <td class="ps-4 text-gray-300">Investments</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.cashflow.annual.0.investments_in_property_plant_and_equipment_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.cashflow.quarter.0.investments_in_property_plant_and_equipment_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.cashflow.annual|slice:":5" %}<td class="text-end text-gray-300">{{ row.investments_in_property_plant_and_equipment|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.cashflow.quarter|slice:":5" %}<td class="text-end text-gray-300">{{ row.investments_in_property_plant_and_equipment|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+                                <tr class="total-row border-top border-secondary">
+                                    <td class="ps-4 fw-bold text-white">Cash from Investing</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.cashflow.annual.0.net_cash_used_for_investing_activities_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.cashflow.quarter.0.net_cash_used_for_investing_activities_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.cashflow.annual|slice:":5" %}<td class="text-end fw-bold text-white">{{ row.net_cash_used_for_investing_activities|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.cashflow.quarter|slice:":5" %}<td class="text-end fw-bold text-white">{{ row.net_cash_used_for_investing_activities|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+
+                                <!-- FINANCING -->
+                                <tr><td colspan="10" style="height: 10px;"></td></tr>
+                                <tr class="table-active bg-opacity-10"><td colspan="10" class="ps-4 fw-bold text-success small">FINANCING ACTIVITIES</td></tr>
+                                <tr>
+                                    <td class="ps-4 text-gray-300">Debt Repayment</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.cashflow.annual.0.debt_repayment_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.cashflow.quarter.0.debt_repayment_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.cashflow.annual|slice:":5" %}<td class="text-end text-gray-300">{{ row.debt_repayment|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.cashflow.quarter|slice:":5" %}<td class="text-end text-gray-300">{{ row.debt_repayment|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+                                <tr>
+                                    <td class="ps-4 text-gray-300">Stock Repurchased</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.cashflow.annual.0.common_stock_repurchased_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.cashflow.quarter.0.common_stock_repurchased_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.cashflow.annual|slice:":5" %}<td class="text-end text-gray-300">{{ row.common_stock_repurchased|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.cashflow.quarter|slice:":5" %}<td class="text-end text-gray-300">{{ row.common_stock_repurchased|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+                                <tr>
+                                    <td class="ps-4 text-gray-300">Dividends Paid</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.cashflow.annual.0.dividends_paid_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.cashflow.quarter.0.dividends_paid_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.cashflow.annual|slice:":5" %}<td class="text-end text-gray-300">{{ row.dividends_paid|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.cashflow.quarter|slice:":5" %}<td class="text-end text-gray-300">{{ row.dividends_paid|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+                                <tr class="total-row border-top border-secondary">
+                                    <td class="ps-4 fw-bold text-white">Cash from Financing</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.cashflow.annual.0.net_cash_used_provided_by_financing_activities_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.cashflow.quarter.0.net_cash_used_provided_by_financing_activities_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.cashflow.annual|slice:":5" %}<td class="text-end fw-bold text-white">{{ row.net_cash_used_provided_by_financing_activities|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.cashflow.quarter|slice:":5" %}<td class="text-end fw-bold text-white">{{ row.net_cash_used_provided_by_financing_activities|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+                                
+                                <tr class="total-row border-top border-2 border-primary table-active bg-opacity-25">
+                                    <td class="ps-4 fw-bold text-primary">Free Cash Flow</td>
+                                    <td class="text-center">
+                                        {% if pType == 'annual' %}
+                                            {% with t=financial_stmts.cashflow.annual.0.free_cash_flow_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with t=financial_stmts.cashflow.quarter.0.free_cash_flow_trend|default:0 %}
+                                                {% if t > 0 %}<span class="text-success small">▲ {{ t|floatformat:1 }}%</span>
+                                                {% elif t < 0 %}<span class="text-danger small">▼ {{ t|floatformat:1 }}%</span>
+                                                {% else %}<span class="text-secondary small">-</span>{% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                    {% if pType == 'annual' %}{% for row in financial_stmts.cashflow.annual|slice:":5" %}<td class="text-end fw-bold text-primary">{{ row.free_cash_flow|intword }}</td>{% endfor %}
+                                    {% else %}{% for row in financial_stmts.cashflow.quarter|slice:":5" %}<td class="text-end fw-bold text-primary">{{ row.free_cash_flow|intword }}</td>{% endfor %}{% endif %}
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <!-- Right Column: Fundamentals & News -->
+        <div class="col-lg-3 animate__animated animate__fadeInRight">
+            <!-- Key Stats -->
+            <div class="glass-panel p-4 mb-4 shadow-lg premium-card border-0">
+                <h5 class="section-title mb-4">{% trans "Fundamentals" %}</h5>
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="stat-card h-100 p-2 rounded-3 bg-dark bg-opacity-25 border border-secondary border-opacity-25">
+                            <div class="stat-label text-uppercase text-xs text-secondary fw-bold mb-1">{% trans "Market Cap" %}</div>
+                            <div class="stat-value text-white fw-bold fs-5">{{ fundamentals.market_cap|intword|default:"-" }}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 52-Week Range Visual Slider -->
+                    <div class="col-12 order-last order-md-2 mt-3 mb-2">
+                        <div class="stat-card h-100 p-3 rounded-3 bg-dark bg-opacity-25 border border-secondary border-opacity-25">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="stat-label text-uppercase text-xs text-secondary fw-bold">52 Week Range</span>
+                                <span class="text-white fw-bold small">{{ profile.price|default:"-" }}</span>
+                            </div>
+                            <div class="range-slider-container position-relative rounded-pill bg-dark border border-secondary border-opacity-25 mt-2" id="rangeSliderContainer" 
+                                 data-low="{{ profile.year_low|default:0 }}" 
+                                 data-high="{{ profile.year_high|default:100 }}" 
+                                 data-current="{{ profile.price|default:0 }}"
+                                 style="height: 12px;"> <!-- Thicker Bar -->
+                                <div class="range-slider-bar rounded-pill" style="height: 100%; width: 0%; opacity: 0.8; transition: width 1s ease;"></div>
+                                <div class="range-marker position-absolute top-50 translate-middle" id="rangeMarker" 
+                                     style="left: 0%; width: 18px; height: 18px; background: #fff; border: 3px solid #0d6efd; border-radius: 50%; box-shadow: 0 0 10px rgba(13, 110, 253, 0.8); cursor: pointer; transition: left 1s ease;"></div>
+                            </div>
+                            <div class="d-flex justify-content-between font-monospace small mt-1">
+                                <span class="range-label text-white-50" style="font-size: 0.85rem;">{{ profile.year_low|default:"-" }}</span>
+                                <span class="range-label text-white-50" style="font-size: 0.85rem;">{{ profile.year_high|default:"-" }}</span>
+                            </div>
+                            
+                            <script>
+                                document.addEventListener('DOMContentLoaded', ()=> {
+                                    try {
+                                        const container = document.getElementById('rangeSliderContainer');
+                                        const low = parseFloat(container.dataset.low);
+                                        const high = parseFloat(container.dataset.high);
+                                        const curr = parseFloat(container.dataset.current);
+                                        
+                                        if(!isNaN(low) && !isNaN(high) && !isNaN(curr) && high > low) {
+                                            // Calc Percent
+                                            let pct = ((curr - low) / (high - low)) * 100;
+                                            pct = Math.max(0, Math.min(100, pct)); // Clamp 0-100
+                                            
+                                            // Update Marker
+                                            const marker = document.getElementById('rangeMarker');
+                                            if(marker) marker.style.left = pct + '%';
+                                            
+                                            // Colorize Bar segment (Heatmap Gradient - Neon Style)
+                                            const bar = container.querySelector('.range-slider-bar');
+                                            if(bar) {
+                                                bar.style.width = '100%'; 
+                                                // More vibrant gradient
+                                                bar.style.background = `linear-gradient(90deg, #ef4444 0%, #eab308 ${pct}%, #22c55e 100%)`; 
+                                            }
+                                        }
+                                    } catch(e) { console.error("Range Slider Error", e); }
+                                });
+                            </script>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="stat-card h-100 p-2 rounded-3 bg-dark bg-opacity-25 border border-secondary border-opacity-25">
+                            <div class="stat-label text-uppercase text-xs text-secondary fw-bold mb-1">{% trans "P/E Ratio" %}</div>
+                            <div class="stat-value fw-bold text-info fs-5">{{ fundamentals.pe|floatformat:2|default:"-" }}</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-card h-100 p-2 rounded-3 bg-dark bg-opacity-25 border border-secondary border-opacity-25">
+                            <div class="stat-label text-uppercase text-xs text-secondary fw-bold mb-1">{% trans "EPS (TTM)" %}</div>
+                            <div class="stat-value fw-bold text-white">{{ fundamentals.eps|floatformat:2|default:"-" }}</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-card h-100 p-2 rounded-3 bg-dark bg-opacity-25 border border-secondary border-opacity-25">
+                            <div class="stat-label text-uppercase text-xs text-secondary fw-bold mb-1">{% trans "P/B Ratio" %}</div>
+                            <div class="stat-value fw-bold text-white">{{ fundamentals.pbr|floatformat:2|default:"-" }}</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-card h-100 p-2 rounded-3 bg-dark bg-opacity-25 border border-secondary border-opacity-25">
+                            <div class="stat-label text-uppercase text-xs text-secondary fw-bold mb-1">{% trans "ROE" %}</div>
+                            <div class="stat-value fw-bold {% if fundamentals.roe > 0 %}text-success{% else %}text-danger{% endif %}">
+                                {{ fundamentals.roe|floatformat:2|default:"-" }}%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="stat-card h-100 p-2 rounded-3 bg-dark bg-opacity-25 border border-secondary border-opacity-25">
+                            <div class="stat-label text-uppercase text-xs text-secondary fw-bold mb-1">{% trans "CEO" %}</div>
+                            <div class="stat-value text-white small text-truncate" title="{{ profile.ceo }}">{{ profile.ceo|default:"-" }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- News -->
+            <div class="glass-panel p-4 shadow-lg">
+                <h5 class="section-title">{% trans "Recent News" %}</h5>
+             <!-- Latest News (Redesigned) -->
+            <div class="glass-panel p-4 shadow-lg animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+                <h5 class="section-title mb-4"><i class="bi bi-newspaper me-2"></i>{% trans "Latest News" %}</h5>
+                
+                <div class="news-feed" style="max-height: 600px; overflow-y: auto;">
+                    {% if news_list %}
+                        {% for news in news_list %}
+                        <a href="{{ news.link }}" target="_blank" class="text-decoration-none text-reset">
+                            <div class="news-item d-flex align-items-start mb-4 p-3 rounded-3 position-relative" style="transition: all 0.3s ease; background: rgba(255,255,255,0.03);">
+                                {% if news.image %}
+                                <div class="news-thumb me-3 flex-shrink-0">
+                                    <img src="{{ news.image }}" alt="News Image" class="rounded-3 shadow-sm" style="width: 80px; height: 80px; object-fit: cover;">
+                                </div>
+                                {% endif %}
+                                <div class="news-content flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="badge bg-primary bg-opacity-25 text-primary border border-primary border-opacity-25 rounded-pill px-2 py-1" style="font-size: 0.7rem;">{{ news.site }}</span>
+                                        <small class="text-secondary" style="font-size: 0.75rem;">{{ news.date }}</small>
+                                    </div>
+                                    <h6 class="news-title fw-bold mb-2 text-light" style="font-size: 0.95rem; line-height: 1.4;">{{ news.title|truncatechars:80 }}</h6>
+                                    <div class="d-flex align-items-center">
+                                        <small class="text-primary fw-semibold" style="font-size: 0.8rem;">Read full story <i class="bi bi-arrow-right ms-1"></i></small>
+                                    </div>
+                                </div>
+                                <!-- Hover Overlay -->
+                                <div class="news-hover-overlay position-absolute top-0 start-0 w-100 h-100 rounded-3" style="background: rgba(255,255,255,0.05); opacity: 0; transition: opacity 0.3s;"></div>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-5 text-gray-500">
+                            <i class="bi bi-inbox fs-1 mb-3 d-block opacity-50"></i>
+                            <p>No recent news found.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <style>
+                .news-item:hover {
+                    transform: translateY(-3px);
+                    background: rgba(255,255,255,0.08) !important;
+                    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+                }
+                .news-item:hover .news-hover-overlay {
+                    opacity: 1;
+                }
+                .news-title {
+                    transition: color 0.2s;
+                }
+                .news-item:hover .news-title {
+                    color: #60a5fa !important; /* Blue-400 */
+                }
+                
+                /* Classic Ledger Design (Book Style) */
+                .financial-sheet {
+                    font-family: 'Times New Roman', Times, serif; /* Classic Book Font */
+                    letter-spacing: 0.02em;
+                }
+                .financial-sheet th, .financial-sheet td {
+                    padding: 0.85rem 1rem;
+                    border-bottom: 1px solid rgba(255,255,255,0.1); 
+                }
+                .financial-sheet thead th {
+                    font-family: 'Outfit', sans-serif; /* Keep headers modern sans-serif for readability */
+                    text-transform: uppercase;
+                    font-size: 0.8rem;
+                    letter-spacing: 0.1em;
+                    border-bottom: 2px solid rgba(255,255,255,0.2);
+                    background: rgba(255,255,255,0.02);
+                }
+                
+                /* Double Line for Major Totals (Assets, Liab, Equity) */
+                .financial-sheet tr.total-row td {
+                    border-top: 1px solid rgba(255,255,255,0.3);
+                    border-bottom: 3px double rgba(255,255,255,0.3) !important;
+                    font-weight: bold;
+                    background: rgba(255,255,255,0.05);
+                }
+    /* GLOBAL OVERRIDES */
+    body {
+        background-color: #0f172a !important; /* Slate 900 */
+        color: #f8fafc;
+        font-family: 'Outfit', sans-serif;
+    }
+    
+    /* Tables - Glass Style */
+    .table-glass {
+        color: #e2e8f0;
+        background: transparent !important;
+        border-color: rgba(255,255,255,0.1);
+    }
+    .table-glass th {
+        background: rgba(30, 41, 59, 0.5) !important;
+        color: #94a3b8;
+        border-color: rgba(255,255,255,0.1);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+    }
+    .table-glass td {
+        background: transparent !important;
+        border-color: rgba(255,255,255,0.05);
+        color: #f1f5f9;
+        font-size: 0.9rem;
+    }
+    .table-glass tr:hover td {
+        background: rgba(255,255,255,0.05) !important;
+    }
+
+    /* Tabs - Premium Pills */
+    .nav-pills .nav-link {
+        color: #94a3b8;
+        background: rgba(30, 41, 59, 0.5);
+        border: 1px solid rgba(255,255,255,0.05);
+        margin-right: 0.5rem;
+        border-radius: 9999px; /* Pill */
+        transition: all 0.2s;
+    }
+    .nav-pills .nav-link.active {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: #fff;
+        border-color: transparent;
+        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.5);
+    }
+    
+    /* Text Utilities Override */
+    .text-secondary, .text-muted, .text-gray-400, .text-gray-500, .text-gray-600 {
+        color: #cbd5e1 !important; /* Slate 300 - High Contrast Gray/White */
+    }
+    
+    /* Section Titles */
+    .section-title {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #fff;
+        text-shadow: 0 0 20px rgba(59, 130, 246, 0.3); /* Blue Glow */
+    }
+    
+    /* Premium Card Upgrade - Force Global Apply */
+    .premium-card, .glass-panel, .card {
+        background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%) !important;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 1rem !important; /* Consistent larger radius */
+    }
+    /* Specific override for sub-cards to be slightly lighter/transparent */
+    .stat-card {
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    }
+    
+    .premium-card:hover {
+        border-color: rgba(99, 102, 241, 0.3) !important; 
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1), 0 0 15px rgba(99, 102, 241, 0.15) !important;
+        transform: translateY(-2px);
+    }
+
+    /* Badges */
+    .badge {
+        font-weight: 600;
+        letter-spacing: 0.02em;
+    }
+
+    /* Visual Range Slider */
+    .range-slider-container {
+        position: relative;
+        height: 8px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 4px;
+        margin-top: 10px;
+        margin-bottom: 5px;
+    }
+    .range-slider-bar {
+        position: absolute;
+        top: 0; left: 0; bottom: 0;
+        background: linear-gradient(90deg, #3b82f6, #8b5cf6); /* Blue to Purple */
+        border-radius: 4px;
+    }
+    .range-marker {
+        position: absolute;
+        top: -4px;
+        width: 4px;
+        height: 16px;
+        background: #fff;
+        border-radius: 2px;
+        box-shadow: 0 0 10px rgba(255,255,255,0.8);
+        transform: translateX(-50%);
+        z-index: 2;
+    }
+    .range-label { font-size: 0.7rem; color: #cbd5e1; font-family: 'Outfit'; }
+</style>
+        </div>
+        </div>
+    </div>
+    
+    <!-- Financial Data JSON for JS (Robust Parsing) -->
+    {{ financial_stmts.income|json_script:"income-data" }}
+    {{ financial_stmts.balance|json_script:"balance-data" }}
+    {{ financial_stmts.cashflow|json_script:"cashflow-data" }}
+    {{ financial_stmts.segments|json_script:"segments-data" }}
+    <script id="financial-data-loader">
+        // Safe Loader
+        try {
+            const income = JSON.parse(document.getElementById('income-data').textContent);
+            const balance = JSON.parse(document.getElementById('balance-data').textContent);
+            const cashflow = JSON.parse(document.getElementById('cashflow-data').textContent);
+            const segments = JSON.parse(document.getElementById('segments-data').textContent);
+            var finData = { income, balance, cashflow, segments }; // Global var for profile.js
+            window.finData = finData;
+            console.log("SafeLoader: Financial Data Loaded", finData);
+        } catch(e) { console.error("SafeLoader Error", e); }
+    </script>
+</div>
+    <!-- Vestiq Pick Modal -->
+    <div class="modal fade" id="vestiqPickModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-white" style="background: #1e293b; border: 1px solid rgba(255,255,255,0.1);">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title"><i class="bi bi-stars text-warning me-2"></i>Vestiq Pick Analysis</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pt-2">
+                    <div class="text-center py-4">
+                        <div id="pickStatusIcon" class="mb-3" style="font-size: 3rem;"></div>
+                        <h3 id="pickStatusTitle" class="fw-bold mb-2"></h3>
+                        <p id="pickStatusDesc" class="text-gray-400 small mb-0"></p>
+                    </div>
+                    <div class="p-3 rounded-3 mb-3" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05);">
+                        <h6 class="text-info mb-2 small text-uppercase fw-bold"><i class="bi bi-lightbulb me-1"></i> AI Comment</h6>
+                        <div id="pickAIComment" class="small text-gray-300" style="white-space: pre-line; line-height: 1.6;"></div>
+                    </div>
+                    <div class="text-center text-secondary" style="font-size: 0.75rem;">
+                        <i class="bi bi-info-circle me-1"></i> Choose an option below to view the chart.
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 d-flex gap-2">
+                    <button type="button" class="btn btn-outline-secondary flex-grow-1 rounded-pill" id="btnClosePick" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary flex-grow-1 rounded-pill" id="btnShowSignals" data-bs-dismiss="modal">Show Signals on Chart</button>
+                </div>
+            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Signal Chart -->
+    <div class="modal fade" id="vestiqChartModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen-lg-down modal-xl modal-dialog-centered">
+            <div class="modal-content" style="background: #0f172a; border: 1px solid #334155;">
+                <div class="modal-header border-bottom border-secondary border-opacity-25 py-2">
+                    <h5 class="modal-title text-white fs-6"><i class="bi bi-activity me-2 text-warning"></i>Vestiq Signal Chart</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="signalChartContainer" style="height: 85vh; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Inject Financial Data -->
+{{ financial_stmts|json_script:"financial-data" }}
+<script>
+    let chartInstance = null;
+    let globalData = null;
+    // finData is globally defined by SafeLoader above 
+    // Chart instances
+    let revChart = null;
+    let profChart = null;
+    let cashChart = null;
+    let healthChart = null;
+    let cashFlowChart = null;
+    let efficiencyChart = null;
+    let solvencyChart = null;
+    let marginsChart = null;
+    let qualityChart = null;
+    let prodChart = null;
+    let geoChart = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        const chartDom = document.getElementById('mainChart');
+        if(!chartDom) return;
+
+        // Init Price Chart
+        chartInstance = echarts.init(chartDom);
+        chartInstance.showLoading({ text: 'Loading...', color: '#6366f1', textColor: '#cbd5e1', maskColor: 'rgba(30, 41, 59, 0.4)' });
+        
+        window.addEventListener('resize', () => {
+             chartInstance && chartInstance.resize();
+             resizeAllCharts();
+        });
+
+        // Load Financial Data
+        try {
+            // Already loaded by SafeLoader script above into global 'finData'
+            if(window.finData && window.finData.income && window.finData.balance) {
+                console.log("Rendering Insight Charts with Annual Data...");
+                renderInsightCharts(window.finData.income.annual, window.finData.balance.annual, window.finData.cashflow ? window.finData.cashflow.annual : []);
+            } else {
+                console.warn("Global 'finData' missing or incomplete");
+                 // Try fallback parse if global failed
+                 try {
+                    const text = document.getElementById('financial-data').textContent;
+                    finData = JSON.parse(text);
+                    renderInsightCharts(finData.income.annual, finData.balance.annual, finData.cashflow ? finData.cashflow.annual : []);
+                 } catch(e){ console.warn("Fallback parse failed"); }
+            }
+            console.log("Rendering Segment Charts...");
+            renderSegmentCharts();
+        } catch(e) { console.error("Fin Data Logic Error", e); }
+
+        // Fetch Price Data
+        try {
+            const sym = "{{ symbol }}";
+            const res = await fetch(`/scanner/chart/${sym}/`);
+            const data = await res.json();
+            
+            chartInstance.hideLoading();
+            
+            if(data.ohlcv && data.ohlcv.length) {
+                globalData = data;
+                renderChart(chartInstance, data);
+                setupVestiqPick();
+            } else {
+                chartInstance.dispose();
+                chartDom.innerHTML = '<div class="d-flex h-100 align-items-center justify-content-center text-gray-500">Chart data unavailable</div>';
+            }
+        } catch(e) {
+            console.error("Chart Error:", e);
+            chartInstance.hideLoading();
+            chartDom.innerHTML = '<div class="d-flex h-100 align-items-center justify-content-center text-danger">Failed to load chart</div>';
+        }
+        
+        // Relayout when tabs switch
+        const tabEls = document.querySelectorAll('button[data-bs-toggle="pill"]');
+        tabEls.forEach(tab => {
+            tab.addEventListener('shown.bs.tab', () => resizeAllCharts());
+        });
+        
+        // Format Korean numbers on initial load and tab switches
+        setTimeout(formatKoreanNumbers, 200);
+        tabEls.forEach(tab => {
+            tab.addEventListener('shown.bs.tab', () => setTimeout(formatKoreanNumbers, 50));
+        });
+    });
+
+    function resizeAllCharts() {
+        if(revChart) revChart.resize();
+        if(profChart) profChart.resize();
+        if(cashChart) cashChart.resize();         // Health Chart
+        if(cashFlowChart) cashFlowChart.resize(); // Cash Flow
+        if(efficiencyChart) efficiencyChart.resize(); // Efficiency
+        if(prodChart) prodChart.resize();
+        if(geoChart) geoChart.resize();
+    }
+
+    function togglePeriod(type) {
+        // 1. Toggle Tables
+        document.querySelectorAll('.stmts-annual').forEach(el => el.classList.toggle('d-none', type !== 'annual'));
+        document.querySelectorAll('.stmts-quarter').forEach(el => el.classList.toggle('d-none', type !== 'quarter'));
+        
+        // 2. Toggle Charts (Sync with new Period)
+        if(finData && finData.income && finData.balance) {
+            const iData = finData.income[type] || [];
+            const bData = finData.balance[type] || [];
+            const cData = finData.cashflow ? (finData.cashflow[type] || []) : [];
+            renderInsightCharts(iData, bData, cData);
+        }
+    }
+
+    // Initialize Tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+
+    // V2: Vestiq "Visual Insight" Charts
+    // Globals: revChart, profChart, healthChart defined at top (need to ensure)
+    // New: marginChart
+    let marginChart = null;
+    
+    function renderInsightCharts(iRaw, bRaw, cRaw) {
+        // console.log("renderInsightCharts called. Data Lengths -> Income:", iRaw ? iRaw.length : 0);
+        if(!iRaw || iRaw.length === 0 || !bRaw || bRaw.length === 0) {
+             console.warn("Aborting Chart Render: Empty Data");
+             return;
+        }
+
+        // --- DATA PRE-PROCESSING & ALIGNMENT ---
+        // 1. Determine safe length (min of available datasets to strictly align)
+        // Usually we want last 5 years or 4 quarters.
+        let sliceLen = Math.min(iRaw.length, bRaw.length);
+        if(cRaw && cRaw.length > 0) sliceLen = Math.min(sliceLen, cRaw.length);
+        
+        // Cap at 10 for annual, 8 for quarter to keep charts readable
+        const isQuarterly = (iRaw[0] && iRaw[0].period && iRaw[0].period !== 'FY' && iRaw[0].period !== 'annual');
+        const maxLen = isQuarterly ? 8 : 10;
+        sliceLen = Math.min(sliceLen, maxLen);
+
+        // 2. Normalize & Reverse (FMP is Newest -> Oldest. We want Oldest -> Newest for Charts)
+        // We take the slice from 0 (Newest) to sliceLen, then Reverse.
+        const income = [...iRaw].slice(0, sliceLen).reverse();
+        const balance = [...bRaw].slice(0, sliceLen).reverse();
+        const cashflow = (cRaw && cRaw.length > 0) ? [...cRaw].slice(0, sliceLen).reverse() : [];
+
+        // 3. Generate Common X-Axis Dates (Using Income data as reference)
+        const dates = income.map(d => {
+            if (isQuarterly) {
+                const year = d.calendarYear || d.fiscalYear || d.date.substring(0,4);
+                return `${year} ${d.period}`;
+            }
+            return d.calendarYear || d.fiscalYear || d.date.substring(0,4);
+        });
+        
+        // Generate separate dates for balance sheet (in case different)
+        const balDates = balance.map(d => {
+            if (isQuarterly) {
+                const year = d.calendarYear || d.fiscalYear || d.date.substring(0,4);
+                return `${year} ${d.period}`;
+            }
+            return d.calendarYear || d.fiscalYear || d.date.substring(0,4);
+        });
+
+        // --- 1. Growth Engine (Revenue & Growth) ---
+        if(document.getElementById('chartRevenue')) {
+            const revenues = income.map(d => d.revenue);
+            const growth = income.map(d => {
+                if (d.revenue_growth !== undefined) return parseFloat(d.revenue_growth.toFixed(1)); // Already % from backend
+                if (d.revenueGrowth !== undefined) return parseFloat((d.revenueGrowth * 100).toFixed(1)); // FMP Raw Ratio
+                return 0;
+            });
+            
+            // FMP often sends growth as 0.15 for 15% or sometimes pre-scaled. 
+            // Checking logic: If growth is like 0.1, it's ratio. If 10.0, it's percent. Usually FMP 'revenueGrowth' is ratio (e.g. 0.05).
+            // But 'revenue_growth' in our view might be pre-processed?
+            // Let's assume input 'revenue_growth' from view is raw or ratio.
+            // Wait, standard view output usually just passes FMP dict. FMP is ratio.
+            // Let's adjust scale if needed. If all values are < 1.0 (and not huge drops), valid assumption.
+            // Actually, safest is raw check or rely on existing logic. Existing logic `d.revenue_growth.toFixed(1)` implies it was already %.
+            
+            if(revChart) revChart.dispose();
+            revChart = echarts.init(document.getElementById('chartRevenue'));
+            revChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+                legend: { show: true, bottom: 0, textStyle: { color: '#cbd5e1' } },
+                grid: { top: '15%', left: '2%', right: '2%', bottom: '15%', containLabel: true },
+                xAxis: { type: 'category', data: dates, axisLine: { lineStyle: { color: '#334155' } }, axisLabel: { color: '#94a3b8' } },
+                yAxis: [
+                    { type: 'value', splitLine: { lineStyle: { color: '#334155', type: 'dashed' } }, axisLabel: { color: '#94a3b8', formatter: (v)=> (v/1e9).toFixed(0)+'B' } },
+                    { type: 'value', show: false }
+                ],
+                series: [
+                    { name: 'Revenue', type: 'bar', data: revenues, itemStyle: { borderRadius: [4, 4, 0, 0], color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0, color:'#3b82f6'}, {offset:1, color:'#1e3a8a'}]) } },
+                    { name: 'Growth %', type: 'line', yAxisIndex: 1, data: growth, smooth: true, itemStyle: { color: '#34d399' }, lineStyle: { width: 3 } }
+                ]
+            });
+            
+            // Update Badge
+            const lastG = growth[growth.length-1];
+            const badge = document.getElementById('badge-revenue-growth');
+            const insightEl = document.getElementById('insight-revenue');
+            
+            if(badge) {
+                const sign = lastG > 0 ? "+" : "";
+                badge.innerHTML = `YoY ${sign}${lastG}%`;
+                badge.className = lastG > 0 ? "badge bg-success bg-opacity-25 text-success border border-success" : "badge bg-danger bg-opacity-25 text-danger border border-danger";
+            }
+            
+            // Generate Insight
+            if(insightEl) {
+                const latestRev = revenues[revenues.length-1];
+                const prevRev = revenues[revenues.length-2];
+                const avgGrowth = (growth.reduce((a,b) => a+b, 0) / growth.length).toFixed(1);
+                
+                let insight = "";
+                if(lastG > 20) {
+                    insight = `🚀 <strong>Hyper-Growth Phase.</strong> Revenue surged ${lastG.toFixed(1)}% YoY, indicating exceptional market demand.`;
+                } else if(lastG > 10) {
+                    insight = `📈 <strong>Solid Expansion.</strong> Revenue grew ${lastG.toFixed(1)}% YoY, outperforming historical averages.`;
+                } else if(lastG > 0) {
+                    insight = `✅ <strong>Stable Growth.</strong> Revenue increased ${lastG.toFixed(1)}% YoY. Business remains steady.`;
+                } else {
+                    insight = `⚠️ <strong>Revenue Contraction.</strong> Sales declined ${lastG.toFixed(1)}% YoY. Investigate market headwinds.`;
+                }
+                insightEl.innerHTML = insight;
+            }
+        }
+
+        // --- 2. Profitability ---
+        if(document.getElementById('chartProfit')) {
+            const netInc = income.map(d => d.netIncome || d.net_income);
+            const ebitda = income.map(d => d.ebitda);
+            const margins = income.map(d => {
+                const r = d.revenue;
+                const n = d.netIncome || d.net_income;
+                return r ? parseFloat(((n / r) * 100).toFixed(1)) : 0;
+            });
+            
+            if(profChart) profChart.dispose();
+            profChart = echarts.init(document.getElementById('chartProfit'));
+            profChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+                legend: { show: true, bottom: 0, textStyle: { color: '#e2e8f0' } },
+                grid: { top: '15%', left: '2%', right: '2%', bottom: '15%', containLabel: true },
+                xAxis: { type: 'category', data: dates, axisLine: { lineStyle: { color: '#334155' } }, axisLabel: { color: '#94a3b8' } },
+                yAxis: [
+                    { type: 'value', splitLine: { lineStyle: { color: '#334155', type: 'dashed' } }, axisLabel: { color: '#94a3b8', formatter: (v)=> (v/1e9).toFixed(0)+'B' } },
+                    { type: 'value', show: false }
+                ],
+                series: [
+                    { name: 'Net Income', type: 'bar', data: netInc, itemStyle: { borderRadius: [4, 4, 0, 0], color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0, color:'#a78bfa'}, {offset:1, color:'#6d28d9'}]) } },
+                    { name: 'EBITDA', type: 'bar', data: ebitda, itemStyle: { borderRadius: [4, 4, 0, 0], color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0, color:'#818cf8'}, {offset:1, color:'#4f46e5'}]) } },
+                    { name: 'Margin %', type: 'line', yAxisIndex: 1, data: margins, smooth: true, itemStyle: { color: '#fb923c' }, lineStyle: { width: 3 } }
+                ]
+            });
+            
+            // Update Badge
+            const lastM = margins[margins.length-1];
+            const marginBadge = document.getElementById('badge-net-margin');
+            const profitInsight = document.getElementById('insight-profit');
+            
+            if(marginBadge) {
+                marginBadge.innerHTML = `Margin ${lastM.toFixed(1)}%`;
+                marginBadge.className = lastM > 20 ? "badge bg-success bg-opacity-25 text-success border border-success" : 
+                                       lastM > 10 ? "badge bg-warning bg-opacity-25 text-warning border border-warning" :
+                                       "badge bg-danger bg-opacity-25 text-danger border border-danger";
+            }
+            
+            // Generate Profitability Insight
+            if(profitInsight) {
+                const marginTrend = margins[margins.length-1] - margins[margins.length-2];
+                let pInsight = "";
+                
+                if(lastM > 25) {
+                    pInsight = `💎 <strong>Superior Profitability.</strong> Net margin at ${lastM.toFixed(1)}% reflects a strong competitive moat.`;
+                } else if(lastM > 15) {
+                    pInsight = `✅ <strong>Healthy Margins.</strong> ${lastM.toFixed(1)}% net margin converts revenue efficiently into profit.`;
+                } else if(lastM > 5) {
+                    pInsight = `📊 <strong>Standard Profitability.</strong> ${lastM.toFixed(1)}% net margin. Room for optimization.`;
+                } else if(lastM > 0) {
+                    pInsight = `⚠️ <strong>Thin Margins.</strong> ${lastM.toFixed(1)}% profitability. Highly sensitive to cost fluctuations.`;
+                } else {
+                    pInsight = `🔻 <strong>Unprofitable.</strong> Reporting a net loss (${lastM.toFixed(1)}% margin). Focus on path to profitability.`;
+                }
+                profitInsight.innerHTML = pInsight;
+            }
+        }
+
+        // --- 3. Financial Health ---
+        if(document.getElementById('chartCash')) {
+            const cash = balance.map(d => d.cash || d.cashAndCashEquivalents);
+            const debt = balance.map(d => d.total_debt || d.totalDebt);
+            
+            if(cashChart) cashChart.dispose();
+            cashChart = echarts.init(document.getElementById('chartCash'));
+            cashChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'axis' },
+                legend: { show: true, bottom: 0, textStyle: { color: '#cbd5e1' } },
+                grid: { top: '15%', left: '2%', right: '2%', bottom: '15%', containLabel: true },
+                xAxis: { type: 'category', data: balDates, axisLine: { lineStyle: { color: '#334155' } }, axisLabel: { color: '#94a3b8' } },
+                yAxis: { type: 'value', splitLine: { lineStyle: { color: '#334155', type: 'dashed' } }, axisLabel: { color: '#94a3b8', formatter: (v)=> (v/1e9).toFixed(0)+'B' } },
+                series: [
+                    { name: 'Cash', type: 'bar', data: cash, stack: 'total', itemStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0, color:'#34d399'}, {offset:1, color:'#047857'}]) } },
+                    { name: 'Total Debt', type: 'bar', data: debt, stack: 'total', itemStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0, color:'#f87171'}, {offset:1, color:'#dc2626'}]) } }
+                ]
+            });
+            
+            // Update Badge & Insight
+            const healthBadge = document.getElementById('badge-cash-position');
+            const healthInsight = document.getElementById('insight-health');
+            const latestCash = cash[cash.length-1];
+            const latestDebt = debt[debt.length-1];
+            const netCash = latestCash - latestDebt;
+            
+            if(healthBadge) {
+                if(latestDebt === 0 || !latestDebt) {
+                    healthBadge.innerHTML = "Debt Free";
+                    healthBadge.className = "badge bg-success bg-opacity-25 text-success border border-success";
+                } else {
+                    const ratio = (latestCash / latestDebt).toFixed(2);
+                    healthBadge.innerHTML = `Cash/Debt ${ratio}x`;
+                    healthBadge.className = ratio > 1 ? "badge bg-success bg-opacity-25 text-success border border-success" :
+                                           ratio > 0.5 ? "badge bg-warning bg-opacity-25 text-warning border border-warning" :
+                                           "badge bg-danger bg-opacity-25 text-danger border border-danger";
+                }
+            }
+            
+            if(healthInsight) {
+                let hInsight = "";
+                if(latestDebt === 0 || !latestDebt) {
+                    hInsight = `✨ <strong>Zero debt!</strong> $${(latestCash/1e9).toFixed(1)}B in cash. Excellent financial flexibility.`;
+                } else if(netCash > 0) {
+                    hInsight = `💪 <strong>Net cash positive.</strong> Cash exceeds debt by $${(netCash/1e9).toFixed(1)}B. Strong balance sheet.`;
+                } else {
+                    const debtRatio = ((latestDebt - latestCash)/latestDebt * 100).toFixed(0);
+                    hInsight = `⚠️ <strong>Net debt position.</strong> Debt exceeds cash. Monitor leverage carefully.`;
+                }
+                healthInsight.innerHTML = hInsight;
+            }
+        }
+
+        // --- 4. Cash Flow Dynamics ---
+        if(document.getElementById('chartCashFlow') && cashflow.length > 0) {
+            const ocf = cashflow.map(d => d.operatingCashFlow || d.operating_cf || 0);
+            const capex = cashflow.map(d => d.capitalExpenditure || d.capex || 0);
+            const fcf = cashflow.map(d => d.freeCashFlow || d.free_cash_flow || 0);
+            
+            if(cashFlowChart) cashFlowChart.dispose();
+            cashFlowChart = echarts.init(document.getElementById('chartCashFlow'));
+            cashFlowChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+                legend: { show: true, bottom: 0, textStyle: { color: '#cbd5e1' } },
+                grid: { top: '15%', left: '2%', right: '2%', bottom: '15%', containLabel: true },
+                xAxis: { type: 'category', data: dates, axisLine: { lineStyle: { color: '#334155' } }, axisLabel: { color: '#94a3b8' } },
+                yAxis: { type: 'value', splitLine: { lineStyle: { color: '#334155', type: 'dashed' } }, axisLabel: { color: '#94a3b8', formatter: (v)=> (v/1e9).toFixed(0)+'B' } },
+                series: [
+                    { name: 'Operating CF', type: 'bar', data: ocf, itemStyle: { borderRadius: [4, 4, 0, 0], color: '#10b981' } }, 
+                    { name: 'Capex', type: 'bar', stack: 'total', data: capex, itemStyle: { color: '#ef4444' } },
+                    { name: 'Free Cash Flow', type: 'line', smooth: true, data: fcf, itemStyle: { color: '#34d399' }, lineStyle: { width: 3 } }
+                ]
+            });
+            
+            const lastFCF = fcf[fcf.length-1];
+            const badge = document.getElementById('badge-fcf');
+                badge.className = lastFCF > 0 ? "badge bg-success bg-opacity-25 text-success border border-success" : "badge bg-danger bg-opacity-25 text-danger border border-danger";
+            
+
+            // Insight
+            const cfInsight = document.getElementById('insight-cashflow');
+            if(cfInsight) {
+                if(lastFCF > 0) {
+                     cfInsight.innerHTML = `💸 <strong>Positive FCF.</strong> Generating cash to fund growth, dividends, or buybacks.`;
+                } else {
+                     cfInsight.innerHTML = `⚠️ <strong>Negative FCF.</strong> Investing heavily in CapEx/Ops. Common in growth phases.`;
+                }
+            }
+        }
+
+        // --- 5. Capital Efficiency (ROE/ROA) ---
+        // Uses Income & Balance (Now Perfectly Aligned by Index)
+        if(document.getElementById('chartEfficiency') && income.length > 0 && balance.length > 0) {
+            const roe = [];
+            const roa = [];
+
+            // Since we aligned at start, we can loop safely
+            for(let i=0; i<sliceLen; i++) {
+                const ni = income[i].netIncome || income[i].net_income || 0;
+                const eq = balance[i].totalStockholdersEquity || balance[i].total_equity || 0;
+                const ast = balance[i].totalAssets || balance[i].total_assets || 0;
+                
+                roe.push(eq ? parseFloat(((ni/eq)*100).toFixed(1)) : 0);
+                roa.push(ast ? parseFloat(((ni/ast)*100).toFixed(1)) : 0);
+            }
+
+            if(efficiencyChart) efficiencyChart.dispose();
+            efficiencyChart = echarts.init(document.getElementById('chartEfficiency'));
+            efficiencyChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'axis' },
+                legend: { show: true, bottom: 0, textStyle: { color: '#cbd5e1' } },
+                grid: { top: '15%', left: '2%', right: '2%', bottom: '15%', containLabel: true },
+                xAxis: { type: 'category', data: dates, axisLine: { lineStyle: { color: '#334155' } }, axisLabel: { color: '#94a3b8' } },
+                yAxis: { type: 'value', axisLabel: { formatter: '{value}%', color: '#94a3b8' }, splitLine: { lineStyle: { color: '#334155', type: 'dashed' } } },
+                series: [
+                    { name: 'ROE', type: 'line', data: roe, smooth: true, itemStyle: { color: '#f59e0b' }, lineStyle: { width: 3 } }, 
+                    { name: 'ROA', type: 'line', data: roa, smooth: true, itemStyle: { color: '#6366f1' }, lineStyle: { width: 3 } }  
+                ]
+            });
+            
+            const lastROE = roe[roe.length-1];
+            const badge = document.getElementById('badge-roe');
+            if(badge) badge.innerHTML = `ROE ${lastROE}%`;
+            
+            // Insight
+            const effInsight = document.getElementById('insight-efficiency');
+            if(effInsight) {
+                if(lastROE > 20) effInsight.innerHTML = `💎 <strong>Superior Efficiency.</strong> ${lastROE}% ROE indicates elite capital allocation.`;
+                else if(lastROE > 12) effInsight.innerHTML = `✅ <strong>Solid Returns.</strong> ${lastROE}% ROE meets standard benchmarks.`;
+                else effInsight.innerHTML = `📉 <strong>Low Efficiency.</strong> ${lastROE}% ROE suggests room for operational improvement.`;
+            }
+        }
+
+        // --- 6. Solvency (Net Debt vs EBITDA) ---
+        if(document.getElementById('chartSolvency') && income.length > 0 && balance.length > 0) {
+            const netDebt = [];
+            const ebitdaList = [];
+
+            for(let i=0; i<sliceLen; i++) {
+                const totalDebt = balance[i].totalDebt || balance[i].total_debt || 0;
+                const cash = balance[i].cashAndCashEquivalents || balance[i].cash || 0;
+                const stInv = balance[i].shortTermInvestments || balance[i].short_term_investments || 0;
+                netDebt.push(totalDebt - cash - stInv);
+                ebitdaList.push(income[i].ebitda || 0);
+            }
+
+            var solvChart = echarts.init(document.getElementById('chartSolvency'));
+            solvChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                legend: { show: true, bottom: 0, textStyle: { color: '#cbd5e1' } },
+                grid: { top: '15%', left: '2%', right: '2%', bottom: '15%', containLabel: true },
+                xAxis: { type: 'category', data: dates, axisLine: { lineStyle: { color: '#334155' } }, axisLabel: { color: '#94a3b8' } },
+                yAxis: { type: 'value', splitLine: { lineStyle: { color: '#334155', type: 'dashed' } }, axisLabel: { color: '#94a3b8', formatter: (v)=> (v/1e9).toFixed(0)+'B' } },
+                series: [
+                    { name: 'Net Debt', type: 'bar', data: netDebt, itemStyle: { borderRadius: [4, 4, 0, 0], color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{offset: 0, color: '#ef4444'}, {offset: 1, color: '#b91c1c'}]) } }, 
+                    { name: 'EBITDA', type: 'line', data: ebitdaList, smooth: true, itemStyle: { color: '#3b82f6' }, lineStyle: { width: 3, type: 'dashed' } } 
+                ]
+            });
+            
+            const lastND = netDebt[netDebt.length-1];
+            const badge = document.getElementById('badge-netdebt');
+            if(badge && badge.classList) {
+                badge.innerHTML = lastND <= 0 ? "Net Cash" : "Net Debt";
+                badge.className = lastND <= 0 ? "badge bg-success bg-opacity-25 text-success border border-success" : "badge bg-warning bg-opacity-25 text-warning border border-warning";
+            }
+            
+            // Insight
+            const solvInsight = document.getElementById('insight-solvency');
+            if(solvInsight) {
+                if(lastND <= 0) {
+                    solvInsight.innerHTML = `🛡️ <strong>Fortress Balance Sheet.</strong> Net Cash position (Cash > Debt). Very safe.`;
+                } else {
+                    const ratio = ebitdaList[ebitdaList.length-1] ? (lastND / ebitdaList[ebitdaList.length-1]).toFixed(1) : "N/A";
+                    solvInsight.innerHTML = `💳 <strong>Leveraged.</strong> Net Debt/EBITDA is ${ratio}x. Monitor debt service ability.`;
+                }
+            }
+        }
+
+        // --- 3. Health (Cash vs Debt) ---
+        if(document.getElementById('chartCash') && balance.length > 0) {
+            const cash = balance.map(d => d.cash || d.cash_and_cash_equivalents || 0);
+            const debt = balance.map(d => d.total_debt || d.totalDebt || 0);
+            
+            if(healthChart) healthChart.dispose();
+            healthChart = echarts.init(document.getElementById('chartCash'));
+            healthChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                legend: { show: true, bottom: 0, textStyle: { color: '#cbd5e1' } },
+                grid: { top: '15%', left: '2%', right: '2%', bottom: '15%', containLabel: true },
+                xAxis: { type: 'category', data: dates, axisLine: { lineStyle: { color: '#334155' } }, axisLabel: { color: '#94a3b8' } },
+                yAxis: { type: 'value', splitLine: { lineStyle: { color: '#334155', type: 'dashed' } }, axisLabel: { color: '#94a3b8', formatter: (v)=> (v/1e9).toFixed(0)+'B' } },
+                series: [
+                    { name: 'Cash', type: 'bar', data: cash, itemStyle: { borderRadius: [4,4,0,0], color: '#10b981' } },
+                    { name: 'Total Debt', type: 'bar', data: debt, itemStyle: { borderRadius: [4,4,0,0], color: '#f43f5e' } }
+                ]
+            });
+            
+            const lastCash = cash[cash.length-1];
+            const lastDebt = debt[debt.length-1];
+            const isSafe = lastCash >= lastDebt;
+            const badge = document.getElementById('badge-cash-position');
+            if(badge) {
+                badge.innerHTML = isSafe ? "Net Cash Positive" : "High Debt";
+                badge.className = isSafe ? "badge bg-success bg-opacity-25 text-success border border-success" : "badge bg-warning bg-opacity-25 text-warning border border-warning";
+            }
+        }
+
+        // --- 7. Efficiency Analysis (Margin Trends) [NEW] ---
+        if(document.getElementById('chartMargins')) {
+             const grossM = income.map(d => d.revenue ? parseFloat((d.grossProfit / d.revenue * 100).toFixed(1)) : (d.gross_profit ? parseFloat((d.gross_profit / d.revenue * 100).toFixed(1)) : 0));
+             const opM = income.map(d => d.revenue ? parseFloat(((d.operatingIncome || d.op_income) / d.revenue * 100).toFixed(1)) : 0);
+             const netM = income.map(d => d.revenue ? parseFloat(((d.netIncome || d.net_income) / d.revenue * 100).toFixed(1)) : 0);
+
+             if(marginChart) marginChart.dispose();
+             marginChart = echarts.init(document.getElementById('chartMargins'));
+             marginChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'axis' },
+                legend: { show: true, textStyle: { color: '#cbd5e1' } },
+                grid: { top: '15%', left: '2%', right: '2%', bottom: '10%', containLabel: true },
+                xAxis: { type: 'category', data: dates, axisLine: { lineStyle: { color: '#334155' } }, axisLabel: { color: '#94a3b8' } },
+                yAxis: { type: 'value', splitLine: { lineStyle: { color: '#334155', type: 'dashed' } }, axisLabel: { color: '#94a3b8', formatter: '{value}%' } },
+                series: [
+                    { name: 'Gross Margin', type: 'line', data: grossM, smooth: true, itemStyle: { color: '#22d3ee' } },
+                    { name: 'Operating Margin', type: 'line', data: opM, smooth: true, itemStyle: { color: '#3b82f6' } },
+                    { name: 'Net Margin', type: 'line', data: netM, smooth: true, itemStyle: { color: '#8b5cf6' } }
+                ]
+             });
+             
+             // Insight
+             const margInsight = document.getElementById('insight-margins');
+             if(margInsight) {
+                 const lastNet = netM[netM.length-1];
+                 const prevNet = netM[netM.length-2] || 0;
+                 const diff = (lastNet - prevNet).toFixed(1);
+                 const dir = diff >= 0 ? "expanded" : "contracted";
+                 const color = diff >= 0 ? "text-success" : "text-danger";
+                 margInsight.innerHTML = `📊 <strong>Margin Analysis.</strong> Net margin <span class="${color}">${dir} by ${Math.abs(diff)}%</span> YoY to ${lastNet}%.`;
+             }
+        }
+
+        // --- 8. EPS Trend (Scatter) ---
+        if(document.getElementById('chartQuality')) {
+              const epsData = income.map(d => parseFloat((d.eps || 0).toFixed(2)));
+              
+             let qualChart = echarts.getInstanceByDom(document.getElementById('chartQuality'));
+             if(qualChart) qualChart.dispose();
+             qualChart = echarts.init(document.getElementById('chartQuality'));
+             qualChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'axis' },
+                legend: { show: true, bottom: 0, textStyle: { color: '#cbd5e1' } },
+                grid: { top: '15%', left: '2%', right: '2%', bottom: '15%', containLabel: true },
+                xAxis: { type: 'category', data: dates, axisLine: { lineStyle: { color: '#334155' } }, axisLabel: { color: '#94a3b8' } },
+                yAxis: { type: 'value', splitLine: { lineStyle: { color: '#334155', type: 'dashed' } }, axisLabel: { color: '#94a3b8' } },
+                series: [
+                    { name: 'EPS (Diluted)', type: 'scatter', symbolSize: 15, data: epsData, itemStyle: { color: '#ec4899', shadowBlur: 10, shadowColor: 'rgba(236, 72, 153, 0.5)' } }
+                ]
+             });
+             
+             // Insight
+             const epsInsight = document.getElementById('insight-eps');
+             if(epsInsight) {
+                 const lastEPS = epsData[epsData.length-1];
+                 const prevEPS = epsData[epsData.length-2] || 0;
+                 if(lastEPS > prevEPS) epsInsight.innerHTML = `📈 <strong>Earnings Growth.</strong> EPS rose to $${lastEPS}, signaling profitability growth.`;
+                 else epsInsight.innerHTML = `📉 <strong>Earnings Pressure.</strong> EPS declined to $${lastEPS}. Monitor cost structure.`;
+             }
+        }
+    }
+
+    // --- Financial Charts Logic ---
+    // Call this once on load
+    function renderSegmentCharts() {
+        console.log("🎯 renderSegmentCharts() CALLED!");
+        
+        if(!finData || !finData.segments) {
+            console.error("❌ EARLY EXIT: finData or finData.segments is missing!");
+            return;
+        }
+        
+        const commonTooltip = {
+            trigger: 'item',
+            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+            borderColor: '#334155',
+            textStyle: { color: '#f8fafc' },
+            formatter: '{b}: {c} ({d}%)'
+        };
+        const ignoreKeys = ['date', 'symbol', 'fillingDate', 'acceptedDate', 'period', 'link', 'finalLink', 'fiscalYear'];
+
+        // Product Seg
+        if(finData.segments.product && document.getElementById('productSegChart')) {
+            let rawWithMeta = finData.segments.product;
+            let rawData = rawWithMeta.data || rawWithMeta; 
+            const dataDate = rawWithMeta.date || "N/A";
+            
+            const pData = Object.keys(rawData)
+                .filter(k => !ignoreKeys.includes(k))
+                .map(k => {
+                    let val = rawData[k];
+                    if (typeof val === 'string') val = parseFloat(val);
+                    return { value: val, name: k };
+                })
+                .filter(item => typeof item.value === 'number' && !isNaN(item.value) && item.value > 0);
+            
+            if(pData.length > 0) {
+                if(prodChart) prodChart.dispose();
+                prodChart = echarts.init(document.getElementById('productSegChart'));
+                prodChart.setOption({
+                    title: { 
+                        text: `Data from: ${dataDate}`, 
+                        left: 'center', bottom: 0, 
+                        textStyle: { color: '#64748b', fontSize: 10, fontWeight: 'normal' } 
+                    },
+                    backgroundColor: 'transparent',
+                    tooltip: commonTooltip,
+                    legend: { show: false },
+                    series: [{
+                        type: 'pie', radius: ['40%', '70%'], center: ['50%', '45%'],
+                        itemStyle: { borderRadius: 5, borderColor: '#1e293b', borderWidth: 2 },
+                        label: { show: true, color: '#cbd5e1', formatter: '{b}\n{d}%' },
+                        data: pData
+                    }]
+                });
+                
+                // Insight
+                const pInsight = document.getElementById('insight-product');
+                if(pInsight) {
+                     const sorted = [...pData].sort((a,b) => b.value - a.value);
+                     const top = sorted[0];
+                     const pct = ((top.value / sorted.reduce((a,b)=>a+b.value,0))*100).toFixed(0);
+                     pInsight.innerHTML = `🏆 <strong>Dominant Product.</strong> "${top.name}" drives ${pct}% of revenue.`;
+                }
+            } else {
+                 document.getElementById('productSegChart').innerHTML = '<div class="d-flex align-items-center justify-content-center h-100 text-gray-500">No Product Data</div>';
+            }
+        }
+
+        // Geo Seg
+        if(finData.segments.geo && document.getElementById('geoSegChart')) {
+            let rawWithMeta = finData.segments.geo;
+            let rawData = rawWithMeta.data || rawWithMeta;
+            const dataDate = rawWithMeta.date || "N/A";
+
+            const gData = Object.keys(rawData)
+                .filter(k => !ignoreKeys.includes(k))
+                .map(k => {
+                    let val = rawData[k];
+                    if (typeof val === 'string') val = parseFloat(val);
+                    return { value: val, name: k };
+                })
+                .filter(item => typeof item.value === 'number' && !isNaN(item.value) && item.value > 0);
+            
+            if(gData.length > 0) {
+                if(geoChart) geoChart.dispose();
+                geoChart = echarts.init(document.getElementById('geoSegChart'));
+                geoChart.setOption({
+                    title: { 
+                        text: `Data from: ${dataDate}`, 
+                        left: 'center', bottom: 0, 
+                        textStyle: { color: '#64748b', fontSize: 10, fontWeight: 'normal' } 
+                    },
+                    backgroundColor: 'transparent',
+                    tooltip: commonTooltip,
+                    legend: { show: false }, 
+                    series: [{
+                        type: 'pie', radius: ['40%', '70%'], center: ['50%', '45%'],
+                        itemStyle: { borderRadius: 5, borderColor: '#1e293b', borderWidth: 2 },
+                        label: { show: true, color: '#cbd5e1', formatter: '{b}\n{d}%' },
+                        data: gData
+                    }]
+                });
+                
+                // Insight
+                const gInsight = document.getElementById('insight-geo');
+                if(gInsight) {
+                     const sorted = [...gData].sort((a,b) => b.value - a.value);
+                     const top = sorted[0];
+                     const pct = ((top.value / sorted.reduce((a,b)=>a+b.value,0))*100).toFixed(0);
+                     gInsight.innerHTML = `🌍 <strong>Top Market.</strong> "${top.name}" contributes ${pct}% of total revenue.`;
+                }
+            } else {
+                document.getElementById('geoSegChart').innerHTML = '<div class="d-flex align-items-center justify-content-center h-100 text-gray-500">No Geo Data</div>';
+            }
+        }
+    }
+
+
+
+
+
+    
+    function setupVestiqPick() {
+        const btn = document.getElementById('btnVestiqPick');
+        if(!btn) return;
+        
+        btn.addEventListener('click', () => {
+             if (!globalData) return;
+            
+            const analysis = globalData.signal_analysis;
+            const hasSignal = analysis && analysis.show;
+            
+            const iconEl = document.getElementById('pickStatusIcon');
+            const titleEl = document.getElementById('pickStatusTitle');
+            const descEl = document.getElementById('pickStatusDesc');
+            const commentEl = document.getElementById('pickAIComment');
+            
+            if (hasSignal) {
+                iconEl.innerHTML = analysis.type.includes('Alpha') ? '🚀' : '🛡️';
+                titleEl.innerText = analysis.title;
+                titleEl.style.color = analysis.color;
+                descEl.innerText = "This stock matches premium strategy criteria today.";
+                
+                let reasonsHtml = "<ul class='text-start mb-0 ps-3'>";
+                if(analysis.reasons) analysis.reasons.forEach(r => reasonsHtml += `<li>${r}</li>`);
+                reasonsHtml += "</ul>";
+                commentEl.innerHTML = reasonsHtml;
+            } else {
+                iconEl.innerHTML = '😴';
+                titleEl.innerText = "No Pick Today";
+                titleEl.style.color = "#94a3b8";
+                descEl.innerText = "Does not meet strict criteria today.";
+                commentEl.innerText = globalData.ai_comment || "AI is monitoring this stock...";
+            }
+            
+            
+            const modalEl = document.getElementById('vestiqPickModal');
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+
+            // Clear previously bound listeners to avoid duplicates
+            // We use 'onclick' directly for simplicity here or add/remove listeners
+            
+            const btnSignal = document.getElementById('btnShowSignals');
+            if(btnSignal) {
+                btnSignal.onclick = () => {
+                   // Open the Signal Chart Modal
+                   const chartModalEl = document.getElementById('vestiqChartModal');
+                   const chartModal = new bootstrap.Modal(chartModalEl);
+                   chartModal.show();
+                   
+                   // Init Chart inside Modal after it's shown
+                   chartModalEl.addEventListener('shown.bs.modal', function onShown() {
+                        const signalDom = document.getElementById('signalChartContainer');
+                        if(signalDom) {
+                             let vChart = echarts.getInstanceByDom(signalDom);
+                             if(vChart) vChart.dispose();
+                             vChart = echarts.init(signalDom);
+                             
+                             // Render Base Chart
+                             renderChart(vChart, globalData);
+                             
+                             // Add Markers to THIS chart (not the main one)
+                             updateChartWithMarkers(globalData.markers, vChart);
+                        }
+                        chartModalEl.removeEventListener('shown.bs.modal', onShown);
+                   }, { once: true });
+                };
+            }
+
+            const btnClose = document.getElementById('btnClosePick');
+            if(btnClose) {
+                btnClose.onclick = () => {
+                    updateChartWithMarkers([]); // Clear markers
+                };
+            }
+        });
+    }
+
+    function renderChart(chart, data) {
+        if (!data || !data.ohlcv || !Array.isArray(data.ohlcv)) {
+            console.error("renderChart: Invalid Data", data);
+            if(chart) chart.dispose();
+            return;
+        }
+
+        const dates = data.ohlcv.map(item => {
+            // Correct timestamp (assume seconds, local/UTC handled by backend usually, but here plain string is best if available)
+            let d = new Date(item.time * 1000);
+            return d.toLocaleDateString('en-CA');
+        });
+        const values = data.ohlcv.map(d => [d.open, d.close, d.low, d.high]);
+        const volumes = data.ohlcv.map((d, i) => [i, d.volume, d.close > d.open ? 1 : -1]);
+
+        // MAs - Safety Check
+        const getMA = (k) => (data.ma && data.ma[k]) ? data.ma[k].map(d => d.value) : [];
+        const ma20 = getMA('ma20');
+        const ma60 = getMA('ma60');
+        const ma120 = getMA('ma120');
+        const ma240 = getMA('ma240');
+        
+        // BB - Safety Check
+        const bbUpper = (data.bb && data.bb.upper) ? data.bb.upper.map(d => d.value) : [];
+        const bbLower = (data.bb && data.bb.lower) ? data.bb.lower.map(d => d.value) : [];
+        // Map only if both exist
+        const bbDiff = (bbUpper.length > 0 && bbLower.length > 0) ? bbUpper.map((u, i) => u - bbLower[i]) : [];
+
+        // Indicators - Safety Check
+        const rsi = (data.rsi && Array.isArray(data.rsi)) ? data.rsi.map(d => d.value) : [];
+        
+        const macd = (data.macd && data.macd.macd) ? data.macd.macd.map(d => d.value) : [];
+        const macdSignal = (data.macd && data.macd.signal) ? data.macd.signal.map(d => d.value) : [];
+        const macdHist = (data.macd && data.macd.diff) ? data.macd.diff.map(d => d.value) : [];
+        
+        const getStoch = (t, k) => (data.stoch && data.stoch[t]) ? data.stoch[t].map(d => d[k]) : [];
+        
+        const stochSK = getStoch('s', 'k');
+        const stochSD = getStoch('s', 'd');
+        
+        const stochMK = getStoch('m', 'k');
+        const stochMD = getStoch('m', 'd');
+        
+        const stochLK = getStoch('l', 'k');
+        const stochLD = getStoch('l', 'd');
+
+        const upColor = '#ef4444'; 
+        const downColor = '#3b82f6';
+        const borderColor = '#334155'; // Grid border
+
+        const option = {
+            backgroundColor: 'transparent',
+            tooltip: { 
+                trigger: 'axis', axisPointer: { type: 'cross' },
+                backgroundColor: 'rgba(15, 23, 42, 0.95)', borderColor: '#334155', textStyle: { color: '#f8fafc' },
+                padding: [10, 15],
+                formatter: function (params) {
+                    let date = params[0].axisValue;
+                    let result = `<div class="fw-bold mb-1">${date}</div>`;
+                    let map = {};
+                    params.forEach(p => map[p.seriesName] = p);
+                    
+                    if(map['Volume']) {
+                        let val = Math.round(map['Volume'].value[1] || 0).toLocaleString();
+                        let col = map['Volume'].color;
+                        result += `<div style="color:${col}">Volume: ${val}</div>`;
+                    }
+                    
+                    let candle = params.find(p => p.seriesType === 'candlestick');
+                    if(candle) {
+                        let o = candle.value[1].toFixed(2);
+                        let c = candle.value[2].toFixed(2);
+                        let l = candle.value[3].toFixed(2);
+                        let h = candle.value[4].toFixed(2);
+                        result += `<div class="mt-1">
+                            O: ${o}<br>H: ${h}<br>L: ${l}<br>C: ${c}
+                        </div>`;
+                    }
+                    // MAs
+                    ['MA20', 'MA60', 'MA120', 'MA240'].forEach(n => {
+                        if(map[n] && map[n].value !== undefined) result += `<div>${map[n].marker} ${n}: ${Math.round(map[n].value)}</div>`;
+                    });
+                    // Indicators
+                    if(map['RSI']) result += `<div>${map['RSI'].marker} RSI: ${Math.round(map['RSI'].value)}</div>`;
+                    if(map['MACD']) result += `<div>${map['MACD'].marker} MACD: ${Math.round(map['MACD'].value)}</div>`;
+                    ['Stoch S.K', 'Stoch M.K', 'Stoch L.K'].forEach(n => {
+                        if(map[n]) result += `<div>${map[n].marker} ${n}: ${Math.round(map[n].value)}</div>`;
+                    });
+
+                    return result;
+                }
+            },
+            axisPointer: { link: { xAxisIndex: 'all' } },
+            title: [
+                { text: 'Price', left: '0.5%', top: '0.5%', textStyle: { color: '#94a3b8', fontSize: 10 } },
+                { text: 'Volume', left: '0.5%', top: '44%', textStyle: { color: '#94a3b8', fontSize: 10 } },
+                { text: 'RSI (14)', left: '0.5%', top: '53%', textStyle: { color: '#94a3b8', fontSize: 10 } },
+                { text: 'MACD', left: '0.5%', top: '62%', textStyle: { color: '#94a3b8', fontSize: 10 } },
+                { text: 'Stoch Short', left: '0.5%', top: '71%', textStyle: { color: '#94a3b8', fontSize: 10 } },
+                { text: 'Stoch Mid', left: '0.5%', top: '80%', textStyle: { color: '#94a3b8', fontSize: 10 } },
+                { text: 'Stoch Long', left: '0.5%', top: '89%', textStyle: { color: '#94a3b8', fontSize: 10 } }
+            ],
+            grid: [
+                { left: '40px', right: '20px', top: '20px', height: '38%', show: true, borderColor: borderColor, borderWidth: 1 }, 
+                { left: '40px', right: '20px', top: '45%', height: '7%', show: true, borderColor: borderColor, borderWidth: 1 }, 
+                { left: '40px', right: '20px', top: '54%', height: '7%', show: true, borderColor: borderColor, borderWidth: 1 }, 
+                { left: '40px', right: '20px', top: '63%', height: '7%', show: true, borderColor: borderColor, borderWidth: 1 }, 
+                { left: '40px', right: '20px', top: '72%', height: '7%', show: true, borderColor: borderColor, borderWidth: 1 }, 
+                { left: '40px', right: '20px', top: '81%', height: '7%', show: true, borderColor: borderColor, borderWidth: 1 }, 
+                { left: '40px', right: '20px', top: '90%', height: '7%', show: true, borderColor: borderColor, borderWidth: 1 }, 
+            ],
+            xAxis: [
+                { type: 'category', data: dates, gridIndex: 0, show: false, axisPointer: {show: true} },
+                { type: 'category', data: dates, gridIndex: 1, show: false, axisPointer: {show: true} },
+                { type: 'category', data: dates, gridIndex: 2, show: false, axisPointer: {show: true} },
+                { type: 'category', data: dates, gridIndex: 3, show: false, axisPointer: {show: true} },
+                { type: 'category', data: dates, gridIndex: 4, show: false, axisPointer: {show: true} },
+                { type: 'category', data: dates, gridIndex: 5, show: false, axisPointer: {show: true} },
+                { 
+                    type: 'category', data: dates, gridIndex: 6, 
+                    axisLine: { lineStyle: { color: '#475569' } }, 
+                    axisLabel: { show: true, color: '#94a3b8', showMaxLabel: true }, 
+                    axisPointer: {show: true} 
+                }
+            ],
+            yAxis: [
+                { scale: true, gridIndex: 0, splitLine: { lineStyle: { color: '#334155', type: 'dashed' } }, axisLabel: { color: '#64748b', inside: true } },
+                { scale: true, gridIndex: 1, show: false }, 
+                { scale: true, gridIndex: 2, splitLine: { show: false }, min: 0, max: 100, axisLabel: { show: false } }, 
+                { scale: true, gridIndex: 3, splitLine: { show: false }, axisLabel: { show: false } }, 
+                { scale: true, gridIndex: 4, splitLine: { show: false }, min: 0, max: 100, axisLabel: { show: false } }, 
+                { scale: true, gridIndex: 5, splitLine: { show: false }, min: 0, max: 100, axisLabel: { show: false } }, 
+                { scale: true, gridIndex: 6, splitLine: { show: false }, min: 0, max: 100, axisLabel: { show: false } }  
+            ],
+            dataZoom: [{ type: 'inside', xAxisIndex: [0, 1, 2, 3, 4, 5, 6], start: 80, end: 100 }],
+            series: [
+                // Price
+                {
+                    name: 'Price', type: 'candlestick', data: values,
+                    itemStyle: { color: upColor, color0: downColor, borderColor: upColor, borderColor0: downColor },
+                    markPoint: {
+                        data: [], // Initially Empty, filled by Button
+                        label: { show: true, color: '#fff', fontSize: 10 },
+                        symbolSize: 40
+                    }
+                },
+                { name: 'MA20', type: 'line', data: ma20, smooth:true, showSymbol:false, itemStyle:{color:'#fbbf24'}, lineStyle:{width:1} },
+                { name: 'MA60', type: 'line', data: ma60, smooth:true, showSymbol:false, itemStyle:{color:'#3b82f6'}, lineStyle:{width:1} },
+                { name: 'MA120', type: 'line', data: ma120, smooth:true, showSymbol:false, itemStyle:{color:'#c084fc'}, lineStyle:{width:1} },
+                { name: 'MA240', type: 'line', data: ma240, smooth:true, showSymbol:false, itemStyle:{color:'#22d3ee'}, lineStyle:{width:1} },
+                
+                { name: 'BB Lower', type: 'line', data: bbLower, lineStyle: { width: 1, type: 'dashed', color: 'rgba(148, 163, 184, 0.4)' }, symbol: 'none' },
+                { name: 'BB Upper', type: 'line', data: bbUpper, lineStyle: { width: 1, type: 'dashed', color: 'rgba(148, 163, 184, 0.4)' }, symbol: 'none' },
+
+                { name: 'Volume', type: 'bar', xAxisIndex: 1, yAxisIndex: 1, data: volumes, itemStyle: { color: (p) => p.value[2] > 0 ? upColor : downColor } },
+
+                { name: 'RSI', type: 'line', xAxisIndex: 2, yAxisIndex: 2, data: rsi, showSymbol: false, itemStyle: { color: '#f59e0b' }, lineStyle: { width: 1 } },
+                { name: 'RSI Upper', type: 'line', xAxisIndex: 2, yAxisIndex: 2, data: rsi.map(()=>70), showSymbol: false, lineStyle: { type: 'dashed', color: '#64748b', width: 0.5 }, symbol: 'none' },
+                { name: 'RSI Lower', type: 'line', xAxisIndex: 2, yAxisIndex: 2, data: rsi.map(()=>30), showSymbol: false, lineStyle: { type: 'dashed', color: '#64748b', width: 0.5 }, symbol: 'none' },
+
+                { name: 'MACD', type: 'line', xAxisIndex: 3, yAxisIndex: 3, data: macd, showSymbol: false, itemStyle: { color: '#22d3ee' }, lineStyle: { width: 1 } },
+                { name: 'Signal', type: 'line', xAxisIndex: 3, yAxisIndex: 3, data: macdSignal, showSymbol: false, itemStyle: { color: '#fbbf24' }, lineStyle: { width: 1 } },
+                { name: 'Hist', type: 'bar', xAxisIndex: 3, yAxisIndex: 3, data: macdHist, itemStyle: { color: (p) => p.value > 0 ? upColor : downColor } },
+
+                { name: 'Stoch S.K', type: 'line', xAxisIndex: 4, yAxisIndex: 4, data: stochSK, showSymbol: false, itemStyle: { color: '#22d3ee' }, lineStyle: { width: 1 } },
+                { name: 'Stoch S.D', type: 'line', xAxisIndex: 4, yAxisIndex: 4, data: stochSD, showSymbol: false, itemStyle: { color: '#0ea5e9', type: 'dashed' }, lineStyle: { width: 0.5 } },
+                
+                { name: 'Stoch M.K', type: 'line', xAxisIndex: 5, yAxisIndex: 5, data: stochMK, showSymbol: false, itemStyle: { color: '#4ade80' }, lineStyle: { width: 1 } },
+                { name: 'Stoch M.D', type: 'line', xAxisIndex: 5, yAxisIndex: 5, data: stochMD, showSymbol: false, itemStyle: { color: '#22c55e', type: 'dashed' }, lineStyle: { width: 0.5 } },
+
+                { name: 'Stoch L.K', type: 'line', xAxisIndex: 6, yAxisIndex: 6, data: stochLK, showSymbol: false, itemStyle: { color: '#f472b6' }, lineStyle: { width: 1 } },
+                { name: 'Stoch L.D', type: 'line', xAxisIndex: 6, yAxisIndex: 6, data: stochLD, showSymbol: false, itemStyle: { color: '#db2777', type: 'dashed' }, lineStyle: { width: 0.5 } },
+            ]
+        };
+        chart.setOption(option);
+    }
+    
+    function updateChartWithMarkers(markers, targetChart) {
+        // Use targetChart if provided, else Default Main Chart
+        const chartToUpdate = targetChart || chartInstance;
+        
+        if (!chartToUpdate) return;
+        // Only update the markPoint of the first series (Price)
+        chartToUpdate.setOption({
+            series: [{
+                name: 'Price',
+                markPoint: {
+                    data: markers
+                }
+            }]
+        });
+    }
+    
+    // --- Number Formatting Logic ---
+    function formatKoreanNumbers() {
+        // Select all table cells in financial sheets
+        const cells = document.querySelectorAll('.financial-sheet td');
+        let count = 0;
+        
+        cells.forEach(cell => {
+            let text = cell.innerText.trim();
+            // Check for Korean units
+            if (text.includes('십억') || text.includes('백만') || text.includes('천')) {
+                let numVal = parseFloat(text.replace(/[^0-9.-]/g, ''));
+                let suffix = '';
+                
+                if (text.includes('십억')) suffix = 'B';
+                else if (text.includes('백만')) suffix = 'M';
+                else if (text.includes('천')) suffix = 'K';
+                
+                if (!isNaN(numVal) && suffix) {
+                    // Billions get 2 decimals, others 1
+                    let decimals = suffix === 'B' ? 2 : 1;
+                    // Format: $2.90B
+                    cell.innerText = (numVal < 0 ? '-' : '') + '$' + Math.abs(numVal).toFixed(decimals) + suffix;
+                    count++;
+                }
+            }
+        });
+        if(count > 0) console.log(`Formatted ${count} cells to English units`);
+    }
+
+
+</script>
+{% endblock %}

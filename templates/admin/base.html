@@ -1,0 +1,494 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'css/bootstrap-icons.css' %}">
+<style>
+    :root {
+        --primary: #4a7cf0; /* Vestiq Blue */
+        --secondary: #6c757d;
+        --success: #1cc88a;
+        --info: #36b9cc;
+        --warning: #f6c23e;
+        --danger: #e74a3b;
+        --dark: #2A3F54; /* SkyLine Sidebar Color */
+        --light: #f2f5f9;
+        --body-bg: #F7F7F7; /* Light Gray BG */
+        --text-color: #73879C;
+        --header-bg: #ffffff;
+        --sidebar-bg: #2A3F54;
+        --sidebar-text: #E7E7E7;
+        --sidebar-active: #1ABB9C;
+    }
+
+    body {
+        font-family: "Helvetica Neue", Roboto, Arial, "Droid Sans", sans-serif;
+        background-color: var(--body-bg);
+        color: var(--text-color);
+        margin: 0;
+        font-size: 14px;
+    }
+
+    /* Hide default header */
+    #header { display: none !important; }
+
+    /* Layout */
+    #wrapper {
+        display: flex;
+        min-height: 100vh;
+        width: 100%;
+    }
+
+    /* Sidebar */
+    #sidebar {
+        width: 230px;
+        background-color: var(--sidebar-bg);
+        color: var(--sidebar-text);
+        display: flex;
+        flex-direction: column;
+        transition: all 0.3s;
+        position: fixed;
+        height: 100vh;
+        z-index: 1000;
+    }
+    
+    .sidebar-brand {
+        height: 60px;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        font-size: 1.2rem;
+        font-weight: 500;
+        color: white;
+        text-decoration: none;
+    }
+    .sidebar-brand i { 
+        border: 1px solid white; 
+        border-radius: 50%; 
+        padding: 5px; 
+        margin-right: 10px; 
+        font-size: 1rem; 
+    }
+    
+    .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 10px 0;
+    }
+    .sidebar-menu li {
+        margin-bottom: 0;
+    }
+    .sidebar-menu a {
+        display: flex;
+        align-items: center;
+        padding: 13px 20px;
+        color: #E7E7E7;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        border-right: 5px solid transparent;
+    }
+    .sidebar-menu a:hover {
+        background: rgba(255,255,255,0.05);
+    }
+    .sidebar-menu a.active {
+        background: rgba(255,255,255,0.05);
+        border-right-color: var(--primary);
+        text-shadow: rgba(0,0,0,0.25) 0 -1px 0;
+    }
+    .sidebar-menu i {
+        margin-right: 15px;
+        width: 18px;
+        text-align: center;
+        font-size: 1.1rem;
+    }
+    
+    .sidebar-heading {
+        padding: 10px 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.3);
+        margin-top: 15px;
+        letter-spacing: 0.5px;
+    }
+
+    /* Topbar */
+    #topbar {
+        height: 60px;
+        background: #EDEDED;
+        border-bottom: 1px solid #D9DEE4;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        margin-bottom: 10px;
+    }
+    
+    .search-box {
+        position: relative;
+    }
+    .search-box input {
+        border-radius: 25px;
+        border: 1px solid #ccc;
+        padding: 6px 15px 6px 35px;
+        width: 250px;
+        font-size: 0.9rem;
+        outline: none;
+        color: #555;
+    }
+    .search-box i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+    }
+
+    /* Main Content */
+    #content-wrapper {
+        flex: 1;
+        margin-left: 230px;
+        display: flex;
+        flex-direction: column;
+        background: var(--body-bg);
+    }
+    
+    #main {
+        padding: 10px 20px;
+    }
+
+    /* Cards & Modules */
+    .module {
+        background: white;
+        border: 1px solid #E6E9ED;
+        border-radius: 0; /* Flat style */
+        margin-bottom: 20px;
+        padding: 10px 17px;
+        display: flex;
+        flex-direction: column;
+    }
+    .module caption {
+        background: transparent;
+        color: inherit;
+        font-size: 1.1rem;
+        font-weight: 500;
+        padding: 5px 0 10px 0;
+        border-bottom: 2px solid #E6E9ED;
+        margin-bottom: 10px;
+    }
+
+    /* Buttons */
+    .button, input[type=submit], .submit-row input {
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 3px;
+        padding: 6px 12px;
+        font-size: 0.9rem;
+        cursor: pointer;
+    }
+    
+    /* Table */
+    table {
+        width: 100%;
+        border-spacing: 0;
+        border-collapse: collapse;
+    }
+    thead th {
+        background: #F7F7F7; /* Very light gray */
+        color: #73879C;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        padding: 12px 10px;
+        border-bottom: 2px solid #E6E9ED;
+        text-align: left;
+    }
+    tbody td {
+        padding: 12px 10px;
+        border-bottom: 1px solid #E6E9ED; /* Row lines */
+        color: #73879C;
+        vertical-align: middle;
+    }
+    tbody tr:nth-child(even) { background: #f9f9f9; } /* Zebra striping */
+    tbody tr:hover { background: #f0f0f0; }
+
+    /* SkyLine Cards (Global) */
+    .skyline-cards {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    .sky-card {
+        background: white;
+        border-radius: 3px;
+        padding: 20px;
+        position: relative;
+        box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        overflow: hidden;
+    }
+    .sky-card .inner h3 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+        color: #5A738E;
+    }
+    .sky-card .inner p {
+        margin: 5px 0 0 0;
+        font-size: 0.85rem;
+        color: #999;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .sky-card .icon {
+        color: rgba(0,0,0,0.07);
+        font-size: 4rem;
+        position: absolute;
+        right: 10px;
+        top: 5px;
+    }
+    .sky-card:hover .icon {
+        color: rgba(0,0,0,0.15);
+        transform: scale(1.1);
+        transition: all 0.3s;
+    }
+    
+    /* Action Buttons (Global) */
+    .action-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        background: white;
+        padding: 15px 20px;
+        border: 1px solid #E6E9ED;
+    }
+    .action-bar h2 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: #5A738E;
+    }
+    .btn-sky {
+        background: #2A3F54;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 3px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+    }
+    .btn-sky:hover {
+        background: #3E5771;
+        color: white;
+    }
+    .btn-sky.secondary {
+        background: #fff;
+        border: 1px solid #ccc;
+        color: #555;
+    }
+    .btn-sky.secondary:hover {
+        background: #f0f0f0;
+    }
+
+    /* Changelist Styles */
+    #changelist {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+    }
+    
+    /* Filter Sidebar */
+    #changelist-filter {
+        background: white;
+        border: 1px solid #E6E9ED;
+        padding: 0;
+        width: 260px;
+        flex-shrink: 0;
+        order: -1; /* Move to left */
+        border-radius: 3px;
+    }
+    #changelist-filter h2 {
+        background: #2A3F54;
+        color: white;
+        padding: 10px 15px;
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        border-radius: 3px 3px 0 0;
+    }
+    #changelist-filter h3 {
+        padding: 10px 15px;
+        margin: 0;
+        font-size: 0.9rem;
+        border-bottom: 1px solid #eee;
+        color: #5A738E;
+    }
+    #changelist-filter ul {
+        padding: 10px 15px;
+        margin: 0;
+        list-style: none;
+        border-bottom: 1px solid #eee;
+    }
+    #changelist-filter li {
+        margin-bottom: 5px;
+    }
+    #changelist-filter a {
+        color: #5A738E;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+    #changelist-filter a:hover, #changelist-filter li.selected a {
+        color: #2A3F54;
+        font-weight: 600;
+    }
+    
+    /* Results Area */
+    #changelist .results {
+        flex: 1;
+        background: white;
+        border: 1px solid #E6E9ED;
+        border-radius: 3px;
+        overflow: hidden;
+    }
+    
+    /* Toolbar/Search */
+    #toolbar {
+        background: white;
+        padding: 15px;
+        border: 1px solid #E6E9ED;
+        margin-bottom: 20px;
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+    }
+    #toolbar form {
+        width: 100%;
+        display: flex;
+        gap: 10px;
+    }
+    #toolbar input[type=text] {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+    #toolbar input[type=submit] {
+        background: #2A3F54;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+    
+    /* Pagination */
+    .paginator {
+        padding: 10px 15px;
+        border-top: 1px solid #E6E9ED;
+        background: #f9f9f9;
+        font-size: 0.9rem;
+    }
+
+</style>
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} vestiq-admin{% endblock %}
+
+{% block container %}
+<div id="wrapper">
+    <!-- Sidebar -->
+    <div id="sidebar">
+        <a href="{% url 'admin:index' %}" class="sidebar-brand">
+            <i class="bi bi-graph-up-arrow"></i> Vestiq Admin
+        </a>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="{% url 'admin:index' %}" class="{% if request.path == '/admin/' %}active{% endif %}">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+            </li>
+            
+            <div class="sidebar-heading">Data Management</div>
+            
+            <li>
+                <a href="/admin/updatedata/ticker/" class="{% if 'updatedata/ticker' in request.path %}active{% endif %}">
+                    <i class="bi bi-list-ul"></i> Tickers (Universe)
+                </a>
+            </li>
+            <li>
+                <a href="/admin/updatedata/fundamentaldata/" class="{% if 'fundamentaldata' in request.path %}active{% endif %}">
+                    <i class="bi bi-bar-chart"></i> Fundamental Data
+                </a>
+            </li>
+            <li>
+                <a href="/admin/updatedata/pricehistory/" class="{% if 'pricehistory' in request.path %}active{% endif %}">
+                    <i class="bi bi-graph-up"></i> Price History
+                </a>
+            </li>
+            
+            <div class="sidebar-heading">System</div>
+            
+            <li>
+                <a href="/admin/auth/user/">
+                    <i class="bi bi-people"></i> Users
+                </a>
+            </li>
+             <li>
+                <a href="/">
+                    <i class="bi bi-box-arrow-left"></i> Back to Site
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper">
+        <!-- Topbar -->
+        <div id="topbar">
+            <div style="display: flex; align-items: center;">
+                <i class="bi bi-list fs-4 me-3" style="color: #5A738E; cursor: pointer;"></i>
+                <div class="search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+            </div>
+            
+            <div id="user-tools" style="display: flex; align-items: center;">
+                <a href="/" class="text-decoration-none me-3" style="color: #5A738E; font-weight: 500; font-size: 0.9rem;">
+                    <i class="bi bi-box-arrow-left me-1"></i> Back to Vestiq
+                </a>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <img src="{% static 'img/logo.png' %}?v=7" style="width: 50px; height: 50px; border-radius: 50%; border: 1px solid #ccc;">
+                    <span style="font-weight: 500; color: #5A738E;">{% firstof user.get_short_name user.get_username %}</span>
+                    <i class="bi bi-chevron-down" style="font-size: 0.8rem; color: #5A738E;"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="main">
+            {% block messages %}
+                {% if messages %}
+                <ul class="messagelist">{% for message in messages %}
+                  <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|capfirst }}</li>
+                {% endfor %}</ul>
+                {% endif %}
+            {% endblock messages %}
+
+            {% block content %}{% endblock %}
+            {% block sidebar %}{% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}

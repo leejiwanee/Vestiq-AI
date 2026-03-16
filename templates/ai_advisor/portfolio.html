@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+{% load humanize i18n %}
+
+{% block title %}{% trans "AI Portfolio Advisor" %}{% endblock %}
+
+{% block content %}
+<style>
+    /* === Premium UI Overhaul === */
+    :root {
+        --primary-gradient: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        --glass-bg: rgba(255, 255, 255, 0.95);
+        --input-bg: #f8fafc;
+        --input-border: #e2e8f0;
+    }
+
+    .advisor-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .advisor-card {
+        border: none;
+        border-radius: 24px;
+        background: var(--glass-bg);
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .advisor-header {
+        background: var(--primary-gradient);
+        padding: 3rem 2rem;
+        color: white;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Abstract shapes in header */
+    .advisor-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+        transform: rotate(30deg);
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-label {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Force styling on Django form widgets */
+    .advisor-card input[type="number"],
+    .advisor-card input[type="text"],
+    .advisor-card select {
+        padding: 0.875rem 1rem;
+        font-size: 1rem;
+        font-weight: 500;
+        line-height: 1.5;
+        color: #1e293b;
+        background-color: var(--input-bg);
+        background-clip: padding-box;
+        border: 1px solid var(--input-border);
+        border-radius: 12px;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    /* Standalone inputs should be full width */
+    .advisor-card select,
+    .advisor-card input:not(:is(.input-group input)) {
+        display: block;
+        width: 100%;
+    }
+
+    .advisor-card input:focus,
+    .advisor-card select:focus {
+        background-color: #fff;
+        border-color: #3b82f6;
+        outline: 0;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+
+    /* Input Group Fixes */
+    .input-group {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    /* Ensure input inside group takes available space */
+    .input-group>input {
+        position: relative;
+        flex: 1 1 auto;
+        width: 1%;
+        min-width: 0;
+        display: block;
+        /* Bootstrap needs this but flex handles width */
+    }
+
+    .input-group .input-group-text {
+        display: flex;
+        align-items: center;
+        padding: 0.875rem 1.25rem;
+        font-size: 1rem;
+        font-weight: 600;
+        line-height: 1.5;
+        color: #64748b;
+        text-align: center;
+        white-space: nowrap;
+        background-color: #f1f5f9;
+        border: 1px solid var(--input-border);
+    }
+
+    .input-group>.input-group-text:first-child {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        border-top-left-radius: 12px;
+        border-bottom-left-radius: 12px;
+        border-right: 0;
+    }
+
+    .input-group>input:not(:first-child) {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    .input-group>input:not(:last-child) {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .input-group>.input-group-text:last-child {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        border-top-right-radius: 12px;
+        border-bottom-right-radius: 12px;
+        border-left: 0;
+    }
+
+    .help-text {
+        font-size: 0.85rem;
+        color: #94a3b8;
+        margin-top: 0.5rem;
+        margin-left: 0.25rem;
+    }
+
+    .btn-generate {
+        background: var(--primary-gradient);
+        border: none;
+        border-radius: 16px;
+        padding: 1.25rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: white;
+        width: 100%;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-generate:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 30px -5px rgba(37, 99, 235, 0.5);
+    }
+
+    .btn-generate:disabled {
+        opacity: 0.7;
+        transform: none;
+    }
+</style>
+
+<div class="container py-5 advisor-container">
+    <div class="advisor-card">
+
+        <div class="advisor-header">
+            <h1 class="h2 fw-bold mb-2">
+                <i class="bi bi-stars me-2"></i>{% trans "AI Wealth Architect" %}
+            </h1>
+            <p class="mb-0 opacity-90 lead" style="font-size: 1.1rem;">
+                {% trans "Design the optimal portfolio tailored to your goals." %}
+            </p>
+        </div>
+
+        <div class="card-body p-4 p-md-5 bg-white">
+            <form method="post" id="portfolioForm">
+                {% csrf_token %}
+
+                <!-- Section 1: Capital -->
+                <div class="mb-5">
+                    <div class="section-title text-primary">
+                        <i class="bi bi-wallet2 fs-4"></i> {% trans "Capital Setup" %}
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label">{% trans "Total Investment" %}</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                {{ form.total_amount }}
+                            </div>
+                            <div class="help-text">{% trans "Total assets currently available" %}</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">{% trans "Monthly Contribution" %}</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                {{ form.monthly_contribution }}
+                            </div>
+                            <div class="help-text">{% trans "Amount to invest monthly" %}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Strategy -->
+                <div class="mb-5">
+                    <div class="section-title text-primary">
+                        <i class="bi bi-compass fs-4"></i> {% trans "Investment Strategy" %}
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label">{% trans "Risk Profile" %}</label>
+                            {{ form.risk_tolerance }}
+                            <div class="help-text">{% trans "Principal Protection vs High Return" %}</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">{% trans "Investment Goal" %}</label>
+                            {{ form.investment_goal }}
+                            <div class="help-text">{% trans "Primary purpose of investment" %}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Timeline -->
+                <div class="mb-5">
+                    <div class="section-title text-primary">
+                        <i class="bi bi-hourglass-split fs-4"></i> {% trans "Duration & Target" %}
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label">{% trans "Duration" %}</label>
+                            <div class="input-group">
+                                {{ form.duration_months }}
+                                <span class="input-group-text">{% trans "Months" %}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">{% trans "Target Annual Return" %}</label>
+                            <div class="input-group">
+                                {{ form.target_return }}
+                                <span class="input-group-text">%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-5">
+                    <button type="submit" class="btn btn-generate" id="submitBtn">
+                        <span id="btnText">🚀 {% trans "Generate AI Portfolio" %}</span>
+                        <span id="loadingSpinner" class="spinner-border spinner-border-sm ms-2"
+                            style="display:none;"></span>
+                    </button>
+                    <p class="text-center text-muted mt-3 small">
+                        <i class="bi bi-info-circle me-1"></i>
+                        {% trans "Gemini Pro analyzes real-time market data to derive the optimal allocation." %}
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 폼 제출 시 로딩 효과
+    document.getElementById('portfolioForm').addEventListener('submit', function () {
+        var btn = document.getElementById('submitBtn');
+        var btnText = document.getElementById('btnText');
+        var spinner = document.getElementById('loadingSpinner');
+
+        // 버튼 비활성화 및 로딩 표시
+        btn.disabled = true;
+        btn.style.opacity = '0.8';
+        btnText.innerText = "{% trans 'Analyzing the market and formulating a strategy...' %}";
+        spinner.style.display = "inline-block";
+    });
+</script>
+{% endblock %}

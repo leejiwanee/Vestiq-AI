@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load i18n humanize %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">{% trans "Add Position" %} - {{ trade.ticker }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-light border">
+                        <strong>{% trans "Current Holding:" %}</strong><br>
+                        {% trans "Total Invested:" %} ${{ trade.invested_amount|intcomma }}<br>
+                        {% trans "Avg Price:" %} ${{ trade.buy_price|floatformat:2|intcomma }}
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="id_date" class="form-label">{% trans "Date" %}</label>
+                            <input type="date" name="date" class="form-control" id="id_date" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_price" class="form-label">{% trans "Buy Price" %}</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" name="price" step="0.01" class="form-control" id="id_price" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_amount" class="form-label">{% trans "Invested Amount" %}</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" name="amount" step="0.01" class="form-control" id="id_amount" required>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">{% trans "Add Position" %}</button>
+                            <a href="{% url 'trade_history' trade.pk %}" class="btn btn-outline-secondary">{% trans "Cancel" %}</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Set default date to today
+    document.getElementById('id_date').valueAsDate = new Date();
+</script>
+{% endblock %}

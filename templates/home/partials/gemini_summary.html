@@ -1,0 +1,80 @@
+{% load i18n humanize %}
+
+{% if gemini_summary and gemini_summary.title %}
+  <div class="timeline-container">
+    <div class="timeline-line"></div>
+    
+    <!-- Main Insight -->
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-time">{{ gemini_summary.last_updated|default:"NOW" }}</div>
+      <h6 style="font-weight: 600; margin: 8px 0; color: #fff;">{{ gemini_summary.title }}</h6>
+      <div class="timeline-content">{{ gemini_summary.summary|linebreaksbr }}</div>
+    </div>
+    
+    <!-- Global Context -->
+    {% if gemini_summary.macro %}
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background: #A78BFA;"></div>
+      <div class="timeline-time">GLOBAL CONTEXT</div>
+      <div class="timeline-content">
+        {% if gemini_summary.macro.points %}
+          <ul style="margin: 8px 0; padding-left: 16px; color: #E2E8F0;">
+            {% for point in gemini_summary.macro.points %}
+              <li style="margin-bottom: 6px;">{{ point|safe }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          {{ gemini_summary.macro.content }}
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+    
+    <!-- Sector Moves -->
+    {% if gemini_summary.sectors %}
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background: #10B981;"></div>
+      <div class="timeline-time">SECTOR ACTIVITY</div>
+      <div class="timeline-content">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+          {% for s in gemini_summary.sectors %}
+          <div style="display: flex; justify-content: space-between; padding: 6px 12px; background: rgba(255,255,255,0.03); border-radius: 6px;">
+            <span style="color: #E2E8F0;">{{ s.name }}</span>
+            <span style="font-weight: 600; font-family: 'JetBrains Mono', monospace; {% if '-' in s.change %}color: #EF4444;{% else %}color: #10B981;{% endif %}">
+              {{ s.change }}
+            </span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    
+    <!-- Themes -->
+    {% if gemini_summary.themes %}
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background: #F59E0B;"></div>
+      <div class="timeline-time">TRENDING THEMES</div>
+      <div class="timeline-content">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+          {% for t in gemini_summary.themes %}
+          <div style="display: flex; justify-content: space-between; padding: 6px 12px; background: rgba(255,255,255,0.03); border-radius: 6px;">
+            <span style="color: #E2E8F0;">{{ t.name }}</span>
+            <span style="font-weight: 600; font-family: 'JetBrains Mono', monospace; {% if '-' in t.change %}color: #EF4444;{% else %}color: #10B981;{% endif %}">
+              {{ t.change }}
+            </span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    
+  </div>
+{% else %}
+  <div class="text-center py-5" style="color: #475569;">
+    <span class="spinner-border spinner-border-sm me-2"></span>
+    Aggregating intelligence...
+  </div>
+{% endif %}

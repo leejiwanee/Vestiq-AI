@@ -1,0 +1,491 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+
+{% block title %}AI Stock Inspector - Vestiq{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .inspector-hero {
+        background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+        padding: 4rem 1rem;
+        border-radius: 1.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .inspector-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(79, 70, 229, 0.1) 0%, transparent 60%);
+        animation: rotate 20s linear infinite;
+        z-index: 0;
+    }
+    
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .search-input {
+        background: rgba(30, 41, 59, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: white;
+        border-radius: 50px;
+        padding: 1.2rem 1.5rem;
+        padding-right: 4rem;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        backdrop-filter: blur(12px);
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
+    .search-input:focus {
+        background: rgba(30, 41, 59, 0.95);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.3);
+        outline: none;
+    }
+
+    .search-btn {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .search-btn:hover {
+        background: #4338ca;
+        transform: translateY(-50%) scale(1.05);
+    }
+
+    /* Card Styles */
+    .glass-card {
+        background: #1e293b; /* Slate 800 */
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+    
+    .text-gray-400 { color: #94a3b8 !important; }
+    .text-gray-300 { color: #cbd5e1 !important; }
+    
+    .signal-badge {
+        font-size: 1.25rem;
+        font-weight: 800;
+        padding: 0.5rem 1.5rem;
+        border-radius: 0.75rem;
+        display: inline-block;
+        letter-spacing: 0.5px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero Search -->
+<div class="inspector-hero">
+    <div class="hero-content">
+        <h1 class="display-4 fw-bold mb-2 text-white">AI Stock Inspector</h1>
+        <p class="lead mb-4 text-gray-400">
+            {% trans "Aggressive AI Analysis & Technical Deep Dive" %}
+        </p>
+
+        <div class="search-input-wrapper">
+            <input type="text" id="symbolInput" class="search-input" 
+                   placeholder="{% trans "Enter Ticker (e.g., AAPL, TSLA)..." %}" autocomplete="off">
+            <button class="search-btn" onclick="analyzeStock()">
+                <i class="bi bi-search fs-5"></i>
+            </button>
+        </div>
+        <div class="mt-3 text-sm text-gray-400">
+            {% trans "Supports multiple tickers separated by comma" %}
+        </div>
+    </div>
+</div>
+
+<!-- Results Container -->
+<div id="resultsContainer" class="container-fluid px-0"></div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Global Chart Instances
+    const chartInstances = {};
+
+    document.getElementById('symbolInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') analyzeStock();
+    });
+
+    async function analyzeStock() {
+        const input = document.getElementById('symbolInput').value.trim();
+        if (!input) return;
+
+        const symbols = input.split(',').map(s => s.trim().toUpperCase()).filter(s => s);
+        if (symbols.length === 0) return;
+
+        document.getElementById('symbolInput').value = '';
+        
+        // Clear previous if simple user flow, or prepend? 
+        // User asked for "Results Page", implies clean state usually. 
+        // But logic supports multiple. I'll prepend so they stack.
+        // Actually, let's clear container for a fresh look if user enters new search
+        // document.getElementById('resultsContainer').innerHTML = ''; // Optional specific behavior
+
+        for (const symbol of symbols) {
+            createPlaceholder(symbol);
+            // Parallel fetch: Analysis AND Chart
+            fetchAnalysisAndChart(symbol);
+        }
+    }
+
+    function createPlaceholder(symbol) {
+        const container = document.getElementById('resultsContainer');
+        const cardId = `card-${symbol}`;
+        
+        const existing = document.getElementById(cardId);
+        if (existing) existing.remove();
+
+        const html = `
+            <div id="${cardId}" class="glass-card mb-5 shadow-lg">
+                <div class="p-5 text-center">
+                    <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
+                    <h3 class="text-white fw-bold">Analyzing ${symbol}...</h3>
+                    <p class="text-gray-400">Gathering market data, calculating indicators, and consulting Gemini AI...</p>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML('afterbegin', html);
+    }
+
+    async function fetchAnalysisAndChart(symbol) {
+        const cardId = `card-${symbol}`;
+        const cardElement = document.getElementById(cardId);
+
+        try {
+            // 1. Fetch AI Analysis
+            const aiRes = await fetch('{% url "ai_advisor:api_analyze_stock" %}', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
+                body: JSON.stringify({ symbol: symbol })
+            });
+            const aiData = await aiRes.json();
+            if (aiData.error) throw new Error(aiData.error);
+
+            // 2. Fetch Chart Data
+            const chartRes = await fetch(`/scanner/chart/${symbol}/`);
+            const chartData = await chartRes.json();
+            
+            // 3. Render
+            renderResult(symbol, aiData, chartData);
+
+        } catch (error) {
+            console.error(error);
+            if(cardElement) {
+                cardElement.innerHTML = `
+                    <div class="p-5 text-center">
+                        <i class="bi bi-exclamation-circle text-danger display-1 mb-3"></i>
+                        <h3 class="text-white">Analysis Failed for ${symbol}</h3>
+                        <p class="text-gray-400">${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+    }
+
+    function renderResult(symbol, aiData, chartData) {
+        const cardId = `card-${symbol}`;
+        const chartId = `chart-${symbol}`;
+        const gaugeId = `gauge-${symbol}`;
+        const analysis = aiData.analysis;
+        
+        // Determine Color
+        let colorClass = 'bg-secondary';
+        let colorHex = '#94a3b8';
+        if(analysis.signal.includes('BUY')) { colorClass = 'bg-success'; colorHex = '#10b981'; }
+        else if(analysis.signal.includes('SELL')) { colorClass = 'bg-danger'; colorHex = '#ef4444'; }
+        else if(analysis.signal.includes('HOLD')) { colorClass = 'bg-warning text-dark'; colorHex = '#f59e0b'; }
+
+        const html = `
+            <div class="glass-card mb-5 shadow-lg animate__animated animate__fadeIn">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center p-4 border-bottom border-dark" style="background: rgba(0,0,0,0.2);">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 50px; height: 50px;">
+                            ${symbol[0]}
+                        </div>
+                        <div>
+                            <h2 class="h4 text-white fw-bold mb-0">${aiData.company} (${symbol})</h2>
+                            <div class="text-gray-400 fs-6">
+                                $${aiData.price.toFixed(2)} 
+                                <span class="badge ${colorClass} ms-2 bg-opacity-75">${analysis.strategy}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-end d-none d-md-block">
+                        <span class="d-block text-gray-400 text-sm">Valid for Today</span>
+                        <span class="d-block text-white fw-bold">${new Date().toLocaleDateString()}</span>
+                    </div>
+                </div>
+
+                <div class="card-body p-0">
+                    <div class="row g-0">
+                        <!-- Left: Chart (Our Chart) -->
+                        <div class="col-lg-8 border-end border-dark">
+                            <div class="p-2 bg-slate-900" style="height: 600px; position: relative;">
+                                <div id="${chartId}" style="width: 100%; height: 100%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Right: AI Verdict -->
+                        <div class="col-lg-4 bg-slate-800">
+                            <div class="p-4 h-100 d-flex flex-column">
+                                
+                                <!-- Gauge & Score -->
+                                <div class="text-center mb-4 position-relative">
+                                    <div style="width: 180px; height: 100px; margin: 0 auto; position: relative;">
+                                        <canvas id="${gaugeId}"></canvas>
+                                        <div style="position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%);">
+                                            <div class="display-4 fw-bold text-white lh-1">${analysis.score}</div>
+                                            <div class="text-gray-400 text-xs">AI Score</div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2">
+                                        <span class="signal-badge ${colorClass} text-white shadow-lg border border-white border-opacity-25">
+                                            ${analysis.signal}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Analysis Text -->
+                                <div class="mb-4">
+                                    <h5 class="text-white fw-bold border-start border-4 border-primary ps-3 mb-3">
+                                        "${analysis.verdict_title}"
+                                    </h5>
+                                    <ul class="list-unstyled text-gray-300 small mb-0 spacing-y-2">
+                                        ${analysis.reasoning.map(r => `
+                                            <li class="d-flex gap-2 mb-2 align-items-start">
+                                                <i class="bi bi-check-circle-fill text-primary mt-1"></i>
+                                                <span>${r}</span>
+                                            </li>
+                                        `).join('')}
+                                    </ul>
+                                </div>
+
+                                <!-- Targets Grid -->
+                                <div class="mt-auto">
+                                    <div class="row g-2 text-center">
+                                        <div class="col-4">
+                                            <div class="p-2 rounded bg-dark bg-opacity-50 border border-secondary border-opacity-25">
+                                                <div class="text-gray-400 x-small mb-1">ENTRY</div>
+                                                <div class="fw-bold text-white">${analysis.targets.entry}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="p-2 rounded bg-success bg-opacity-10 border border-success border-opacity-25">
+                                                <div class="text-success x-small mb-1">TARGET</div>
+                                                <div class="fw-bold text-success">${analysis.targets.target}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="p-2 rounded bg-danger bg-opacity-10 border border-danger border-opacity-25">
+                                                <div class="text-danger x-small mb-1">STOP</div>
+                                                <div class="fw-bold text-danger">${analysis.targets.stop_loss}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const card = document.getElementById(cardId);
+        card.innerHTML = html;
+
+        // Init Chart
+        initEChart(chartId, chartData, symbol);
+        
+        // Init Gauge (Chart.js)
+        initGauge(gaugeId, analysis.score, colorHex);
+    }
+
+    function initEChart(domId, data, symbol) {
+        if (!data.ohlcv || !data.ohlcv.length) return;
+        
+        const chart = echarts.init(document.getElementById(domId));
+        chartInstances[domId] = chart;
+
+        const dates = data.ohlcv.map(d => new Date(d.time * 1000).toLocaleDateString());
+        const values = data.ohlcv.map(d => [d.open, d.close, d.low, d.high]);
+        // Vol Color: Close > Open ? Green (#22c55e) : Red (#ef4444)
+        const volumes = data.ohlcv.map((d, i) => [i, d.volume, d.close > d.open ? 1 : -1]);
+
+        // Indicators
+        const ma20 = data.ma.ma20.map(d => d.value);
+        const ma60 = data.ma.ma60.map(d => d.value);
+        const ma120 = data.ma.ma120.map(d => d.value);
+        const ma240 = data.ma.ma240.map(d => d.value);
+
+        // Bollinger Bands
+        const bbUpper = data.bb ? data.bb.upper.map(d => d.value) : [];
+        const bbLower = data.bb ? data.bb.lower.map(d => d.value) : [];
+        const bbDiff = bbUpper.map((u, i) => u - bbLower[i]);
+
+        // RSI
+        const rsi = data.rsi.map(d => d.value);
+
+        // MACD
+        const macd = data.macd.macd.map(d => d.value);
+        const signal = data.macd.signal.map(d => d.value);
+        const hist = data.macd.diff.map(d => d.value);
+
+        const option = {
+            backgroundColor: 'transparent',
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'cross' },
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                borderColor: '#475569',
+                textStyle: { color: '#f8fafc' }
+            },
+            grid: [
+                { left: '3%', right: '3%', height: '40%', top: '2%' },  // Main
+                { left: '3%', right: '3%', top: '45%', height: '15%' }, // Volume
+                { left: '3%', right: '3%', top: '63%', height: '15%' }, // RSI
+                { left: '3%', right: '3%', top: '81%', height: '15%' }  // MACD
+            ],
+            xAxis: [
+                { type: 'category', data: dates, gridIndex: 0, axisLine: { show:false }, axisLabel: { show: false } },
+                { type: 'category', data: dates, gridIndex: 1, show: false },
+                { type: 'category', data: dates, gridIndex: 2, show: false },
+                { type: 'category', data: dates, gridIndex: 3, axisLine: { lineStyle: { color: '#64748b' } } }
+            ],
+            yAxis: [
+                { scale: true, gridIndex: 0, splitLine: { lineStyle: { color: '#334155' } }, axisLabel: { color: '#94a3b8' } },
+                { scale: true, gridIndex: 1, show: false },
+                { scale: true, gridIndex: 2, splitLine: { show: false }, min: 0, max: 100, axisLabel: { show: false } }, // RSI
+                { scale: true, gridIndex: 3, splitLine: { show: false }, axisLabel: { show: false } }  // MACD
+            ],
+            dataZoom: [{ type: 'inside', xAxisIndex: [0, 1, 2, 3], start: 70, end: 100 }],
+            series: [
+                // Price (Up=Green, Down=Red)
+                {
+                    type: 'candlestick',
+                    data: values,
+                    itemStyle: { 
+                        color: '#22c55e',       // Up (Green)
+                        color0: '#ef4444',      // Down (Red)
+                        borderColor: '#22c55e', 
+                        borderColor0: '#ef4444' 
+                    }
+                },
+                { name: 'MA20', type: 'line', data: ma20, smooth: true, showSymbol: false, itemStyle: { color: '#fbbf24' }, lineStyle: { width: 1 } },
+                { name: 'MA60', type: 'line', data: ma60, smooth: true, showSymbol: false, itemStyle: { color: '#3b82f6' }, lineStyle: { width: 1 } },
+                { name: 'MA120', type: 'line', data: ma120, smooth: true, showSymbol: false, itemStyle: { color: '#c084fc' }, lineStyle: { width: 1 } },
+                { name: 'MA240', type: 'line', data: ma240, smooth: true, showSymbol: false, itemStyle: { color: '#22d3ee' }, lineStyle: { width: 1 } },
+
+                // Bollinger Bands (Area Fill Trick)
+                {
+                    name: 'BB Base', type: 'line', data: bbLower, smooth: true, showSymbol: false,
+                    lineStyle: { opacity: 0 }, stack: 'bb-band', symbol: 'none', silent: true
+                },
+                {
+                    name: 'BB Area', type: 'line', data: bbDiff, smooth: true, showSymbol: false,
+                    lineStyle: { opacity: 0 }, areaStyle: { color: 'rgba(56, 189, 248, 0.1)' },
+                    stack: 'bb-band', symbol: 'none', silent: true
+                },
+                {
+                    name: 'BB Upper', type: 'line', data: bbUpper, smooth: true, showSymbol: false,
+                    lineStyle: { width: 1, color: 'rgba(148, 163, 184, 0.4)', type: 'dashed' },
+                    itemStyle: { color: 'rgba(148, 163, 184, 0.4)' }, symbol: 'none'
+                },
+                {
+                    name: 'BB Lower', type: 'line', data: bbLower, smooth: true, showSymbol: false,
+                    lineStyle: { width: 1, color: 'rgba(148, 163, 184, 0.4)', type: 'dashed' },
+                    itemStyle: { color: 'rgba(148, 163, 184, 0.4)' }, symbol: 'none'
+                },
+                
+                // Volume (Up=Green, Down=Red)
+                {
+                    name: 'Volume', type: 'bar', xAxisIndex: 1, yAxisIndex: 1, data: volumes,
+                    itemStyle: { color: (params) => params.value[2] > 0 ? '#22c55e' : '#ef4444' }
+                },
+
+                // RSI
+                {
+                    name: 'RSI', type: 'line', xAxisIndex: 2, yAxisIndex: 2, data: rsi,
+                    showSymbol: false, lineStyle: { width: 1, color: '#a855f7' },
+                    markLine: { data: [{ yAxis: 30 }, { yAxis: 70 }], lineStyle: { color: '#cbd5e1', type: 'dashed' }, symbol: 'none' }
+                },
+
+                // MACD
+                { name: 'MACD', type: 'line', xAxisIndex: 3, yAxisIndex: 3, data: macd, showSymbol: false, lineStyle: { width: 1, color: '#3b82f6' } },
+                { name: 'Signal', type: 'line', xAxisIndex: 3, yAxisIndex: 3, data: signal, showSymbol: false, lineStyle: { width: 1, color: '#f59e0b' } },
+                { name: 'Hist', type: 'bar', xAxisIndex: 3, yAxisIndex: 3, data: hist, itemStyle: { color: (p) => p.value > 0 ? '#22c55e' : '#ef4444' } }
+            ]
+        };
+
+        chart.setOption(option);
+        window.addEventListener('resize', () => chart.resize());
+    }
+
+    function initGauge(canvasId, score, color) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Score', ''],
+                datasets: [{
+                    data: [score, 100 - score],
+                    backgroundColor: [color, 'rgba(255,255,255,0.1)'],
+                    borderWidth: 0,
+                    circumference: 180,
+                    rotation: 270,
+                    cutout: '85%',
+                    borderRadius: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { enabled: false } }
+            }
+        });
+    }
+</script>
+{% endblock %}

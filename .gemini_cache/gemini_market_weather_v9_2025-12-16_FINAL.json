@@ -1,0 +1,172 @@
+{
+  "en": {
+    "title": "Markets Tread Cautiously: Gloomy Consumers, Sagging Oil, But Crypto Finds a Bid!",
+    "summary": "A mixed bag on the bourses today, with major indices mostly dipping as consumer sentiment wobbles, even as spending persists. Oil prices took a tumble amidst demand worries, while Bitcoin shone, demonstrating its 'digital gold' appeal in uncertain times.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6800.26 (-0.24%)",
+        "comment": "Taking a slight breather after recent highs."
+      },
+      {
+        "label": "Nasdaq",
+        "value": "23111.46 (+0.23%)",
+        "comment": "Tech titans still finding their footing and a bit of green."
+      },
+      {
+        "label": "Russell 2000",
+        "value": "2523.08 (-0.30%)",
+        "comment": "Small caps feeling the broader market pinch."
+      },
+      {
+        "label": "Bitcoin",
+        "value": "87519.51 (+1.27%)",
+        "comment": "Surging as a digital safe-haven alternative."
+      }
+    ],
+    "macro": {
+      "title": "Macro Vibes",
+      "points": [
+        "<b>Consumer Paradox</b>: Consumers are reportedly feeling down about the economy, yet continue to spend, indicating a puzzling divergence between sentiment and actual behavior.",
+        "<b>Yield Curve Wiggles</b>: Long-dated Treasury yields (10yr, 30yr) are down, while the 3-month yield edged up, signaling potential concerns about future economic growth and a flattening yield curve.",
+        "<b>Oil Slick</b>: Crude oil prices slid significantly, suggesting fears of weakening global demand, likely tied to broader economic slowdown concerns.",
+        "<b>Regulatory Ripples</b>: The potential reclassification of cannabis and CBD could introduce significant regulatory shifts, impacting related stocks and research sectors."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "Information Technology",
+        "change": "Relative Strength",
+        "comment": "Nasdaq's positive performance points to resilience in tech."
+      },
+      {
+        "name": "Precious Metals",
+        "change": "Up",
+        "comment": "Gold and silver shine as safe-haven assets."
+      },
+      {
+        "name": "Basic Materials",
+        "change": "Up",
+        "comment": "Copper's rise suggests some underlying industrial demand."
+      },
+      {
+        "name": "Energy",
+        "change": "Down",
+        "comment": "Crude oil's significant drop signals demand worries."
+      },
+      {
+        "name": "Consumer Discretionary",
+        "change": "Down",
+        "comment": "Luxury segment showing weakness with sinking Birkin bag prices."
+      },
+      {
+        "name": "Industrials",
+        "change": "Down",
+        "comment": "Broad market weakness likely impacts cyclically sensitive industrials."
+      }
+    ],
+    "themes": [
+      {
+        "name": "Digital Assets",
+        "change": "Strong",
+        "comment": "Bitcoin's climb reinforces its role amidst uncertainty."
+      },
+      {
+        "name": "Safe Havens",
+        "change": "Up",
+        "comment": "Gold and silver continue to attract investors."
+      },
+      {
+        "name": "Cannabis & CBD",
+        "change": "Potential catalyst",
+        "comment": "Regulatory changes could shake up this evolving market."
+      }
+    ]
+  },
+  "ko": {
+    "title": "시장은 조심스러운 행보: 우울한 소비 심리, 유가 하락에도 비트코인은 비상!",
+    "summary": "오늘 증시는 혼조세를 보이며 주요 지수는 하락세를 기록했습니다. 소비 심리는 위축되었지만 지출은 이어지는 가운데, 유가는 수요 우려로 급락했습니다. 한편, 비트코인은 불확실한 시기에 '디지털 금'으로서의 매력을 과시하며 강세를 보였습니다.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6800.26 (-0.24%)",
+        "comment": "최근 고점 이후 잠시 숨고르기 중입니다."
+      },
+      {
+        "label": "Nasdaq",
+        "value": "23111.46 (+0.23%)",
+        "comment": "기술주는 여전히 제자리를 찾아가며 녹색 불을 유지합니다."
+      },
+      {
+        "label": "Russell 2000",
+        "value": "2523.08 (-0.30%)",
+        "comment": "소형주는 전반적인 시장의 압박을 느끼고 있습니다."
+      },
+      {
+        "label": "비트코인",
+        "value": "87519.51 (+1.27%)",
+        "comment": "불확실성 속에서 디지털 안전자산 대안으로 급등했습니다."
+      }
+    ],
+    "macro": {
+      "title": "매크로 경제",
+      "points": [
+        "<b>소비자 역설</b>: 소비자들은 경제에 대해 비관적으로 느끼지만, 지출은 계속하고 있어, 심리와 실제 행동 간의 수수께끼 같은 괴리가 관찰됩니다.",
+        "<b>금리 곡선 변화</b>: 장기 국채 수익률(10년물, 30년물)은 하락한 반면, 3개월물은 소폭 상승하여, 미래 경제 성장과 관련된 우려 및 금리 곡선 평탄화 가능성을 시사합니다.",
+        "<b>유가 급락</b>: 국제 유가가 크게 하락하여 글로벌 수요 약화에 대한 우려를 증폭시키고 있으며, 이는 전반적인 경제 둔화와 연결될 수 있습니다.",
+        "<b>규제 변화의 파급효과</b>: 대마초와 CBD의 재분류 가능성은 관련 주식 및 연구 부문에 중요한 규제 변화를 가져올 수 있습니다."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "정보 기술",
+        "change": "상대적 강세",
+        "comment": "나스닥의 긍정적인 성과는 기술 부문의 회복력을 보여줍니다."
+      },
+      {
+        "name": "귀금속",
+        "change": "상승",
+        "comment": "금과 은은 안전자산으로서 빛을 발합니다."
+      },
+      {
+        "name": "기초 소재",
+        "change": "상승",
+        "comment": "구리 가격의 상승은 일부 산업 수요를 시사합니다."
+      },
+      {
+        "name": "에너지",
+        "change": "하락",
+        "comment": "국제 유가의 상당한 하락은 수요에 대한 우려를 나타냅니다."
+      },
+      {
+        "name": "경기소비재",
+        "change": "하락",
+        "comment": "버킨백 가격 하락은 명품 부문의 약세를 보여줍니다."
+      },
+      {
+        "name": "산업재",
+        "change": "하락",
+        "comment": "광범위한 시장 약세는 경기 순환에 민감한 산업재에 영향을 미칠 가능성이 큽니다."
+      }
+    ],
+    "themes": [
+      {
+        "name": "디지털 자산",
+        "change": "강세",
+        "comment": "비트코인의 상승은 불확실성 속에서 그 역할을 강화합니다."
+      },
+      {
+        "name": "안전자산",
+        "change": "상승",
+        "comment": "금과 은은 계속해서 투자자들을 끌어들입니다."
+      },
+      {
+        "name": "대마초 및 CBD",
+        "change": "잠재적 촉매제",
+        "comment": "규제 변화는 이 진화하는 시장에 큰 영향을 미칠 수 있습니다."
+      }
+    ]
+  },
+  "last_updated": "2025-12-16 04:11 PM EST",
+  "last_updated_ts": "2025-12-16T16:11:20.649828-05:00"
+}

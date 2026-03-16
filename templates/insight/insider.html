@@ -1,0 +1,648 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load i18n %}
+
+{% block title %}Insider Trading Radar{% endblock %}
+
+{% block content %}
+<style>
+    body { background-color: #0f172a !important; color: #cbd5e1; font-family: 'Inter', sans-serif; }
+    
+    /* Background Ambience */
+    .space-bg {
+        background: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.08), transparent 60%),
+                    radial-gradient(circle at 0% 50%, rgba(30, 41, 59, 0.4), transparent 50%);
+    }
+
+    /* Glass Panels */
+    .glass-panel {
+        background: rgba(30, 41, 59, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-radius: 16px;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    
+    .panel-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+    }
+    
+    .panel-body {
+        flex: 1;
+        overflow-y: auto;
+        min-height: 0; /* Flexbox scrolling fix */
+    }
+
+    /* Tables */
+    .custom-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    .custom-table th {
+        position: sticky;
+        top: 0;
+        background: rgba(30, 41, 59, 0.9); /* Sticky header bg */
+        backdrop-filter: blur(12px);
+        z-index: 10;
+        text-align: left;
+        color: #94a3b8;
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 12px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .custom-table td {
+        padding: 14px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+        vertical-align: middle;
+        font-size: 0.9rem;
+    }
+    .custom-table tr:hover td {
+        background: rgba(255,255,255,0.02);
+    }
+    
+    /* Company Name & Ticker */
+    .ticker-symbol {
+        font-weight: 700;
+        color: #e2e8f0;
+        display: block;
+    }
+    .company-name {
+        font-size: 0.75rem;
+        color: #64748b;
+        display: block;
+        max-width: 140px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Badges */
+    .role-badge {
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: rgba(148, 163, 184, 0.1);
+        color: #94a3b8;
+    }
+    
+    .trade-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        min-width: 80px;
+        justify-content: flex-end;
+    }
+    .trade-pill.buy { background: rgba(74, 222, 128, 0.1); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.2); }
+    .trade-pill.sell { background: rgba(248, 113, 113, 0.1); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.2); }
+
+    .price-sub { font-size: 0.8rem; color: #64748b; font-family: 'JetBrains Mono', monospace; }
+
+    /* Stats Cards */
+    .stat-card-clean {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 12px;
+        padding: 20px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .text-glow-green { text-shadow: 0 0 15px rgba(74, 222, 128, 0.2); }
+    .text-glow-red { text-shadow: 0 0 15px rgba(248, 113, 113, 0.2); }
+
+    /* Chart Containers */
+    .chart-container-lg {
+        position: relative;
+        height: 250px;
+        width: 100%;
+    }
+    .chart-container-sm {
+        position: relative;
+        height: 180px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Scrollbar */
+    .panel-body::-webkit-scrollbar { width: 6px; }
+    .panel-body::-webkit-scrollbar-track { background: transparent; }
+    .panel-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    .panel-body::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+</style>
+
+<div class="space-bg min-vh-100 pb-5">
+    <div class="container-fluid px-4 pt-4 pb-5">
+        
+        <!-- Header Section -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="fw-bold text-white mb-1" style="letter-spacing: -0.5px;">Insider Radar</h1>
+                <p class="text-secondary mb-0">High-conviction insider transactions (Last 30 Days)</p>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                 <div class="text-end d-none d-md-block">
+                     <div class="text-secondary small fw-bold">Last Updated</div>
+                     <div class="text-white font-monospace small">{{ last_updated|date:"H:i:s" }}</div>
+                 </div>
+                <span class="badge bg-dark border border-secondary text-secondary fw-normal px-3 py-2 rounded-pill">
+                    <span class="text-success me-1">●</span> Live
+                </span>
+            </div>
+        </div>
+
+        <!-- CHARTS ROW: TOP 5 BUY | RATIO | TOP 5 SELL -->
+        <div class="row g-4 mb-4">
+            <!-- 1. TOP 5 BUYS -->
+            <div class="col-lg-4">
+                <div class="glass-panel p-3 h-100">
+                    <div class="d-flex align-items-center mb-3">
+                         <span class="badge rounded-circle bg-success bg-opacity-10 text-success p-2 me-2"><i class="bi bi-arrow-up-right"></i></span>
+                         <h6 class="mb-0 text-white fw-bold ls-1">TOP 5 BUYS</h6>
+                    </div>
+                    <div style="height: 200px; width: 100%;">
+                        <canvas id="topBuysChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. RATIO -->
+            <div class="col-lg-4">
+                <div class="glass-panel p-3 h-100 text-center">
+                    <h6 class="mb-3 text-white fw-bold ls-1">BUY / SELL VOLUME RATIO</h6>
+                    <div style="height: 200px; width: 100%; position: relative;">
+                        <canvas id="ratioChart"></canvas>
+                        <!-- Center Text for Ratio -->
+                        <div class="position-absolute top-50 start-50 translate-middle text-center" style="pointer-events: none;">
+                            <div class="small text-secondary fw-bold">TOTAL</div>
+                             <div class="text-white fw-bold">{{ buy_count|add:sell_count }} Tx</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. TOP 5 SELLS -->
+            <div class="col-lg-4">
+                <div class="glass-panel p-3 h-100">
+                    <div class="d-flex align-items-center justify-content-end mb-3">
+                         <h6 class="mb-0 text-white fw-bold ls-1 text-end">TOP 5 SELLS</h6>
+                         <span class="badge rounded-circle bg-danger bg-opacity-10 text-danger p-2 ms-2"><i class="bi bi-arrow-down-right"></i></span>
+                    </div>
+                    <div style="height: 200px; width: 100%;">
+                        <canvas id="topSellsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content: Split Columns -->
+        <div class="row g-4 h-100">
+            
+            <!-- LEFT: BUY STREAM -->
+            <div class="col-xl-6" style="height: 600px;">
+                <div class="glass-panel h-100 d-flex flex-column">
+                    <div class="panel-header flex-shrink-0">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center">
+                                <span class="badge rounded-circle bg-success bg-opacity-10 text-success p-2 me-2"><i class="bi bi-arrow-up-right"></i></span>
+                                <h5 class="mb-0 text-white fw-bold">Recent Purchases</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body flex-grow-1 overflow-auto">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Ticker / Company</th>
+                                    <th>Insider / Role</th>
+                                    <th class="sortable-header" onclick="sortTable('buyTable', 2, 'string')" role="button">
+                                        <div class="d-flex align-items-center justify-content-between w-100">
+                                            <span>Date @ Price</span>
+                                            <i class="bi bi-arrow-down-up text-secondary fs-6 opacity-50"></i>
+                                        </div>
+                                    </th>
+                                    <th class="sortable-header" onclick="sortTable('buyTable', 3, 'number')" role="button">
+                                        <div class="d-flex align-items-center justify-content-between w-100">
+                                            <span>Shares / Owned</span>
+                                            <i class="bi bi-arrow-down-up text-secondary fs-6 opacity-50"></i>
+                                        </div>
+                                    </th>
+                                    <th class="sortable-header" onclick="sortTable('buyTable', 4, 'number')" role="button">
+                                        <div class="d-flex align-items-center justify-content-between w-100">
+                                            <span>ΔOwn</span>
+                                            <i class="bi bi-arrow-down-up text-secondary fs-6 opacity-50"></i>
+                                        </div>
+                                    </th>
+                                    <th class="sortable-header" onclick="sortTable('buyTable', 5, 'number')" role="button">
+                                        <div class="d-flex align-items-center justify-content-between w-100">
+                                            <span>Value</span>
+                                            <i class="bi bi-arrow-down-up text-secondary fs-6 opacity-50"></i>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="buyTable">
+                                {% for trade in buys %}
+                                <tr>
+                                    <td width="25%">
+                                        <div class="d-flex align-items-center">
+                                            <a href="https://finance.yahoo.com/quote/{{ trade.ticker }}" target="_blank" class="text-decoration-none">
+                                                <span class="ticker-symbol">{{ trade.ticker }}</span>
+                                                <span class="company-name">{{ trade.company }}</span>
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="text-white fw-medium small">{{ trade.insider }}</div>
+                                        <span class="role-badge">{{ trade.title|truncatechars:18 }}</span>
+                                    </td>
+                                    <td data-sort="{{ trade.date }}">
+                                        <div class="text-gray-400 small">{{ trade.date }}</div>
+                                        <div class="price-sub">@ ${{ trade.price|floatformat:2 }}</div>
+                                    </td>
+                                    <td data-sort="{{ trade.owned }}">
+                                        <div class="text-white small fw-bold">{{ trade.qty|intword }}</div>
+                                        <div class="text-secondary small" style="font-size: 0.75rem;">Own: {{ trade.owned|intword }}</div>
+                                    </td>
+                                    <td class="text-center" data-sort="{{ trade.delta_own_val }}">
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">{{ trade.delta_own }}</span>
+                                    </td>
+                                    <td class="text-end" data-sort="{{ trade.value }}">
+                                        <div class="trade-pill buy">
+                                            +${{ trade.value|intword }}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="6" class="text-center py-5 text-secondary">No recent purchases found.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: SELL STREAM -->
+            <div class="col-xl-6" style="height: 600px;">
+                <div class="glass-panel h-100 d-flex flex-column">
+                    <div class="panel-header flex-shrink-0">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center">
+                                <span class="badge rounded-circle bg-danger bg-opacity-10 text-danger p-2 me-2"><i class="bi bi-arrow-down-right"></i></span>
+                                <h5 class="mb-0 text-white fw-bold">Recent Sales</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body flex-grow-1 overflow-auto">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Ticker / Company</th>
+                                    <th>Insider / Role</th>
+                                    <th class="sortable-header" onclick="sortTable('sellTable', 2, 'string')" role="button">
+                                        <div class="d-flex align-items-center justify-content-between w-100">
+                                            <span>Date @ Price</span>
+                                            <i class="bi bi-arrow-down-up text-secondary fs-6 opacity-50"></i>
+                                        </div>
+                                    </th>
+                                    <th class="sortable-header" onclick="sortTable('sellTable', 3, 'number')" role="button">
+                                        <div class="d-flex align-items-center justify-content-between w-100">
+                                            <span>Shares / Owned</span>
+                                            <i class="bi bi-arrow-down-up text-secondary fs-6 opacity-50"></i>
+                                        </div>
+                                    </th>
+                                    <th class="sortable-header" onclick="sortTable('sellTable', 4, 'number')" role="button">
+                                        <div class="d-flex align-items-center justify-content-between w-100">
+                                            <span>ΔOwn</span>
+                                            <i class="bi bi-arrow-down-up text-secondary fs-6 opacity-50"></i>
+                                        </div>
+                                    </th>
+                                    <th class="sortable-header" onclick="sortTable('sellTable', 5, 'number')" role="button">
+                                        <div class="d-flex align-items-center justify-content-between w-100">
+                                            <span>Value</span>
+                                            <i class="bi bi-arrow-down-up text-secondary fs-6 opacity-50"></i>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="sellTable">
+                                {% for trade in sells %}
+                                <tr>
+                                    <td width="25%">
+                                        <div class="d-flex align-items-center">
+                                            <a href="https://finance.yahoo.com/quote/{{ trade.ticker }}" target="_blank" class="text-decoration-none">
+                                                <span class="ticker-symbol">{{ trade.ticker }}</span>
+                                                <span class="company-name">{{ trade.company }}</span>
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="text-white fw-medium small">{{ trade.insider }}</div>
+                                        <span class="role-badge">{{ trade.title|truncatechars:18 }}</span>
+                                    </td>
+                                    <td data-sort="{{ trade.date }}">
+                                        <div class="text-gray-400 small">{{ trade.date }}</div>
+                                        <div class="price-sub">@ ${{ trade.price|floatformat:2 }}</div>
+                                    </td>
+                                    <td data-sort="{{ trade.owned }}">
+                                        <div class="text-white small fw-bold">{{ trade.qty|intword }}</div>
+                                        <div class="text-secondary small" style="font-size: 0.75rem;">Own: {{ trade.owned|intword }}</div>
+                                    </td>
+                                    <td class="text-center" data-sort="{{ trade.delta_own_val }}">
+                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25">{{ trade.delta_own }}</span>
+                                    </td>
+                                    <td class="text-end" data-sort="{{ trade.value }}">
+                                        <div class="trade-pill sell">
+                                            -${{ trade.value|intword }}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="6" class="text-center py-5 text-secondary">No recent sales found.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- End Row -->
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        Chart.defaults.color = '#64748b';
+        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.register(ChartDataLabels);
+
+        // --- Common Chart Options for Top Buys/Sells ---
+        const commonOptions = {
+            indexAxis: 'y', // Horizontal Bar
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                datalabels: {
+                    color: '#fff',
+                    anchor: 'end',
+                    align: 'start',
+                    offset: -4,
+                    formatter: function(value, context) {
+                        return context.chart.data.labels[context.dataIndex];
+                    },
+                    font: { weight: 'bold', size: 10 }
+                },
+                tooltip: {
+                     callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.x !== null) {
+                                label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumSignificantDigits: 3 }).format(context.parsed.x);
+                            }
+                            return label;
+                        }
+                    } 
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false, drawBorder: false },
+                    ticks: { display: false }
+                },
+                y: {
+                     display: false // Hide Y axis labels since we use datalabels inside bar or tooltips
+                }
+            },
+            layout: { padding: { left: 0, right: 20, top: 0, bottom: 0 } }
+        };
+
+        // 0. DAILY TREND CHART - REMOVED
+
+        // 1. BUY / SELL RATIO (Doughnut - Prettier)
+        const buyVol = {{ total_buy_vol|default:0|stringformat:"d" }};
+        const sellVol = {{ total_sell_vol|default:0|stringformat:"d" }};
+        
+        new Chart(document.getElementById('ratioChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Buy Volume', 'Sell Volume'],
+                datasets: [{
+                    data: [buyVol, sellVol],
+                    backgroundColor: ['#4ade80', '#f87171'],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '85%', // Thinner ring for elegance
+                plugins: {
+                    legend: { 
+                        display: true, 
+                        position: 'bottom',
+                        labels: { color: '#94a3b8', font: { size: 10 }, usePointStyle: true, boxWidth: 6 }
+                    },
+                    datalabels: { display: false }, // No text on chart itself
+                    tooltip: {
+                         backgroundColor: 'rgba(0,0,0,0.8)',
+                         padding: 12,
+                         cornerRadius: 8,
+                         callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                let value = context.parsed;
+                                let total = context.chart._metasets[context.datasetIndex].total;
+                                let percentage = ((value / total) * 100).toFixed(1) + '%';
+                                
+                                // Format Value
+                                let formattedValue = value;
+                                if (value >= 1000000000) formattedValue = '$' + (value / 1000000000).toFixed(1) + ' Billion';
+                                else if (value >= 1000000) formattedValue = '$' + (value / 1000000).toFixed(1) + ' Million';
+                                else formattedValue = '$' + value;
+
+                                return label + ': ' + formattedValue + ' (' + percentage + ')';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. TOP MOVERS - REMOVED
+        // The original "TOP 5 MOVERS (Bar - Tornado Style)" block is removed as per instruction.
+
+        // Create Gradients
+        const ctxBuy = document.getElementById('topBuysChart').getContext('2d');
+        const buyGradient = ctxBuy.createLinearGradient(0, 0, 400, 0);
+        buyGradient.addColorStop(0, '#4ade80');
+        buyGradient.addColorStop(1, '#86efac'); // Light Green
+
+        const ctxSell = document.getElementById('topSellsChart').getContext('2d');
+        const sellGradient = ctxSell.createLinearGradient(0, 0, 400, 0);
+        sellGradient.addColorStop(0, '#f87171');
+        sellGradient.addColorStop(1, '#fca5a5'); // Light Red
+
+        // 3. TOP 5 BUYS (Green)
+        const buyTickers = JSON.parse('{{ top_buy_tickers|safe }}');
+        const buyValues = JSON.parse('{{ top_buy_values|safe }}');
+
+        new Chart(document.getElementById('topBuysChart'), {
+            type: 'bar',
+            data: {
+                labels: buyTickers,
+                datasets: [{
+                    label: 'Buy Value',
+                    data: buyValues,
+                    backgroundColor: buyGradient, // Gradient
+                    borderRadius: 100, // Pill Shape
+                    barThickness: 15, // Sleek
+                    borderSkipped: false
+                }]
+            },
+            options: commonOptions
+        });
+
+        // 4. TOP 5 SELLS (Red)
+        const sellTickers = JSON.parse('{{ top_sell_tickers|safe }}');
+        const sellValues = JSON.parse('{{ top_sell_values|safe }}');
+
+        new Chart(document.getElementById('topSellsChart'), {
+            type: 'bar',
+            data: {
+                labels: sellTickers,
+                datasets: [{
+                    label: 'Sell Value',
+                    data: sellValues,
+                    backgroundColor: sellGradient, // Gradient
+                    borderRadius: 100, // Pill Shape
+                    barThickness: 15, // Sleek
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                ...commonOptions,
+                indexAxis: 'y',
+                plugins: {
+                    ...commonOptions.plugins,
+                    datalabels: {
+                        ...commonOptions.plugins.datalabels,
+                    }
+                },
+                 scales: {
+                    x: { display: false },
+                    y: { display: false }
+                }
+            }
+        });
+    });
+
+    // --- Improved Sort Function ---
+    function sortTable(tableId, colIndex, type) {
+        console.log(`Sorting ${tableId} column ${colIndex} as ${type}`);
+        const table = document.getElementById(tableId);
+        if (!table) { console.error("Table not found:", tableId); return; }
+        
+        let switching = true;
+        let shouldSwitch;
+        let dir = "desc"; 
+        let switchcount = 0;
+        
+        // Reset all icons in this table's header
+        const headerRow = table.parentElement.querySelector('thead tr');
+        if (headerRow) {
+            const headers = headerRow.querySelectorAll('th i');
+            headers.forEach(icon => {
+                 icon.className = "bi bi-arrow-down-up text-secondary fs-6 opacity-50"; 
+            });
+        }
+
+        // Loop until no switching needed
+        while (switching) {
+            switching = false;
+            const rows = table.rows; 
+
+            let i;
+            for (i = 0; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                const x = rows[i].getElementsByTagName("TD")[colIndex];
+                const y = rows[i + 1].getElementsByTagName("TD")[colIndex];
+                
+                let xContent, yContent;
+                
+                if (type === 'number') {
+                    xContent = parseFloat(x.getAttribute('data-sort')) || 0;
+                    yContent = parseFloat(y.getAttribute('data-sort')) || 0;
+                } else {
+                    xContent = (x.getAttribute('data-sort') || "").toLowerCase();
+                    yContent = (y.getAttribute('data-sort') || "").toLowerCase();
+                }
+
+                if (dir == "asc") {
+                    if (xContent > yContent) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (dir == "desc") {
+                    if (xContent < yContent) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount ++;
+            } else {
+                if (switchcount == 0 && dir == "desc") {
+                    dir = "asc";
+                    switching = true;
+                }
+            }
+        }
+        
+        // Update Icon for the clicked column
+        const headerRowElement = table.parentElement.querySelector('thead tr');
+        if (headerRowElement) {
+            const targetHeader = headerRowElement.children[colIndex];
+            if (targetHeader) {
+                 const icon = targetHeader.querySelector('i');
+                 if (icon) {
+                     icon.className = (dir === 'asc') 
+                        ? "bi bi-sort-up text-white fs-5 opacity-100" 
+                        : "bi bi-sort-down text-white fs-5 opacity-100";
+                 }
+            }
+        }
+    }
+</script>
+{% endblock %}
+```

@@ -1,0 +1,112 @@
+{% load humanize %}
+<div class="pick-card group" 
+     style="position:relative; background: linear-gradient(145deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8)); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius:16px; padding:20px 24px; cursor:pointer; overflow:hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);"
+     data-strat="{% for s in pick.strategies %}{{ s }},{% endfor %}" 
+     data-ticker="{{ pick.symbol }}"
+     onclick="openDetailModal('{{ pick.symbol }}')">
+    
+    <!-- Hover Sheen (via CSS in main file) -->
+
+    <div style="display:flex; justify-content: space-between; align-items:center;">
+        
+        <!-- LEFT: Symbol & Info -->
+        <div style="display:flex; flex-direction:column; gap:6px; flex:1;">
+             <!-- Symbol Row -->
+             <div style="display:flex; align-items:center; gap:10px;">
+                 <div style="font-size:1.5rem; font-weight:800; background: linear-gradient(to bottom right, #ffffff 30%, #94a3b8 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing:-0.5px; line-height:1;">
+                    {{ pick.symbol }}
+                 </div>
+                 
+                 <!-- Secret Star -->
+                 {% if pick.is_secret %}
+                 <div style="color:#fbbf24; font-size:1.1rem; filter: drop-shadow(0 0 8px rgba(251,191,36,0.5)); animation: pulse-glow-gold 2s infinite;">
+                    <i class="bi bi-star-fill"></i>
+                 </div>
+                 {% endif %}
+             </div>
+             
+             <!-- Name -->
+             <div style="font-size:0.95rem; color:#64748b; font-weight:500; display:flex; align-items:center; gap:8px;">
+                 {{ pick.name|default:""|truncatechars:25 }}
+             </div>
+
+             <!-- Badges (Modern Pill Row) -->
+             <div style="display:flex; gap:6px; margin-top:4px; flex-wrap:wrap;">
+                {% for s in pick.strategies %}
+                    {% if 'Phoenix' in s or 'PHOENIX' in s %}
+                         <span style="font-size:0.7rem; padding:2px 10px; border-radius:99px; background:rgba(249,115,22,0.1); color:#fb923c; border:1px solid rgba(249,115,22,0.2); font-weight:700; letter-spacing:0.5px;">PHOENIX</span>
+                    {% elif 'Gurum' in s or 'GURUM' in s %}
+                        {% if 'Cross' in s or 'CROSS' in s %}
+                            <span style="font-size:0.7rem; padding:2px 10px; border-radius:99px; background:rgba(56,189,248,0.1); color:#38bdf8; border:1px solid rgba(56,189,248,0.2); font-weight:700; letter-spacing:0.5px;">GURUM CROSS</span>
+                        {% elif 'Rocket' in s or 'ROCKET' in s %}
+                            <span style="font-size:0.7rem; padding:2px 10px; border-radius:99px; background:rgba(253,230,138,0.1); color:#fde68a; border:1px solid rgba(253,230,138,0.2); font-weight:700; letter-spacing:0.5px;">GURUM ROCKET</span>
+                        {% elif 'Perfect' in s or 'PERFECT' in s %}
+                            <span style="font-size:0.7rem; padding:2px 10px; border-radius:99px; background:rgba(216,180,254,0.1); color:#d8b4fe; border:1px solid rgba(216,180,254,0.2); font-weight:700; letter-spacing:0.5px;">GURUM PERFECT</span>
+                        {% else %}
+                             <span style="font-size:0.7rem; padding:2px 10px; border-radius:99px; background:rgba(56,189,248,0.1); color:#38bdf8; border:1px solid rgba(56,189,248,0.2); font-weight:700; letter-spacing:0.5px;">GURUM</span>
+                        {% endif %}
+                    {% elif 'Alpha' in s or 'ALPHA' in s or 'Buy' in s %}
+                        <span style="font-size:0.7rem; padding:2px 10px; border-radius:99px; background:rgba(34,197,94,0.1); color:#4ade80; border:1px solid rgba(34,197,94,0.2); font-weight:700; letter-spacing:0.5px;">ALPHA</span>
+                    {% elif 'Prime' in s or 'PRIME' in s %}
+                        <span style="font-size:0.7rem; padding:2px 10px; border-radius:99px; background:rgba(52,211,153,0.1); color:#34d399; border:1px solid rgba(52,211,153,0.2); font-weight:700; letter-spacing:0.5px;">PRIME</span>
+                    {% elif 'Win' in s or 'WIN' in s %}
+                        <span style="font-size:0.7rem; padding:2px 10px; border-radius:99px; background:rgba(250,204,21,0.1); color:#facc15; border:1px solid rgba(250,204,21,0.2); font-weight:700; letter-spacing:0.5px;">WIN</span>
+                    {% elif 'Underdog' in s or 'UNDERDOG' in s %}
+                        <span style="font-size:0.7rem; padding:2px 10px; border-radius:99px; background:rgba(148,163,184,0.1); color:#94a3b8; border:1px solid rgba(148,163,184,0.2); font-weight:700; letter-spacing:0.5px;">UNDERDOG</span>
+                    {% elif 'Volume' in s or 'VOLUME' in s %}
+                        <span style="font-size:0.7rem; padding:2px 10px; border-radius:99px; background:rgba(129,140,248,0.1); color:#818cf8; border:1px solid rgba(129,140,248,0.2); font-weight:700; letter-spacing:0.5px;">VOLUME</span>
+                    {% elif 'Sell' in s or 'Hedge' in s or 'HEDGE' in s %}
+                        <span style="font-size:0.7rem; padding:2px 10px; border-radius:99px; background:rgba(239,68,68,0.1); color:#f87171; border:1px solid rgba(239,68,68,0.2); font-weight:700; letter-spacing:0.5px;">HEDGE</span>
+                    {% else %}
+                        <span style="font-size:0.7rem; padding:2px 10px; border-radius:99px; background:rgba(255,255,255,0.1); color:#e2e8f0; border:1px solid rgba(255,255,255,0.2); font-weight:700; letter-spacing:0.5px;">{{ s|upper }}</span>
+                    {% endif %}
+                {% endfor %}
+             </div>
+        </div>
+        
+                <!-- Right Side Container -->
+        <div style="display:flex; align-items:center; gap:16px; flex-shrink:0;">
+            
+            <!-- Price Stack -->
+            <div style="display:flex; flex-direction:column; align-items:flex-end; min-width:80px;">
+                 <div class="pick-price" style="font-size:1.6rem; font-weight:700; color:#f8fafc; font-family:'Outfit'; letter-spacing:-0.5px; text-shadow: 0 4px 12px rgba(0,0,0,0.5); line-height:1;">
+                     ${{ pick.price|floatformat:2 }}
+                 </div>
+                 
+                 <div style="margin-top:4px; display:flex; align-items:center; gap:6px;">
+                    {% if pick.change >= 0 %}
+                    <div style="background:rgba(34,197,94,0.15); color:#4ade80; padding:2px 8px; border-radius:6px; font-weight:700; font-size:0.85rem; border:1px solid rgba(34,197,94,0.2);">
+                        <i class="bi bi-caret-up-fill" style="margin-right:2px;"></i>{{ pick.change }}%
+                    </div>
+                    {% else %}
+                    <div style="background:rgba(248,113,113,0.15); color:#f87171; padding:2px 8px; border-radius:6px; font-weight:700; font-size:0.85rem; border:1px solid rgba(248,113,113,0.2);">
+                        <i class="bi bi-caret-down-fill" style="margin-right:2px;"></i>{{ pick.change }}%
+                    </div>
+                    {% endif %}
+                 </div>
+
+                 <!-- Avg Vol (Moved Here) -->
+                 <div style="font-size:0.75rem; color:#64748b; font-weight:500; margin-top:6px; opacity:0.8;">
+                    Avg: <span style="color:#94a3b8;">{{ pick.avg_volume }}</span>
+                 </div>
+            </div>
+
+            <!-- Kakao Send Button -->
+            <button class="kakao-send-btn" 
+                    style="width:36px; height:36px; border-radius:50%; background:rgba(254,229,0,0.15); display:flex; align-items:center; justify-content:center; color:#FEE500; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border:1px solid rgba(254,229,0,0.3); flex-shrink:0; cursor:pointer;"
+                    data-symbol="{{ pick.symbol }}"
+                    data-name="{{ pick.name }}"
+                    data-price="{{ pick.price }}"
+                    data-strategies="{% for s in pick.strategies %}{{ s }},{% endfor %}"
+                    onclick="event.stopPropagation(); sendToKakao(this);"
+                    title="카카오톡으로 전송">
+                <i class="bi bi-chat-fill" style="font-size:1rem;"></i>
+            </button>
+
+            <!-- Action Arrow -->
+            <div class="action-arrow" style="width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; color:white; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border:1px solid rgba(255,255,255,0.05); flex-shrink:0;">
+                <i class="bi bi-chevron-right" style="font-size:1rem;"></i>
+            </div>
+        </div>
+    </div>
+</div>

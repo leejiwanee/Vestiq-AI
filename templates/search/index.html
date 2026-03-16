@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static i18n humanize %}
+
+{% block title %}{% trans "Company Search" %} - Vestiq{% endblock %}
+
+{% block extra_head %}
+<style>
+    .search-hero {
+        min-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        background: #0f172a; /* Fallback */
+    }
+
+    /* Ambient Background Links */
+    .ambient-light {
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, transparent 70%);
+        border-radius: 50%;
+        filter: blur(60px);
+        z-index: 0;
+        animation: float 10s infinite alternate;
+    }
+    .ambient-1 { top: -10%; left: -10%; animation-delay: 0s; }
+    .ambient-2 { bottom: -10%; right: -10%; background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%); animation-delay: -5s; }
+
+    @keyframes float {
+        0% { transform: translate(0, 0) scale(1); }
+        100% { transform: translate(30px, 50px) scale(1.1); }
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+        width: 100%;
+        max-width: 800px;
+        padding: 0 1.5rem;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+        margin: 2rem auto;
+        max-width: 600px;
+        transition: transform 0.3s ease;
+    }
+    .search-input-wrapper:hover {
+        transform: translateY(-2px);
+    }
+
+    .search-input {
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: white;
+        border-radius: 2rem;
+        padding: 1.25rem 3.5rem 1.25rem 1.75rem;
+        font-size: 1.2rem;
+        width: 100%;
+        backdrop-filter: blur(16px);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .search-input:focus {
+        background: rgba(30, 41, 59, 0.9);
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.25), 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    .search-icon-btn {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        border: none;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .search-icon-btn:hover {
+        background: #4338ca;
+        transform: translateY(-50%) scale(1.05);
+    }
+
+    .trending-chips {
+        display: flex;
+        justify-content: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+    .chip {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 100px;
+        color: #94a3b8;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+    .chip:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-1px);
+    }
+    .chip-up { color: #34d399; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="search-hero">
+    <div class="ambient-light ambient-1"></div>
+    <div class="ambient-light ambient-2"></div>
+
+    <div class="hero-content animate__animated animate__fadeInUp">
+        <h1 class="display-4 fw-bold text-white mb-2">
+            {% trans "Market Intelligence" %}
+        </h1>
+        <p class="text-gray-400 fs-5 mb-4">
+            {% trans "Deep dive into financial data, charts, and news." %}
+        </p>
+
+        <div class="search-input-wrapper">
+            <input type="text" id="searchInput" class="search-input" 
+                   placeholder="{% trans 'Search Ticker (e.g., AAPL, NVDA)...' %}" autocomplete="off">
+            <button class="search-icon-btn" onclick="submitSearch()">
+                <i class="bi bi-search fs-5"></i>
+            </button>
+        </div>
+
+        <div class="mt-4">
+            <div class="text-gray-500 text-sm mb-2 text-uppercase fw-bold tracking-wider">{% trans "Trending Now" %}</div>
+            <div class="trending-chips">
+                <a href="/search/profile/NVDA/" class="chip">NVDA <span class="chip-up ms-1">▲</span></a>
+                <a href="/search/profile/TSLA/" class="chip">TSLA</a>
+                <a href="/search/profile/AAPL/" class="chip">AAPL</a>
+                <a href="/search/profile/AMD/" class="chip">AMD</a>
+                <a href="/search/profile/PLTR/" class="chip">PLTR</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function submitSearch() {
+        const input = document.getElementById('searchInput');
+        const val = input.value.trim().toUpperCase();
+        if (val) window.location.href = `/search/profile/${val}/`;
+    }
+
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') submitSearch();
+    });
+</script>
+{% endblock %}

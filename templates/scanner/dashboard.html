@@ -1,0 +1,1458 @@
+{% extends "base.html" %}
+{% load static humanize i18n %}
+
+{% block title %}{% trans "Scanner Dashboard" %}{% endblock %}
+
+{% block container_class %}container-fluid my-4{% endblock %}
+
+{% block content %}
+<style>
+  /* === 기본 스타일 === */
+  body {
+    font-size: 16px;
+    background-color: #0f172a !important; /* Force Dark Theme Background */
+    color: #f8fafc;
+  }
+
+  /* Force dark theme for base elements if not inherited */
+  .btn-outline-primary {
+      color: #60a5fa;
+      border-color: #3b82f6;
+  }
+  .btn-outline-primary:hover {
+      background-color: #1e293b;
+      color: #93c5fd;
+      border-color: #60a5fa;
+  }
+
+  .qa-small {
+    font-size: 13px !important;
+    color: #94a3b8;
+  }
+
+  .qa-text {
+    font-size: 15px !important;
+    color: #cbd5e1;
+  }
+
+  .qa-title {
+    font-size: 24px !important;
+    font-weight: 700;
+    color: #f8fafc; /* Bright White */
+  }
+
+  /* Improved Text Colors */
+  .text-white { color: #f8fafc !important; }
+  .text-muted { color: #cbd5e1 !important; } /* Lighter gray for better visibility */
+  .text-white-50 { color: #94a3b8 !important; } /* Slightly brighter than default 50% */
+
+  /* === 카드 === */
+  /* === 카드 === */
+  .qa-card {
+    border-radius: 16px;
+    border: 1px solid #334155; /* Dark Border */
+    background: #1e293b; /* Dark BG */
+    padding: 20px;
+    height: 100%;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    color: #f8fafc;
+  }
+
+  .qa-card-blue {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border: 1px solid #1e40af;
+    color: #ffffff;
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+  }
+
+  .qa-card-dark {
+    border-radius: 16px;
+    background: #1e293b;
+    color: #ffffff;
+    padding: 20px;
+    border: 1px solid #475569; /* Brighter border */
+  }
+
+  .qa-metric-label {
+    font-size: 13px;
+    opacity: 1; /* Full opacity */
+    color: #cbd5e1; /* Bright Gray */
+    margin-bottom: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .qa-metric-big {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  /* === 시그널 바 스타일 (Performance) === */
+  .signal-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+
+  .signal-row:last-child {
+    margin-bottom: 0;
+  }
+
+  .signal-label {
+    width: 80px;
+    color: #94a3b8;
+    font-weight: 600;
+  }
+
+  .signal-bar-bg {
+    flex-grow: 1;
+    height: 6px;
+    background: #334155;
+    border-radius: 99px;
+    margin: 0 12px;
+    overflow: hidden;
+  }
+
+  .signal-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.5s ease;
+  }
+
+  .signal-count {
+    width: 45px;
+    text-align: right;
+    font-weight: 700;
+  }
+
+  /* 필터 색상 */
+  .fill-vol {
+    background: #fbbf24;
+  }
+
+  .fill-vola {
+    background: #f43f5e;
+  }
+
+  .fill-trend {
+    background: #34d399;
+  }
+
+  .fill-patt {
+    background: #818cf8;
+  }
+
+  .fill-mom {
+    background: #38bdf8;
+  }
+
+  .fill-val {
+    background: #c084fc;
+  }
+
+  /* 뱃지 */
+  .qa-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-right: 3px;
+    margin-bottom: 3px;
+  }
+
+  .qa-badge-volume {
+    background: #fef3c7;
+    color: #b45309;
+  }
+
+  .qa-badge-vola {
+    background: #ffe4e6;
+    color: #e11d48;
+  }
+
+  .qa-badge-trend {
+    background: #dcfce7;
+    color: #15803d;
+  }
+
+  .qa-badge-pattern {
+    background: #e0e7ff;
+    color: #4338ca;
+  }
+
+  .qa-badge-momentum {
+    background: #e0f2fe;
+    color: #0369a1;
+  }
+
+  .qa-badge-value {
+    background: #f3e8ff;
+    color: #7e22ce;
+    border: 1px solid #d8b4fe;
+  }
+
+  .qa-badge-lux {
+    background: #fce7f3;
+    color: #be185d;
+    border: 1px solid #fbcfe8;
+  }
+
+  .qa-badge-gap {
+    background: #ede9fe;
+    color: #6d28d9;
+    border: 1px solid #ddd6fe;
+  }
+
+  .qa-badge-squeeze {
+    background: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+  }
+
+  /* VCS Badges - Dark Mode */
+  .qa-badge-buy {
+    background: #052e16; /* Dark Green */
+    color: #4ade80; /* Light Green Text */
+    border: 1px solid #14532d;
+  }
+
+  .qa-badge-watch {
+    background: #431407; /* Dark Orange */
+    color: #fb923c; /* Light Orange */
+    border: 1px solid #7c2d12;
+  }
+
+  .qa-badge-avoid {
+    background: #4c0519; /* Dark Red */
+    color: #fb7185; /* Light Red */
+    border: 1px solid #881337;
+  }
+
+  /* 유틸 */
+  .qa-num-pos {
+    color: #16a34a !important;
+    font-weight: 600;
+  }
+
+  .qa-num-neg {
+    color: #dc2626 !important;
+    font-weight: 600;
+  }
+
+  .qa-num-zero {
+    color: #94a3b8 !important;
+  }
+
+  .qa-chip {
+    padding: 4px 10px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-block;
+  }
+
+  .qa-chip-yes {
+    background: #eff6ff;
+    color: #1d4ed8;
+  }
+
+  .qa-chip-no {
+    background: #f1f5f9;
+    color: #94a3b8;
+  }
+
+  .qa-tab-pill {
+    padding: 8px 16px;
+    border-radius: 99px;
+    border: 1px solid #475569;
+    background: #1e293b;
+    color: #cbd5e1; /* Brighter inactive text */
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    transition: all 0.2s;
+  }
+
+  .qa-tab-pill:hover {
+    background: #334155;
+    color: #ffffff;
+    border-color: #64748b;
+  }
+
+  .qa-tab-pill--active {
+    background: #3b82f6; /* Brighter Blue */
+    color: white;
+    border-color: #60a5fa;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.4); /* Colored shadow */
+  }
+
+  .qa-btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    background: #1e293b;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #f8fafc; /* Forced White */
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .qa-btn-ghost:hover {
+    background: #334155;
+    border-color: #64748b;
+    color: #fff;
+  }
+
+  .qa-gauge-canvas {
+    max-width: 120px;
+    max-height: 60px;
+  }
+
+  /* 테이블 Enhanced Dark Theme */
+  .qa-table-wrapper {
+    border-radius: 12px;
+    border: 1px solid #334155;
+    overflow-x: auto;
+    background: #0f172a; /* Darker background matching body or slightly elevated */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  }
+
+  .qa-table {
+    width: 100%;
+    border-collapse: separate; 
+    border-spacing: 0;
+    font-size: 14px; /* Increased font size for readability */
+    color: #e2e8f0; /* Much brighter text */
+  }
+
+  .qa-table th {
+    background: #1e293b; /* Distinct Header */
+    padding: 14px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #cbd5e1; /* Brighter Header Text */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #334155;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .qa-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #334155; /* Visible separator */
+    vertical-align: middle;
+    color: #ffffff; /* Pure White */
+    white-space: nowrap;
+    background: #1e293b; /* Distinct Lighter Row BG */
+  }
+
+  .qa-table tr:hover td {
+    background: #334155; /* Much lighter hover */
+  }
+
+  .qa-td-right { text-align: right !important; }
+  .qa-td-center { text-align: center !important; }
+  
+  /* Mode Buttons */
+  .btn-mode-inactive {
+      color: #f8fafc !important;
+      border-color: #475569 !important;
+  }
+  .btn-mode-inactive:hover {
+      background-color: #334155 !important;
+      border-color: #94a3b8 !important;
+  }
+
+  /* Pagination Overrides for Dark Mode */
+  .pagination .page-link {
+    background-color: #1e293b;
+    border-color: #475569;
+    color: #cbd5e1;
+  }
+  .pagination .page-link:hover {
+    background-color: #334155;
+    color: #ffffff;
+    border-color: #64748b;
+  }
+  .pagination .page-item.active .page-link {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: #ffffff;
+  }
+  .pagination .page-item.disabled .page-link {
+    background-color: #0f172a;
+    border-color: #334155;
+    color: #64748b;
+  }
+</style>
+
+<div class="container-fluid px-4 py-3 space-y-6">
+
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h2 class="fw-bold text-white mb-0">{{ page_title }}</h2>
+      <div class="text-muted small mt-1">
+        {% if batch %}{% trans "Updated" %}: <b>{{ batch.started_at|date:"Y-m-d H:i" }}</b>{% else %}{% trans "No Data" %}{% endif %}
+      </div>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+        <!-- Ticker Search -->
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border-radius:8px; padding:4px 12px; border:1px solid rgba(255,255,255,0.1); gap:8px;">
+            <i class="bi bi-search" style="font-size:1rem; color:#94a3b8;"></i>
+            <input type="text" id="tickerSearchInput" 
+                  placeholder="Search ticker..." 
+                  style="background:transparent; border:none; color:#e2e8f0; width:140px; font-family:'Outfit'; font-size:0.9rem; outline:none;"
+                  maxlength="5">
+            <button id="tickerSearchBtn" onclick="searchTickerHistory()" class="btn btn-sm" style="padding:4px 12px; background:#3b82f6; border:none; border-radius:6px; color:white; font-weight:600; font-size:0.75rem; cursor:pointer; transition:all 0.2s;"
+                    onmouseover="this.style.background='#2563eb'; this.style.transform='translateY(-1px)'" 
+                    onmouseout="this.style.background='#3b82f6'; this.style.transform='translateY(0)'">
+                GO
+            </button>
+        </div>
+        
+        <form method="post" action="{% url 'scanner:run_scan' %}">
+            {% csrf_token %}
+            <input type="hidden" name="mode" value="{{ mode }}">
+            <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">{% trans "Run Scan" %}</button>
+        </form>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <!-- ... Cards ... -->
+
+
+    <div class="col-lg-3 col-md-6">
+      <div class="qa-card">
+        <div class="qa-metric-label text-muted">{% trans "Filtered Tickers" %}</div>
+        <div class="qa-metric-big text-white">{{ total_count|default:"0" }}</div>
+        <div class="text-muted small mt-1">{% trans "In current view" %}</div>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6">
+      {% if active_filter == 'all' %}
+      <div class="qa-card qa-card-blue text-white">
+        <div class="qa-metric-label" style="color:#dbeafe;">{% trans "Market Sentiment" %}</div>
+        <div class="d-flex justify-content-between align-items-end mt-2">
+          <div>
+            <div class="qa-metric-value text-white">
+              <span class="text-white">↑ {{ up_count }}</span>
+              <span class="text-white-50 mx-1">/</span>
+              <span class="text-white">↓ {{ down_count }}</span>
+            </div>
+            <div class="qa-metric-sub text-white-50">{% trans "Up / Down" %}</div>
+          </div>
+          <div style="text-align:right;">
+             <div style="display:flex; gap:2px; align-items:flex-end; height:30px;">
+                <div style="width:6px; height:{% widthratio up_count total_count 30 %}px; background:#86efac; border-radius:2px;"></div>
+                <div style="width:6px; height:{% widthratio down_count total_count 30 %}px; background:#fca5a5; border-radius:2px;"></div>
+             </div>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="qa-card qa-card-blue text-white">
+        <div class="qa-metric-label" style="color:#dbeafe;">{% trans "Triggered" %}</div>
+        <div class="d-flex justify-content-between align-items-end mt-2">
+          <div>
+            <div class="qa-metric-value text-white">{{ triggered_count }}</div>
+            <div class="qa-metric-sub text-white-50">{% trans "Buy Opportunities" %}</div>
+          </div>
+          <div class="text-end">
+            <div class="fs-4 fw-bold text-warning">{{ trigger_share|floatformat:1 }}%</div>
+            <div class="qa-metric-sub text-white-50">{% trans "Market Share" %}</div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="col-lg-3 col-md-6">
+      <div class="qa-card">
+        <div class="qa-metric-label">{% trans "Avg. Return" %}</div>
+        <div
+          class="qa-metric-big {% if avg_price_change > 0 %}qa-num-pos{% elif avg_price_change < 0 %}qa-num-neg{% else %}qa-num-zero{% endif %}">
+          {{ avg_price_change|floatformat:2 }}%
+        </div>
+        <div class="text-muted small mt-1">{% trans "Today's Performance" %}</div>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6">
+      <div class="qa-card-dark d-flex flex-column justify-content-center">
+        <div class="qa-metric-label"
+          style="border-bottom: 1px solid #334155; padding-bottom: 8px; margin-bottom: 12px; color: #94a3b8;">
+          {{ chart_title }}
+        </div>
+
+        {% for item in chart_data %}
+        <div class="signal-row">
+          <span class="signal-label">{{ item.label }}</span>
+          <div class="signal-bar-bg">
+            <div class="signal-bar-fill"
+              style="width: {% widthratio item.count total_count 100 %}%; background: {{ item.color }};">
+            </div>
+          </div>
+          <span class="signal-count" style="color: {{ item.color }}; filter: brightness(1.2);">
+            {{ item.count }}
+          </span>
+        </div>
+        {% empty %}
+        <div class="text-center text-muted py-2 small">{% trans "No Data" %}</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  {% if batch %}
+  <div class="row">
+    <div class="col-lg-10">
+  <div class="border-bottom pb-3 mb-3">
+      <!-- Mode Selection -->
+      <!-- Mode Selection -->
+      <div class="d-flex gap-2 mb-3">
+        <a href="?mode=day" class="btn btn-sm flex-grow-1 {% if mode == 'day' %}btn-primary text-white fw-bold{% else %}btn-outline-secondary btn-mode-inactive{% endif %}">
+          {% trans "Day Trading" %}
+        </a>
+        <a href="?mode=swing" class="btn btn-sm flex-grow-1 {% if mode == 'swing' %}btn-primary text-white fw-bold{% else %}btn-outline-secondary btn-mode-inactive{% endif %}">
+          {% trans "Swing" %}
+        </a>
+        <a href="?mode=long" class="btn btn-sm flex-grow-1 {% if mode == 'long' %}btn-primary text-white fw-bold{% else %}btn-outline-secondary btn-mode-inactive{% endif %}">
+          {% trans "Long-term" %}
+        </a>
+      </div>
+
+
+      <!-- Filter Tabs (with counts) -->
+      <nav class="qa-tabs">
+        {% for k, label, count in filter_tabs %}
+        <a href="?f={{ k }}&sort={{ sort }}&mode={{ mode }}"
+           class="qa-tab-pill {% if active_filter == k %}qa-tab-pill--active{% endif %}">
+          {{ label }}
+          <span style="opacity:0.6; font-size:12px; margin-left:4px;">({{ count }})</span>
+        </a>
+        {% endfor %}
+      </nav>
+  </div>
+
+  <form id="scanForm" method="post" action="{% url 'scanner:send_scan_email' %}" class="space-y-2">
+    {% csrf_token %}
+
+    <div class="d-flex justify-content-between align-items-center mb-3 p-3 rounded-3 border shadow-sm" style="background:#1e293b; border-color:#334155 !important;">
+      <div class="d-flex align-items-center gap-3">
+        <div class="fw-bold text-muted small">
+          SELECTED: <span id="selCount" class="text-white">0</span>
+        </div>
+        <div class="text-muted small border-start border-secondary ps-3">
+          Showing {{ page_obj.start_index|default:0 }}-{{ page_obj.end_index|default:0 }} of {{ total_count }}
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <button type="button" onclick="submitForm('{% url 'scanner:export_scan_csv' %}')" class="qa-btn-ghost"><i
+            class="bi bi-file-earmark-spreadsheet me-1"></i> CSV Export</button>
+        <button type="button" onclick="submitForm('{% url 'scanner:send_scan_email' %}')" class="qa-btn-ghost"><i
+            class="bi bi-envelope me-1"></i> Email Report</button>
+      </div>
+    </div>
+
+    <div class="qa-table-wrapper" style="border-top:none; border-top-left-radius:0; border-top-right-radius:0;">
+      <table class="qa-table">
+        <thead>
+          <tr>
+            <th style="width:30px;"><input type="checkbox" id="chk_all" onclick="toggleAll(this)"></th>
+            <th>Ticker</th>
+            <th>Company / Signals</th>
+            <th class="qa-td-right">Price</th>
+            <th class="qa-td-right">Volume</th>
+            <th class="qa-td-right">Prev Vol</th>
+            <th class="qa-td-right">
+              Change %
+              <a href="?f={{ active_filter }}&sort=price_desc&mode={{ mode }}" class="text-decoration-none text-muted ms-1">▼</a>
+              <a href="?f={{ active_filter }}&sort=price_asc&mode={{ mode }}" class="text-decoration-none text-muted">▲</a>
+            </th>
+            <th class="qa-td-right">
+              Vol %
+              <a href="?f={{ active_filter }}&sort=vol_desc&mode={{ mode }}" class="text-decoration-none text-muted ms-1">▼</a>
+              <a href="?f={{ active_filter }}&sort=vol_asc&mode={{ mode }}" class="text-decoration-none text-muted">▲</a>
+            </th>
+            <th class="qa-td-center">Status</th>
+            <th class="qa-td-center">
+              VCS
+              <a href="?f={{ active_filter }}&sort=vcs_desc&mode={{ mode }}" class="text-decoration-none text-muted ms-1">▼</a>
+              <a href="?f={{ active_filter }}&sort=vcs_asc&mode={{ mode }}" class="text-decoration-none text-muted">▲</a>
+            </th>
+            <th class="qa-td-center">AI Report</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if page_obj and page_obj.paginator.count > 0 %}
+          {% for row in page_obj %}
+            <tr class="{% if row.trigger %}qa-trigger-row{% endif %}"
+            style="{% if row.trigger %}background-color:rgba(59, 130, 246, 0.15);{% endif %} border-bottom: 1px solid #334155;">
+            <td><input type="checkbox" name="symbols" value="{{ row.symbol }}" onchange="updateCount()"></td>
+
+            <td>
+              <a href="#"
+                onclick="openChartModal('{{ row.symbol }}', '{{ row.company|default:row.symbol }}'); return false;"
+                style="font-weight:700; color:#60a5fa; text-decoration:none; font-size:15px; cursor: pointer;">
+                {{ row.symbol }}
+              </a>
+            </td>
+
+            <td>
+              <div class="qa-text" style="font-weight:600; color:#f8fafc; cursor: pointer;"
+                onclick="openChartModal('{{ row.symbol }}', '{{ row.company|default:row.symbol }}')">
+                {{ row.company|default:row.symbol }}
+              </div>
+              {% if row.industry %}
+              <div style="font-size:12px; color:#cbd5e1; margin-bottom:4px;">{{ row.industry }}</div>
+              {% endif %}
+
+              <div style="display:flex; flex-wrap:wrap; gap:4px;">
+                {% if row.vcs_status %}
+                <span class="{{ row.vcs_badge_class }}">
+                    {{ row.vcs_status }}
+                </span>
+                {% endif %}
+                
+                {% if row.f_volume %} <span class="qa-badge qa-badge-volume">{% trans "VOL" %}</span> {% endif %}
+                {% if row.f_volatility %} <span class="qa-badge qa-badge-vola">{% trans "VOLA" %}</span> {% endif %}
+                {% if row.f_trend %} <span class="qa-badge qa-badge-trend">{% trans "TRND" %}</span> {% endif %}
+                {% if row.f_pattern %} <span class="qa-badge qa-badge-pattern">{% trans "PATT" %}</span> {% endif %}
+                {% if row.f_momentum %} <span class="qa-badge qa-badge-momentum">{% trans "MOM" %}</span> {% endif %}
+                {% if row.f_value %} <span class="qa-badge qa-badge-value">{% trans "VAL" %}</span> {% endif %}
+                {% if row.f_oversold %} <span class="qa-badge qa-badge-oversold">{% trans "OVS" %}</span> {% endif %}
+                {% if row.f_lux %} <span class="qa-badge qa-badge-lux">{% trans "Smart Pattern" %}</span> {% endif %}
+                {% if row.f_gap %} <span class="qa-badge qa-badge-gap">{% trans "GAP" %}</span> {% endif %}
+                {% if row.f_squeeze %} <span class="qa-badge qa-badge-squeeze">{% trans "SQZ" %}</span> {% endif %}
+              </div>
+            </td>
+
+            <td class="qa-td-right fw-bold text-white">
+              ${{ row.close|default:0|floatformat:2 }}
+            </td>
+            <td class="qa-td-right text-white small">
+              {{ row.volume|default:0|intcomma }}
+            </td>
+            <td class="qa-td-right text-white small">
+              {{ row.prev_volume|default:0|intcomma }}
+            </td>
+
+            <td class="qa-td-right">
+              <span
+                class="{% if row.price_change_pct > 0 %}qa-num-pos{% elif row.price_change_pct < 0 %}qa-num-neg{% else %}qa-num-zero{% endif %}">
+                {{ row.price_change_pct|default:0|floatformat:2 }}%
+              </span>
+            </td>
+
+            <td class="qa-td-right">
+              <span
+                class="{% if row.vol_change_pct > 0 %}qa-num-pos{% elif row.vol_change_pct < 0 %}qa-num-neg{% else %}qa-num-zero{% endif %}">
+                {{ row.vol_change_pct|default:0|floatformat:1 }}%
+              </span>
+            </td>
+
+            <td class="qa-td-center">
+              {% if row.trigger %}
+              <span class="qa-chip qa-chip-yes">HIT</span>
+              {% else %}
+              <span class="qa-chip qa-chip-no">-</span>
+              {% endif %}
+            </td>
+
+            <td class="qa-td-center">
+              <span class="fw-bold {{ row.vcs_color|default:'text-white' }}" 
+                    title="{{ row.vcs_breakdown }}" 
+                    data-bs-toggle="tooltip" 
+                    style="cursor: help;">
+                    {{ row.vcs|default:"-" }}
+              </span>
+            </td>
+
+            <td class="qa-td-center">
+              <a href="{% url 'scanner:report' row.symbol %}?f={{ active_filter }}&sort={{ sort }}" class="qa-btn-ghost"
+                style="padding:4px 12px; font-size:12px;">View</a>
+            </td>
+          </tr>
+          {% endfor %}
+          {% else %}
+          <tr>
+            <td colspan="11" style="padding:60px; text-align:center; color:#cbd5e1;">
+              <i class="bi bi-search fs-1 d-block mb-3" style="opacity:0.5;"></i>
+              조건에 맞는 종목이 없습니다.
+            </td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </form>
+
+  {% if page_obj.paginator.num_pages > 1 %}
+  <nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.previous_page_number }}&f={{ active_filter }}&sort={{ sort }}&mode={{ mode }}" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <span class="page-link">&laquo;</span>
+      </li>
+      {% endif %}
+
+      {% for i in page_obj.paginator.page_range %}
+        {% if page_obj.number == i %}
+        <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+        {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ i }}&f={{ active_filter }}&sort={{ sort }}&mode={{ mode }}">{{ i }}</a>
+        </li>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.next_page_number }}&f={{ active_filter }}&sort={{ sort }}&mode={{ mode }}" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <span class="page-link">&raquo;</span>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+    </div> <!-- Close col-lg-10 -->
+    
+    <div class="col-lg-2">
+       <div style="position: sticky; top: 80px;">
+
+
+          {% if active_filter == "all" %}
+          <div class="d-flex flex-column gap-3">
+            {% if mode == 'day' %}
+            <div class="qa-card qa-small">
+              <div style="font-weight:600;margin-bottom:6px; color:#f8fafc;">{% trans "⚡ Volume Spike" %}</div>
+              <ul style="padding-left:18px;margin:0;line-height:1.5; color:#cbd5e1;">
+                <li>{% blocktrans %}Today's Volume ≥ <strong>1.5~2x</strong> 20-day Avg{% endblocktrans %}</li>
+                <li>{% blocktrans %}Volume up <strong>+100%</strong> vs Yesterday{% endblocktrans %}</li>
+              </ul>
+            </div>
+            <div class="qa-card qa-small">
+              <div style="font-weight:600;margin-bottom:6px; color:#f8fafc;">{% trans "💥 Volatility Breakout" %}</div>
+              <ul style="padding-left:18px;margin:0;line-height:1.5; color:#cbd5e1;">
+                <li>{% blocktrans %}ATR% & Intraday Range (High–Low) <strong>≥ 4%</strong>{% endblocktrans %}</li>
+                <li>{% trans "Shows stocks with high intraday volatility" %}</li>
+              </ul>
+            </div>
+            <div class="qa-card qa-small">
+              <div style="font-weight:600;margin-bottom:6px;">{% trans "💎 Momentum (Strength)" %}</div>
+              <ul style="padding-left:18px;margin:0;line-height:1.5;">
+                <li>{% blocktrans %}Today's Return <strong>&gt; 3%</strong>{% endblocktrans %}</li>
+                <li>{% trans "Positive 5D & 20D Returns" %}</li>
+                <li>{% trans "Strong momentum trading above VWAP" %}</li>
+              </ul>
+            </div>
+            <div class="qa-card qa-small">
+              <div style="font-weight:600;margin-bottom:6px;">{% trans "📈 Gap Up" %}</div>
+              <ul style="padding-left:18px;margin:0;line-height:1.5;">
+                <li>{% blocktrans %}Open > Prev Close <strong>+ 2%</strong>{% endblocktrans %}</li>
+                <li>{% trans "Strong Opening Momentum" %}</li>
+              </ul>
+            </div>
+
+            {% endif %}
+
+            {% if mode == 'swing' %}
+            <div class="qa-card qa-small">
+              <div style="font-weight:600;margin-bottom:6px;">{% trans "🔄 Trend Reversal" %}</div>
+              <ul style="padding-left:18px;margin:0;line-height:1.5;">
+                <li>{% blocktrans %}RSI breaks <strong>above 40</strong>{% endblocktrans %}</li>
+                <li>{% trans "MACD Histogram turning up" %}</li>
+                <li>{% blocktrans %}Crosses <strong>above MA20</strong>{% endblocktrans %}</li>
+              </ul>
+            </div>
+            <div class="qa-card qa-small">
+              <div style="font-weight:600;margin-bottom:6px;">{% trans "📊 Chart Pattern" %}</div>
+              <ul style="padding-left:18px;margin:0;line-height:1.5;">
+                <li>{% blocktrans %}Consolidating within <strong>3%</strong> of 20-day High{% endblocktrans %}</li>
+                <li>{% trans "3+ consecutive small candles (Bull flag / Triangle)" %}</li>
+                <li>{% trans "Supported above MA20" %}</li>
+              </ul>
+            </div>
+            <div class="qa-card qa-small">
+              <div style="font-weight:600;margin-bottom:6px;">{% trans "🚀 Smart Trend" %}</div>
+              <ul style="padding-left:18px;margin:0;line-height:1.5;">
+                <li>{% trans "Price > EMA20 > EMA50 (Strong Trend)" %}</li>
+                <li>{% trans "RSI > 50 & MACD Bullish" %}</li>
+                <li>{% trans "Volume > 20-day Avg" %}</li>
+              </ul>
+            </div>
+            <div class="qa-card qa-small">
+              <div style="font-weight:600;margin-bottom:6px;">{% trans "📉 Oversold Reversal" %}</div>
+              <ul style="padding-left:18px;margin:0;line-height:1.5;">
+                <li>{% blocktrans %}RSI <strong>≤ 30</strong> (Oversold){% endblocktrans %}</li>
+                <li>{% blocktrans %}Price near <strong>Lower Bollinger Band</strong>{% endblocktrans %}</li>
+              </ul>
+            </div>
+            <div class="qa-card qa-small">
+              <div style="font-weight:600;margin-bottom:6px;">{% trans "🤐 Bollinger Squeeze" %}</div>
+              <ul style="padding-left:18px;margin:0;line-height:1.5;">
+                <li>{% blocktrans %}Bandwidth < <strong>10%</strong>{% endblocktrans %}</li>
+                <li>{% trans "Low Volatility -> Potential Breakout" %}</li>
+              </ul>
+            </div>
+            {% endif %}
+
+            {% if mode == 'long' %}
+            <div class="qa-card qa-small">
+              <div style="font-weight:600;margin-bottom:6px;">{% trans "💰 Value Filter" %}</div>
+              <ul style="padding-left:18px;margin:0;line-height:1.5;">
+                <li>{% blocktrans %}P/E Ratio <strong>≤ 20</strong> (Undervalued){% endblocktrans %}</li>
+                <li>{% blocktrans %}Also meets <strong>Volume Surge</strong> condition{% endblocktrans %}</li>
+              </ul>
+            </div>
+            <div class="qa-card qa-small">
+              <div style="font-weight:600;margin-bottom:6px;">{% trans "📉 Oversold Filter (BB+RSI)" %}</div>
+              <ul style="padding-left:18px;margin:0;line-height:1.5;">
+                <li>{% blocktrans %}RSI <strong>≤ 30</strong> (Oversold){% endblocktrans %}</li>
+                <li>{% blocktrans %}Price near <strong>Lower Bollinger Band</strong>{% endblocktrans %}</li>
+              </ul>
+            </div>
+            {% endif %}
+          </div>
+
+          {% elif active_filter == "volume" %}
+          <div class="qa-card qa-small">
+            <div style="font-weight:600;margin-bottom:6px;">{% trans "⚡ Volume Spike" %}</div>
+            <ul style="padding-left:18px;margin:0;line-height:1.5;">
+              <li>{% blocktrans %}Today's Volume ≥ <strong>1.5~2x</strong> 20-day Avg{% endblocktrans %}</li>
+              <li>{% blocktrans %}Volume up <strong>+100%</strong> vs Yesterday{% endblocktrans %}</li>
+            </ul>
+          </div>
+
+          {% elif active_filter == "volatility" %}
+          <div class="qa-card qa-small">
+            <div style="font-weight:600;margin-bottom:6px;">{% trans "💥 Volatility Breakout" %}</div>
+            <ul style="padding-left:18px;margin:0;line-height:1.5;">
+              <li>{% blocktrans %}ATR% & Intraday Range (High–Low) <strong>≥ 4%</strong>{% endblocktrans %}</li>
+              <li>{% trans "Shows stocks with high intraday volatility" %}</li>
+            </ul>
+          </div>
+
+          {% elif active_filter == "trend" %}
+          <div class="qa-card qa-small">
+            <div style="font-weight:600;margin-bottom:6px;">{% trans "🔄 Trend Reversal" %}</div>
+            <ul style="padding-left:18px;margin:0;line-height:1.5;">
+              <li>{% blocktrans %}RSI breaks <strong>above 40</strong>{% endblocktrans %}</li>
+              <li>{% trans "MACD Histogram turning up" %}</li>
+              <li>{% blocktrans %}Crosses <strong>above MA20</strong>{% endblocktrans %}</li>
+            </ul>
+          </div>
+
+          {% elif active_filter == "pattern" %}
+          <div class="qa-card qa-small">
+            <div style="font-weight:600;margin-bottom:6px;">{% trans "📊 Chart Pattern" %}</div>
+            <ul style="padding-left:18px;margin:0;line-height:1.5;">
+              <li>{% blocktrans %}Consolidating within <strong>3%</strong> of 20-day High{% endblocktrans %}</li>
+              <li>{% trans "3+ consecutive small candles (Bull flag / Triangle)" %}</li>
+              <li>{% trans "Supported above MA20" %}</li>
+            </ul>
+          </div>
+
+          {% elif active_filter == "momentum" %}
+          <div class="qa-card qa-small">
+            <div style="font-weight:600;margin-bottom:6px;">{% trans "💎 Momentum" %}</div>
+            <ul style="padding-left:18px;margin:0;line-height:1.5;">
+              <li>{% blocktrans %}Today's Return <strong>&gt; 3%</strong>{% endblocktrans %}</li>
+              <li>{% trans "Positive 5D & 20D Returns" %}</li>
+              <li>{% trans "Strong momentum trading above VWAP" %}</li>
+            </ul>
+          </div>
+
+          {% elif active_filter == "lux" %}
+          <div class="qa-card qa-small">
+            <div style="font-weight:600;margin-bottom:6px;">{% trans "🚀 Smart Trend" %}</div>
+            <ul style="padding-left:18px;margin:0;line-height:1.5;">
+              <li>{% trans "Price > EMA20 > EMA50 (Strong Trend)" %}</li>
+              <li>{% trans "RSI > 50 & MACD Bullish" %}</li>
+              <li>{% trans "Volume > 20-day Avg" %}</li>
+            </ul>
+          </div>
+
+          {% elif active_filter == "gap" %}
+          <div class="qa-card qa-small">
+            <div style="font-weight:600;margin-bottom:6px;">{% trans "📈 Gap Up" %}</div>
+            <ul style="padding-left:18px;margin:0;line-height:1.5;">
+              <li>{% blocktrans %}Open > Prev Close <strong>+ 2%</strong>{% endblocktrans %}</li>
+              <li>{% trans "Strong Opening Momentum" %}</li>
+            </ul>
+          </div>
+
+          {% elif active_filter == "squeeze" %}
+          <div class="qa-card qa-small">
+            <div style="font-weight:600;margin-bottom:6px;">{% trans "🤐 Bollinger Squeeze" %}</div>
+            <ul style="padding-left:18px;margin:0;line-height:1.5;">
+              <li>{% blocktrans %}Bandwidth < <strong>10%</strong>{% endblocktrans %}</li>
+              <li>{% trans "Low Volatility -> Potential Breakout" %}</li>
+            </ul>
+          </div>
+
+          {% elif active_filter == "oversold" %}
+          <div class="qa-card qa-small">
+            <div style="font-weight:600;margin-bottom:6px;">{% trans "📉 Oversold Filter (BB+RSI)" %}</div>
+            <ul style="padding-left:18px;margin:0;line-height:1.5;">
+              <li>{% blocktrans %}RSI <strong>≤ 30</strong> (Oversold){% endblocktrans %}</li>
+              <li>{% blocktrans %}Price near <strong>Lower Bollinger Band</strong>{% endblocktrans %}</li>
+            </ul>
+          </div>
+
+          {% elif active_filter == "value" %}
+          <div class="qa-card qa-small">
+            <div style="font-weight:600;margin-bottom:6px;">{% trans "💰 Value Filter" %}</div>
+            <ul style="padding-left:18px;margin:0;line-height:1.5;">
+              <li>{% blocktrans %}P/E Ratio <strong>≤ 20</strong> (Undervalued){% endblocktrans %}</li>
+              <li>{% blocktrans %}Also meets <strong>Volume Surge</strong> condition{% endblocktrans %}</li>
+            </ul>
+          </div>
+
+
+          {% endif %}
+
+          <div class="qa-card qa-small mt-3">
+            <div style="font-weight:600;margin-bottom:6px;">{% trans "🏆 Vestiq Confidence" %}</div>
+            <ul style="padding-left:18px;margin:0;line-height:1.5;">
+              <li><span class="badge bg-success" style="width:50px;">{% trans "BUY" %}</span> <strong>≥ 65</strong></li>
+              <li><span class="badge bg-warning text-dark" style="width:50px;">{% trans "WATCH" %}</span> <strong>35 ~ 64</strong></li>
+              <li><span class="badge bg-danger" style="width:50px;">{% trans "AVOID" %}</span> <strong>&lt; 35</strong></li>
+            </ul>
+            <div class="mt-2 pt-2 border-top text-muted" style="font-size: 11px;">
+                <strong>Formula:</strong> Base(40) + Trend(0~25) + Mom(0~20) + Vol(0~10) + Pattern(0~5)
+            </div>
+          </div>
+       </div>
+    </div>
+  </div>
+  {% endif %}
+
+<!-- New Chart Modal (Ported from Live Picks) -->
+<div class="modal fade" id="chartModal" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(10px);">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content glass-card border-0 shadow-2xl" style="background: rgba(15, 23, 42, 0.95); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+          <!-- Header -->
+          <div class="modal-header border-bottom border-secondary border-opacity-25 py-3">
+              <div class="d-flex align-items-center gap-3">
+                  <h4 class="modal-title text-white fw-bold brand-font mb-0" id="chartModalTitle">Analysis</h4>
+                  <!-- Fundamentals Badge Container -->
+                  <div id="chartFundamentals" class="d-flex gap-2 ms-3"></div>
+
+                  <div id="chartLoading" class="spinner-border text-primary spinner-sm" role="status" style="display: none;">
+                      <span class="visually-hidden">Loading...</span>
+                  </div>
+              </div>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          
+          <!-- Body -->
+          <div class="modal-body p-0 position-relative" style="height: 90vh; overflow-y: auto;">
+              
+              
+              <!-- Chart Section (Full Height) -->
+              <div class="p-2" style="height: 100%; position: relative;">
+                   <div id="chart-main" style="width: 100%; height: 100%;"></div>
+              </div>
+          </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    // Helper to format large numbers
+    function formatNumber(num) {
+        if (!num) return '-';
+        if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
+        if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+        if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+        return num.toLocaleString();
+    }
+
+    async function openChartModal(symbol, companyName) {
+        // Reset UI
+        document.getElementById('chartModalTitle').innerText = `${symbol} ${companyName ? '- ' + companyName : ''}`;
+        document.getElementById('chartFundamentals').innerHTML = ''; // Clear previous badges
+        document.getElementById('chartLoading').style.display = 'block';
+        
+        if(chartMain) chartMain.clear();
+        
+        const modal = new bootstrap.Modal(document.getElementById('chartModal'));
+        modal.show();
+
+        try {
+            // Fetch Chart Data
+            const chartRes = await fetch(`/scanner/chart/${symbol}/`);
+            const data = await chartRes.json();
+            
+            if(data.error) throw new Error(data.error);
+
+            // Render Fundamentals Badges (Always Show)
+            if(data.fundamentals) {
+                console.log("Fundamentals Data:", data.fundamentals);
+                const f = data.fundamentals;
+                let badgesHtml = '';
+                
+                const valOrNa = (v, suffix='') => (v !== null && v !== undefined && v !== 0) ? (typeof v === 'number' ? v.toFixed(2) : v) + suffix : 'N/A';
+                const capOrNa = (v) => (v) ? formatNumber(v) : 'N/A';
+
+                const badgeStyle = 'font-size: 0.85rem; padding: 0.5em 1em; background: #0f172a; border: 1px solid #334155; color: #f8fafc;';
+                
+                badgesHtml += `<span class="badge rounded-pill me-1" style="${badgeStyle}"><span class="text-secondary opacity-75 small me-1">CAP</span> ${capOrNa(f.market_cap)}</span>`;
+                badgesHtml += `<span class="badge rounded-pill me-1" style="${badgeStyle}"><span class="text-info opacity-75 small me-1">PER</span> ${valOrNa(f.per)}</span>`;
+                badgesHtml += `<span class="badge rounded-pill me-1" style="${badgeStyle}"><span class="text-warning opacity-75 small me-1">PBR</span> ${valOrNa(f.pbr)}</span>`;
+                badgesHtml += `<span class="badge rounded-pill me-1" style="${badgeStyle}"><span class="text-success opacity-75 small me-1">ROE</span> ${(f.roe) ? (f.roe * 100).toFixed(2) + '%' : 'N/A'}</span>`;
+                
+                document.getElementById('chartFundamentals').innerHTML = badgesHtml;
+            } else {
+                 console.log("No Fundamentals Data found in response.");
+                 const badgeStyle = 'font-size: 0.85rem; padding: 0.5em 1em; background: #0f172a; border: 1px solid #334155; color: #f8fafc;';
+                 let badgesHtml = '';
+                 badgesHtml += `<span class="badge rounded-pill me-1" style="${badgeStyle}"><span class="text-secondary opacity-75 small me-1">CAP</span> N/A</span>`;
+                 badgesHtml += `<span class="badge rounded-pill me-1" style="${badgeStyle}"><span class="text-info opacity-75 small me-1">PER</span> N/A</span>`;
+                 badgesHtml += `<span class="badge rounded-pill me-1" style="${badgeStyle}"><span class="text-warning opacity-75 small me-1">PBR</span> N/A</span>`;
+                 badgesHtml += `<span class="badge rounded-pill me-1" style="${badgeStyle}"><span class="text-success opacity-75 small me-1">ROE</span> N/A</span>`;
+                 document.getElementById('chartFundamentals').innerHTML = badgesHtml;
+            }
+
+            // Render Chart (Vestiq Logic)
+            renderEChart(data, symbol);
+            
+            document.getElementById('chartLoading').style.display = 'none';
+
+        } catch (error) {
+            console.error(error);
+            alert("Error loading chart data");
+            document.getElementById('chartLoading').style.display = 'none';
+        }
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script>
+    let chartMain = null; 
+
+    // Initialize Global Search Hook
+    document.addEventListener("DOMContentLoaded", function() {
+        const globalInput = document.getElementById('globalSearchInput');
+        
+        if (globalInput) {
+            globalInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    const symbol = this.value.trim().toUpperCase();
+                    if (symbol) {
+                        e.preventDefault(); 
+                        openChartModal(symbol, null);
+                        this.value = ''; 
+                    }
+                }
+            });
+        }
+        
+        // ECharts Init
+        const chartDom = document.getElementById('chart-main');
+        if(chartDom) {
+            chartMain = echarts.init(chartDom);
+            window.addEventListener('resize', function() {
+                chartMain.resize();
+            });
+        }
+    });
+
+
+
+    function renderEChart(data, symbol) {
+         if (!data.ohlcv || !data.ohlcv.length) {
+             window.chartMain.hideLoading();
+             return;
+         }
+         
+         if(chartMain) {
+             try { chartMain.dispose(); } catch(e) {}
+             chartMain = echarts.init(document.getElementById('chart-main'));
+         } else {
+             chartMain = echarts.init(document.getElementById('chart-main'));
+         }
+
+         const dates = data.ohlcv.map(d => new Date(d.time * 1000).toISOString().split('T')[0]);
+         const candleData = data.ohlcv.map(d => [d.open, d.close, d.low, d.high]);
+         const volumeData = data.ohlcv.map(d => d.volume);
+
+         // --- Data Alignment Helper ---
+         const tsMap = new Map();
+         data.ohlcv.forEach((d, i) => tsMap.set(d.time, i));
+         const alignData = (sourceArr, key = 'value') => {
+            const arr = new Array(dates.length).fill(null);
+            if(!sourceArr) return arr;
+            sourceArr.forEach(x => {
+                const idx = tsMap.get(x.time);
+                if (idx !== undefined) arr[idx] = x[key];
+            });
+            return arr;
+         };
+
+         // --- Indicators ---
+         const ma5 = alignData(data.ma && data.ma.ma5 ? data.ma.ma5 : []);
+         const ma20 = alignData(data.ma && data.ma.ma20 ? data.ma.ma20 : []);
+         const ma60 = alignData(data.ma && data.ma.ma60 ? data.ma.ma60 : []);
+         const ma120 = alignData(data.ma && data.ma.ma120 ? data.ma.ma120 : []);
+
+         const bbUp = alignData(data.bb && data.bb.upper ? data.bb.upper : []);
+         const bbLow = alignData(data.bb && data.bb.lower ? data.bb.lower : []);
+         const bbDiff = bbUp.map((u, i) => {
+             const l = bbLow[i];
+             if(u === null || l === null) return null;
+             return u - l;
+         });
+
+         const rsi = alignData(data.rsi || []);
+         const macdLine = data.macd && data.macd.macd ? alignData(data.macd.macd) : [];
+         const macdSignal = data.macd && data.macd.signal ? alignData(data.macd.signal) : [];
+         const macdHist = data.macd && data.macd.hist ? alignData(data.macd.hist) : [];
+
+         // --- Last Value Calculation ---
+         const getLast = (arr) => {
+             for(let i=arr.length-1; i>=0; i--) {
+                 if(arr[i] !== null && arr[i] !== undefined) return arr[i];
+             }
+             return null;
+         };
+         
+         const lastRSIVal = getLast(rsi);
+         const lastMACDVal = getLast(macdLine);
+         const lastSigVal = getLast(macdSignal);
+         const lastHistVal = getLast(macdHist);
+
+         const formatVal = (v) => (v !== null && v !== undefined) ? v.toFixed(2) : '-';
+         
+         // Color helpers
+         const getRSIColor = (v) => v > 70 ? '#ef4444' : v < 30 ? '#22c55e' : '#facc15';
+
+         // --- Chart Option ---
+         const option = {
+            backgroundColor: 'transparent', animation: false,
+            tooltip: { 
+                trigger: 'axis', 
+                axisPointer: { type: 'cross', label: { show: true, backgroundColor: '#333' } },
+                backgroundColor: 'rgba(15, 23, 42, 0.95)', 
+                borderColor: '#334155', borderWidth: 1, 
+                textStyle: { color: '#f1f5f9', fontSize: 13 },
+                formatter: function (params) {
+                    // Tooltip Content (OHLCV Only - Indicators in Board)
+                    if (!params || params.length === 0) return '';
+                    
+                    let res = `<div style="margin-bottom:6px; font-weight:bold; color:#cbd5e1; border-bottom:1px solid #334155; padding-bottom:4px;">${params[0].axisValue}</div>`;
+                    
+                    const price = params.find(p => p.seriesName === 'Price');
+                    if (price && price.value && price.value.length >= 5) {
+                        const o = price.value[1];
+                        const c = price.value[2];
+                        const l = price.value[3];
+                        const h = price.value[4];
+                        const vParams = params.find(p => p.seriesName === 'Volume');
+                        const v = vParams ? vParams.value : 0;
+                // Tooltip logic for Color (Green Up, Red Down)
+                        const color = (c !== undefined && o !== undefined && c >= o) ? '#22c55e' : '#ef4444';
+                        
+                        // [FIX] Safely format numbers
+                        const safeFixed = (val) => (val !== undefined && val !== null) ? val.toFixed(2) : '-';
+                        
+                        res += `
+                        <div style="display:flex; gap:12px; margin-bottom:8px; font-size:12px;">
+                            <div><span style="color:#94a3b8">Open:</span> <span style="font-family:monospace; color:${color}">${safeFixed(o)}</span></div>
+                            <div><span style="color:#94a3b8">High:</span> <span style="font-family:monospace; color:${color}">${safeFixed(h)}</span></div>
+                            <div><span style="color:#94a3b8">Low:</span> <span style="font-family:monospace; color:${color}">${safeFixed(l)}</span></div>
+                            <div><span style="color:#94a3b8">Close:</span> <span style="font-family:monospace; color:${color}">${safeFixed(c)}</span></div>
+                        </div>
+                        <div style="font-size:12px;">
+                            <span style="color:#94a3b8">Vol:</span> <span style="font-family:monospace; color:#cbd5e1">${v ? parseInt(v).toLocaleString() : 'N/A'}</span>
+                        </div>`;
+                    }
+
+                    // Update Indicator Board (External DOM)
+                    const indBox = document.getElementById('chart-indicator-board');
+                    if(indBox) {
+                        let indHtml = `<div style="font-size:12px; font-weight:bold; color:#94a3b8; margin-bottom:4px;">Indicators</div>`;
+                        params.forEach(p => {
+                            if(p.seriesName === 'Price' || p.seriesName === 'Volume' || p.seriesName.includes('BB') || p.seriesName.includes('Base')) return;
+                            if(p.value === undefined || p.value === null) return;
+                            
+                            let val = p.value;
+                            if(typeof val === 'number') val = val.toFixed(2);
+                            
+                            indHtml += `
+                            <div style="display:flex; justify-content:space-between; margin-bottom:2px; font-size:11px;">
+                                <span style="color:${p.color}">${p.seriesName}</span>
+                                <span style="color:#f1f5f9; font-family:monospace;">${val}</span>
+                            </div>`;
+                        });
+                        indBox.innerHTML = indHtml;
+                        indBox.style.display = 'block';
+                    }
+                    return res;
+                },
+                extraCssText: 'box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5); z-index: 1000;'
+            },
+            axisPointer: { link: { xAxisIndex: 'all' } },
+            grid: [
+                { left: '4%', right: '3%', top: '5%', height: '45%', containLabel: true }, // Grid 0: Price
+                { left: '4%', right: '3%', top: '53%', height: '10%', containLabel: true }, // Grid 1: Volume
+                { left: '4%', right: '3%', top: '68%', height: '12%', containLabel: true, show: true, borderColor: '#334155', borderWidth: 1 }, // Grid 2: RSI
+                { left: '4%', right: '3%', top: '84%', height: '12%', containLabel: true, show: true, borderColor: '#334155', borderWidth: 1 }  // Grid 3: MACD
+            ],
+            title: [
+                 { text: '', left: 'center', top: '2%' },
+                 { text: '', left: 'center', top: '53%' }, // Vol Title
+                 { text: 'RSI(14)', left: '2%', top: '68%', textStyle: { fontSize: 10, color: '#94a3b8' } }, 
+                 { text: 'MACD(12,26,9)', left: '2%', top: '84%', textStyle: { fontSize: 10, color: '#94a3b8' } }
+            ],
+            xAxis: [
+                { type: 'category', data: dates, gridIndex: 0, axisLine:{lineStyle:{color:'#334155'}}, axisLabel:{show:false} },
+                { type: 'category', data: dates, gridIndex: 1, axisLine:{lineStyle:{color:'#334155'}}, axisLabel:{show:false} },
+                { type: 'category', data: dates, gridIndex: 2, axisLine:{lineStyle:{color:'#334155'}}, axisLabel:{show:false} },
+                { type: 'category', data: dates, gridIndex: 3, axisLine:{lineStyle:{color:'#334155'}}, axisLabel:{color:'#94a3b8', showMaxLabel:true} } // Date Axis
+            ],
+            yAxis: [
+                { type: 'value', gridIndex: 0, position: 'right', scale: true, splitLine: { lineStyle: { color: '#1e293b' } }, axisLabel: { color: '#94a3b8' } },
+                { type: 'value', gridIndex: 1, position: 'right', splitLine: { show: false }, axisLabel: { show: false } }, // Vol Y
+                { type: 'value', gridIndex: 2, min: 0, max: 100, splitLine: { show:false }, axisLabel: { show:false } }, // RSI Y
+                { type: 'value', gridIndex: 3, splitLine: { show:false }, axisLabel: { show:false } } // MACD Y
+            ],
+            dataZoom: [
+                { type: 'inside', xAxisIndex: [0, 1, 2, 3], start: 60, end: 100 },
+                { type: 'slider', xAxisIndex: [0, 1, 2, 3], bottom: 0, height: 15, borderColor: 'transparent', fillerColor: 'rgba(59, 130, 246, 0.2)' }
+            ],
+            series: [
+                // Price Area (Grid 0)
+                { name: 'BB Base', type: 'line', xAxisIndex: 0, yAxisIndex: 0, data: bbLow, symbol:'none', lineStyle:{opacity:0}, stack:'bb', silent:true },
+                { name: 'BB Area', type: 'line', xAxisIndex: 0, yAxisIndex: 0, data: bbDiff, symbol:'none', lineStyle:{opacity:0}, areaStyle:{color:'rgba(34, 211, 238, 0.1)'}, stack:'bb', silent:true },
+                { name: 'BB Upper', type: 'line', xAxisIndex: 0, yAxisIndex: 0, data: bbUp, showSymbol: false, itemStyle:{color:'#64748b'}, lineStyle:{width:1, color:'#64748b', opacity:0.5} },
+                { name: 'BB Lower', type: 'line', xAxisIndex: 0, yAxisIndex: 0, data: bbLow, showSymbol: false, itemStyle:{color:'#64748b'}, lineStyle:{width:1, color:'#64748b', opacity:0.5} },
+
+                { name: 'Price', type: 'candlestick', data: candleData, xAxisIndex: 0, yAxisIndex: 0, itemStyle: { color: '#22c55e', color0: '#ef4444', borderColor: '#22c55e', borderColor0: '#ef4444' } },
+                { name: 'MA5', type: 'line', data: ma5, xAxisIndex: 0, yAxisIndex: 0, showSymbol: false, lineStyle: { width: 1, color: '#facc15' } },
+                { name: 'MA20', type: 'line', data: ma20, xAxisIndex: 0, yAxisIndex: 0, showSymbol: false, itemStyle: { color: '#22d3ee' }, lineStyle: { width: 3, color: '#22d3ee', shadowColor: 'rgba(34, 211, 238, 0.5)', shadowBlur: 10 }, z: 10 },
+                { name: 'MA60', type: 'line', data: ma60, xAxisIndex: 0, yAxisIndex: 0, showSymbol: false, itemStyle: { color: '#4ade80' }, lineStyle: { width: 1.5, color: '#4ade80' } },
+                { name: 'MA120', type: 'line', data: ma120, xAxisIndex: 0, yAxisIndex: 0, showSymbol: false, itemStyle: { color: '#a855f7' }, lineStyle: { width: 1.5, color: '#a855f7' } },
+
+                // Volume (Grid 1)
+                { name: 'Volume', type: 'bar', data: volumeData, xAxisIndex: 1, yAxisIndex: 1, itemStyle: { color: (p) => {
+                    const c = candleData[p.dataIndex];
+                    // Up: Green, Down: Red
+                    return (c[1] >= c[0]) ? 'rgba(34, 197, 94, 0.5)' : 'rgba(239, 68, 68, 0.5)';
+                }}, barWidth: '60%' },
+
+                // RSI (Grid 2)
+                { name: 'RSI(14)', type: 'line', data: rsi, xAxisIndex: 2, yAxisIndex: 2, showSymbol: false, lineStyle: { width: 1.5, color: '#a78bfa' },
+                  markLine: { symbol: 'none', data: [{ yAxis: 70 }, { yAxis: 30 }], lineStyle: { type: 'dashed', color: '#475569', opacity: 0.5 }, label: { show: false } }
+                },
+
+                // MACD (Grid 3)
+                { name: 'MACD', type: 'line', data: macdLine, xAxisIndex: 3, yAxisIndex: 3, showSymbol: false, lineStyle: { width: 1, color: '#3b82f6' } },
+                { name: 'Signal', type: 'line', data: macdSignal, xAxisIndex: 3, yAxisIndex: 3, showSymbol: false, lineStyle: { width: 1, color: '#f97316' } },
+                { name: 'Hist', type: 'bar', data: macdHist, xAxisIndex: 3, yAxisIndex: 3, itemStyle: { color: (params) => params.value > 0 ? '#22c55e' : '#ef4444' } }
+            ]
+         };
+
+         chartMain.setOption(option);
+         
+         // --- Setup Indicator Board ---
+         const prevOverlay = document.getElementById('chart-strategy-overlay');
+         if(prevOverlay) prevOverlay.remove();
+         const prevIndBox = document.getElementById('chart-indicator-board');
+         if(prevIndBox) prevIndBox.remove();
+
+         // Create Indicator Board
+         const chartContainer = document.getElementById('chart-main');
+         const containerParent = chartContainer.parentElement;
+         if(containerParent) {
+             containerParent.style.position = 'relative';
+             const indBox = document.createElement('div');
+             indBox.id = 'chart-indicator-board';
+             indBox.style.position = 'absolute';
+             indBox.style.top = '10px';
+             indBox.style.left = '60px'; // Left aligned since no overlay
+             indBox.style.width = '160px';
+             indBox.style.padding = '8px 12px';
+             indBox.style.borderRadius = '8px';
+             indBox.style.background = 'rgba(15, 23, 42, 0.8)';
+             indBox.style.border = '1px solid rgba(51, 65, 85, 0.5)';
+             indBox.style.backdropFilter = 'blur(2px)';
+             indBox.style.pointerEvents = 'none';
+             indBox.style.display = 'none';
+             indBox.style.zIndex = '90';
+             containerParent.appendChild(indBox);
+         }
+    }
+    
+    // TICKER SEARCH FUNCTIONALITY
+    function searchTickerHistory() {
+        const input = document.getElementById('tickerSearchInput');
+        const ticker = input.value.trim().toUpperCase();
+        
+        if (!ticker) {
+            alert('종목 코드를 입력해주세요.');
+            return;
+        }
+        
+        // Show modal first
+        const modal = new bootstrap.Modal(document.getElementById('tickerSearchModal'));
+        modal.show();
+        
+        // Update modal subtitle
+        document.getElementById('searchModalSubtitle').textContent = `Searching for ${ticker}...`;
+        document.getElementById('searchResultsContainer').innerHTML = `
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary mb-3" role="status"></div>
+                <div class="text-muted">Loading history...</div>
+            </div>
+        `;
+        
+        // Call API
+        fetch(`/scanner/api/ticker-history/${ticker}/`)
+            .then(response => response.json())
+            .then(data => {
+                renderSearchResults(data);
+            })
+            .catch(error => {
+                console.error('Error fetching ticker history:', error);
+                document.getElementById('searchResultsContainer').innerHTML = `
+                    <div style="text-align:center; padding:60px 20px; color:#ef4444;">
+                        <i class="bi bi-exclamation-triangle" style="font-size:3rem; margin-bottom:16px; display:block;"></i>
+                        <div style="font-size:1.1rem; font-weight:600;">오류가 발생했습니다</div>
+                        <div style="font-size:0.9rem; color:#94a3b8; margin-top:8px;">다시 시도해주세요</div>
+                    </div>
+                `;
+            });
+    }
+    
+    function renderSearchResults(data) {
+        const container = document.getElementById('searchResultsContainer');
+        document.getElementById('searchModalSubtitle').textContent = `${data.ticker} - ${data.company_name}`;
+        
+        if (!data.found || data.history.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center; padding:60px 20px; color:#64748b;">
+                    <i class="bi bi-inbox" style="font-size:3rem; margin-bottom:16px; display:block; opacity:0.5;"></i>
+                    <div style="font-size:1.2rem; font-weight:600; color:#e2e8f0;">신호 없음</div>
+                    <div style="font-size:0.95rem; margin-top:8px;">이 종목에 대한 Vestiq Pick 기록이 없습니다</div>
+                </div>
+            `;
+            return;
+        }
+        
+        // Render timeline
+        let html = '<div style="position:relative;">';
+        
+        // Timeline line
+        html += '<div style="position:absolute; left:20px; top:0; bottom:0; width:2px; background:linear-gradient(180deg, #3b82f6, transparent); opacity:0.3;"></div>';
+        
+        data.history.forEach((item, index) => {
+            const strategyColor = getStrategyColor(item.strategy);
+            html += `
+                <div style="position:relative; padding-left:50px; padding-bottom:24px; cursor:pointer; transition:transform 0.2s;"
+                     onclick="openChartModal('${data.ticker}', '${data.company_name}')"
+                     onmouseover="this.style.transform='translateX(4px)'"
+                     onmouseout="this.style.transform='translateX(0)'">
+                    <!-- Timeline Dot -->
+                    <div style="position:absolute; left:11px; top:8px; width:20px; height:20px; border-radius:50%; background:${strategyColor}; border:3px solid #0f172a; box-shadow:0 0 0 2px ${strategyColor}30;"></div>
+                    
+                    <!-- Content Card -->
+                    <div style="background:rgba(30, 41, 59, 0.6); border:1px solid rgba(148, 163, 184, 0.2); border-radius:12px; padding:16px; backdrop-filter:blur(10px); transition:all 0.2s;">
+                        <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:12px;">
+                            <div>
+                                <div style="font-size:0.85rem; color:#cbd5e1; margin-bottom:4px; font-weight:500;">${item.date}</div>
+                                <div style="display:inline-flex; align-items:center; gap:8px; background:${strategyColor}20; padding:6px 14px; border-radius:20px; border:1px solid ${strategyColor};">
+                                    <i class="bi ${getStrategyIcon(item.strategy)}" style="color:${strategyColor};"></i>
+                                    <span style="color:${strategyColor}; font-weight:700; font-size:0.9rem;">${item.strategy}</span>
+                                </div>
+                            </div>
+                            ${item.price ? `<div style="font-size:1.1rem; font-weight:700; color:#e2e8f0;">$${parseFloat(item.price).toFixed(2)}</div>` : ''}
+                        </div>
+                        ${item.reason ? `<div style="font-size:0.85rem; line-height:1.5; color:#cbd5e1; padding-top:12px; border-top:1px solid rgba(148, 163, 184, 0.1);">${item.reason}</div>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
+    }
+    
+    function getStrategyColor(strategy) {
+        const colors = {
+            'Prime': '#f59e0b',
+            'Alpha': '#22c55e',
+            'Phoenix': '#f97316',
+            'Hedge': '#ef4444',
+            'Secret': '#fbbf24',
+            'GURUM': '#38bdf8'
+        };
+        return colors[strategy] || '#6366f1';
+    }
+    
+    function getStrategyIcon(strategy) {
+        const icons = {
+            'Prime': 'bi-lightning-charge-fill',
+            'Alpha': 'bi-stars',
+            'Phoenix': 'bi-fire',
+            'Hedge': 'bi-shield-exclamation',
+            'Secret': 'bi-star-fill',
+            'GURUM': 'bi-cloud-plus-fill'
+        };
+        return icons[strategy] || 'bi-circle-fill';
+    }
+
+    // Allow Enter key to trigger search
+    document.getElementById('tickerSearchInput')?.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            searchTickerHistory();
+        }
+    });
+</script>
+
+<!-- TICKER SEARCH RESULTS MODAL -->
+<div class="modal fade" id="tickerSearchModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 700px;">
+      <div class="modal-content" style="background: rgba(15, 23, 42, 0.98); border: 1px solid rgba(148, 163, 184, 0.3); box-shadow: 0 20px 60px rgba(0,0,0,0.7); border-radius: 20px; backdrop-filter: blur(10px);">
+          <div class="modal-header border-bottom border-gray-800 py-3" style="background: rgba(15, 23, 42, 0.95);">
+              <div>
+                  <h5 class="modal-title text-white fw-bold mb-1" id="searchModalTitle" style="font-size:1.5rem;">
+                      <i class="bi bi-clock-history me-2" style="color:#3b82f6;"></i>Signal History
+                  </h5>
+                  <div style="font-size:0.95rem; color:#e2e8f0; font-weight:500;" id="searchModalSubtitle">Loading...</div>
+              </div>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body p-4" style="max-height: 600px; overflow-y: auto;">
+              <div id="searchResultsContainer"></div>
+          </div>
+      </div>
+  </div>
+</div>
+{% endblock %}

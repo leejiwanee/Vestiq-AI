@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        {% if form.instance.pk %}
+                            {% trans "Edit Trade" %}
+                        {% else %}
+                            {% trans "Add New Trade" %}
+                        {% endif %}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.ticker.id_for_label }}" class="form-label">{% trans "Ticker" %}</label>
+                            {{ form.ticker }}
+                            {% if form.ticker.errors %}
+                                <div class="text-danger small">{{ form.ticker.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.buy_date.id_for_label }}" class="form-label">{% trans "Buy Date" %}</label>
+                                {{ form.buy_date }}
+                                {% if form.buy_date.errors %}
+                                    <div class="text-danger small">{{ form.buy_date.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.buy_price.id_for_label }}" class="form-label">{% trans "Buy Price ($)" %}</label>
+                                {{ form.buy_price }}
+                                {% if form.buy_price.errors %}
+                                    <div class="text-danger small">{{ form.buy_price.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.invested_amount.id_for_label }}" class="form-label">{% trans "Invested Amount ($)" %}</label>
+                            {{ form.invested_amount }}
+                            {% if form.invested_amount.errors %}
+                                <div class="text-danger small">{{ form.invested_amount.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <hr>
+                        <h5 class="mb-3 text-muted">{% trans "Sell Information (Optional)" %}</h5>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.sell_date.id_for_label }}" class="form-label">{% trans "Sell Date" %}</label>
+                                {{ form.sell_date }}
+                                {% if form.sell_date.errors %}
+                                    <div class="text-danger small">{{ form.sell_date.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.sell_price.id_for_label }}" class="form-label">{% trans "Sell Price ($)" %}</label>
+                                {{ form.sell_price }}
+                                {% if form.sell_price.errors %}
+                                    <div class="text-danger small">{{ form.sell_price.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <hr>
+                        <h5 class="mb-3 text-muted">{% trans "Journaling" %}</h5>
+                        <div class="mb-3">
+                            <label for="{{ form.strategy.id_for_label }}" class="form-label">{% trans "Strategy" %}</label>
+                            {{ form.strategy }}
+                            {% if form.strategy.errors %}
+                                <div class="text-danger small">{{ form.strategy.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.notes.id_for_label }}" class="form-label">{% trans "Notes" %}</label>
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                                <div class="text-danger small">{{ form.notes.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'trade_list' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+                            <button type="submit" class="btn btn-primary">{% trans "Save Trade" %}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,699 @@
+{% extends "base.html" %}
+{% load i18n humanize static %}
+
+{% block title %}Sector Performance - Vestiq{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Updated Fonts to match Index/Home (Playfair + Inter/System) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+    /* 
+       MATCHING HOME THEME (SOVEREIGN V10)
+    */
+    :root {
+        --navy-deep: #0A1929;
+        --navy-light: #132F4C;
+        --violet-primary: #7C3AED;
+        --violet-light: #A78BFA;
+        --white: #FFFFFF;
+        --gray-200: #E2E8F0;
+        --emerald: #10B981;
+        --red: #EF4444;
+        --amber: #F59E0B;
+        --gold: #D4AF37;
+        
+        --radius-lg: 20px;
+        --radius-md: 14px;
+        --radius-sm: 10px;
+    }
+
+    body {
+        background: var(--navy-deep) !important;
+        color: var(--white);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; /* Clean, modern body font */
+    }
+
+    /* Visual Background similar to Home */
+    .visual-bg {
+        position: fixed;
+        top: 0; right: 0;
+        width: 100%; height: 100%;
+        z-index: -1;
+        pointer-events: none;
+        opacity: 0.15;
+        background: radial-gradient(circle at 70% 30%, rgba(124, 58, 237, 0.15), transparent 60%);
+    }
+
+    .sector-wrap {
+        max-width: 95%;
+        margin: 0 auto;
+        padding: 40px 3% 80px;
+    }
+
+    /* Headlines use Playfair Display (Elegant Serif) */
+    h1, h2, h3, h4, h5, .brand-font {
+        font-family: 'Playfair Display', serif;
+        letter-spacing: 0.02em;
+    }
+
+    /* PANELS */
+    .panel-card {
+        background: rgba(19, 47, 76, 0.4);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        backdrop-filter: blur(12px);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .panel-card:hover {
+        border-color: rgba(124, 58, 237, 0.4);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+    }
+
+    /* Specific Styles */
+    .text-gold { color: var(--gold) !important; }
+    .text-violet { color: var(--violet-light) !important; }
+    .text-emerald { color: var(--emerald) !important; }
+    .text-red { color: var(--red) !important; }
+    /* Replaced gray text with these for better visibility */
+    .text-light-soft { color: rgba(255, 255, 255, 0.9) !important; } 
+    .text-light-muted { color: rgba(255, 255, 255, 0.6) !important; }
+    
+    .btn-premium {
+        background: rgba(124, 58, 237, 0.1);
+        border: 1px solid rgba(124, 58, 237, 0.3);
+        color: var(--violet-light);
+        border-radius: var(--radius-sm);
+        padding: 10px 20px;
+        transition: all 0.3s;
+        font-family: 'Inter', sans-serif;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    .btn-premium:hover {
+        background: rgba(124, 58, 237, 0.2);
+        color: var(--white);
+        box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
+    }
+    .btn-premium:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .date-input {
+        background: rgba(19, 47, 76, 0.6);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: var(--white);
+        border-radius: var(--radius-sm);
+        padding: 10px;
+        text-align: center;
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .date-input:focus {
+        outline: none;
+        border-color: var(--violet-primary);
+    }
+
+    .heatmap-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 20px;
+    }
+
+    .heatmap-block {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .heatmap-block.positive {
+        background: linear-gradient(145deg, rgba(16, 185, 129, 0.1), rgba(19, 47, 76, 0.5));
+        border-left: 3px solid var(--emerald);
+    }
+    .heatmap-block.negative {
+        background: linear-gradient(145deg, rgba(239, 68, 68, 0.1), rgba(19, 47, 76, 0.5));
+        border-left: 3px solid var(--red);
+    }
+
+    .modal-content {
+        background: #0A141F;
+        border: 1px solid var(--gold);
+        border-radius: 0;
+    }
+    .modal-header {
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .animate-in {
+        animation: fadeInUp 0.5s ease-out forwards;
+        opacity: 0;
+    }
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .hover-row:hover {
+        background: rgba(255,255,255,0.05); /* Slightly brighter hover */
+    }
+</style>
+
+<div class="visual-bg"></div>
+
+<div class="sector-wrap">
+    
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-end mb-5 animate-in">
+        <div>
+            <h1 class="display-4 fw-bold text-white mb-2" style="text-shadow: 0 4px 20px rgba(0,0,0,0.5);">SECTOR PERFORMANCE</h1>
+            <div class="d-flex align-items-center gap-3 text-violet small" style="letter-spacing: 0.05em; font-family: 'Inter', sans-serif;">
+                <span><i class="bi bi-calendar3 me-2"></i>{{ date|date:"F j, Y" }}</span>
+                <span class="text-white opacity-25">|</span>
+                <span><i class="bi bi-activity me-2"></i>LIVE DATA</span>
+            </div>
+        </div>
+        
+        <div class="d-flex gap-3 align-items-center">
+            <input type="text" id="datePickerInput" class="date-input" value="{{ date|date:'Y-m-d' }}" readonly>
+            <button id="refreshSectorBtn" class="btn-premium d-flex align-items-center gap-2" onclick="startSectorRefresh()">
+                <i class="bi bi-arrow-clockwise" id="refreshIcon"></i>
+                <span id="refreshText">REFRESH</span>
+            </button>
+        </div>
+    </div>
+
+    {% if error %}
+    <div class="alert panel-card d-flex align-items-center gap-3 mb-5 animate-in">
+        <i class="bi bi-exclamation-triangle text-amber fs-3"></i>
+        <div>
+            <h5 class="text-amber mb-1">Data Unavailable</h5>
+            <div class="text-light-soft">{{ error }}</div>
+        </div>
+    </div>
+    {% else %}
+
+    <!-- Top Leaders Row -->
+    <div class="row g-4 mb-5 animate-in" style="animation-delay: 0.1s;">
+        {% for leader in consensus_leaders %}
+        <div class="col-md-{% if leader.rank <= 3 %}4{% else %}6{% endif %}">
+            <div class="panel-card h-100 d-flex flex-column justify-content-between">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="badge rounded-pill border" 
+                         style="background: transparent; 
+                                border-color: {% if leader.rank == 1 %}var(--gold){% elif leader.rank == 2 %}var(--gray-200){% elif leader.rank == 3 %}#CD7F32{% else %}var(--violet-light){% endif %} !important;
+                                color: {% if leader.rank == 1 %}var(--gold){% elif leader.rank == 2 %}var(--gray-200){% elif leader.rank == 3 %}#CD7F32{% else %}var(--violet-light){% endif %};">
+                        {% if leader.rank == 1 %}Market Leader{% elif leader.rank == 2 %}2nd Place{% elif leader.rank == 3 %}3rd Place{% else %}4th/5th Place{% endif %}
+                    </div>
+                    <div class="display-3 fw-bold" 
+                         style="opacity: 0.1; line-height: 0.5; color: {% if leader.rank == 1 %}var(--gold){% else %}var(--white){% endif %};">
+                        {{ leader.rank }}
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="mb-1 text-white text-truncate">{{ leader.name }}</h3>
+                    <div class="small text-light-muted mb-0">2-Week Score: <span class="text-white fw-bold">{{ leader.score }}%</span></div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="panel-card text-center text-light-muted">No trend data available.</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Ranking Chart -->
+    <div class="panel-card mb-5 animate-in" style="animation-delay: 0.2s;">
+        <div class="d-flex align-items-center gap-2 mb-4">
+            <i class="bi bi-bar-chart-fill text-violet"></i>
+            <h4 class="mb-0 text-white">SECTOR RANKINGS</h4>
+        </div>
+        <div style="height: 400px; width: 100%;">
+            <canvas id="rankingChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Heatmap Grid -->
+    <div class="animate-in" style="animation-delay: 0.3s;">
+        <div class="d-flex align-items-center gap-2 mb-4">
+            <i class="bi bi-grid-fill text-violet"></i>
+            <h4 class="mb-0 text-white">DETAILED PERFORMANCE</h4>
+            <span class="ms-auto text-light-muted small text-uppercase">Click cards for details</span>
+        </div>
+
+        <div class="heatmap-grid">
+            {% for sec in sectors %}
+            <div class="panel-card heatmap-block {% if sec.change_percent >= 0 %}positive{% else %}negative{% endif %}"
+                 data-bs-toggle="modal" data-bs-target="#sectorModal-{{ forloop.counter }}">
+                
+                <div class="d-flex justify-content-between mb-2">
+                    <!-- Changed text-muted to text-light-muted or text-white for visibility -->
+                    <span class="text-light-muted small">#{{ forloop.counter }}</span>
+                    {% if sec.pe_ratio %}
+                    <span class="badge bg-dark border border-secondary text-light-soft rounded-pill fw-normal">PE {{ sec.pe_ratio|stringformat:".1f" }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="h4 mb-2 text-white">{{ sec.sector_display }}</div>
+                
+                <div class="d-flex align-items-end justify-content-between mb-3">
+                    <div class="display-6 fw-bold {% if sec.change_percent >= 0 %}text-emerald{% else %}text-red{% endif %}">
+                        {% if sec.change_percent >= 0 %}+{% endif %}{{ sec.change_percent|stringformat:".2f" }}%
+                    </div>
+                </div>
+
+                <!-- Mini Leaders -->
+                <div class="row g-2 border-top border-secondary pt-3 mt-2">
+                    <div class="col-6 border-end border-secondary">
+                        <div class="text-violet small fw-bold mb-1" style="font-size: 0.65rem; letter-spacing: 0.05em;">LEADER</div>
+                        {% with leader=sec.leaders_data.0 %}
+                        {% if leader %}
+                        <div class="text-white small fw-bold">{{ leader.symbol }}</div>
+                        <div class="small {% if leader.change >= 0 %}text-emerald{% else %}text-red{% endif %}">
+                            {% if leader.change >= 0 %}+{% endif %}{{ leader.change|stringformat:".1f" }}%
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="col-6 ps-3">
+                        <div class="text-gold small fw-bold mb-1" style="font-size: 0.65rem; letter-spacing: 0.05em;">GAINER</div>
+                        {% with gainer=sec.gainers_data.0 %}
+                        {% if gainer %}
+                        <div class="text-white small fw-bold">{{ gainer.symbol }}</div>
+                        <div class="small text-emerald">
+                            +{{ gainer.change|stringformat:".1f" }}%
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+                
+                <input type="hidden" id="history-{{ forloop.counter }}" value="{{ sec.history_json|escape }}">
+            </div>
+
+            <!-- MODAL for this sector -->
+            <div class="modal fade" id="sectorModal-{{ forloop.counter }}" tabindex="-1" style="backdrop-filter: blur(5px);">
+                <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content shadow-lg">
+                        <div class="modal-header border-secondary">
+                            <div>
+                                <h4 class="modal-title text-white fw-bold brand-font">{{ sec.sector_display }}</h4>
+                                <small class="text-violet">{{ date|date:"Y-m-d" }} Full Report</small>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body p-0 bg-dark">
+                            <!-- Chart -->
+                            <div class="p-4 border-bottom border-secondary bg-gradient-dark">
+                                <h6 class="text-light-soft text-uppercase ls-1 mb-3">30-Day Performance Trend</h6>
+                                <div style="height: 180px;">
+                                    <canvas id="modalChart-{{ forloop.counter }}"></canvas>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-0">
+                                <!-- Market Cap Leaders -->
+                                <div class="col-md-6 border-end border-secondary">
+                                    <div class="p-3 bg-opacity-10 bg-info border-bottom border-secondary text-center text-info fw-bold ls-1">
+                                        <i class="bi bi-trophy-fill me-2"></i>MARKET CAP LEADERS
+                                    </div>
+                                    <div class="overflow-auto custom-scroll" style="max-height: 400px;">
+                                        {% for stock in sec.leaders_data %}
+                                        <div class="p-3 d-flex justify-content-between align-items-center border-bottom border-secondary hover-row">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <span class="badge bg-secondary text-light" style="width: 25px;">{{ forloop.counter }}</span>
+                                                <div>
+                                                    <a href="https://finance.yahoo.com/quote/{{ stock.symbol }}" target="_blank" class="fw-bold text-white text-decoration-none">{{ stock.symbol }}</a>
+                                                    <div class="small text-light-soft">{{ stock.company_name|truncatewords:3 }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="text-end">
+                                                <div class="text-white">${{ stock.price|stringformat:".2f" }}</div>
+                                                <div class="small fw-bold {% if stock.change >= 0 %}text-emerald{% else %}text-red{% endif %}">
+                                                    {% if stock.change >= 0 %}+{% endif %}{{ stock.change|stringformat:".2f" }}%
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Top Gainers -->
+                                <div class="col-md-6">
+                                    <div class="p-3 bg-opacity-10 bg-warning border-bottom border-secondary text-center text-warning fw-bold ls-1">
+                                        <i class="bi bi-graph-up-arrow me-2"></i>TOP GAINERS
+                                    </div>
+                                    <div class="overflow-auto custom-scroll" style="max-height: 400px;">
+                                        {% for stock in sec.gainers_data %}
+                                        <div class="p-3 d-flex justify-content-between align-items-center border-bottom border-secondary hover-row">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <span class="badge bg-secondary text-light" style="width: 25px;">{{ forloop.counter }}</span>
+                                                <div>
+                                                    <a href="https://finance.yahoo.com/quote/{{ stock.symbol }}" target="_blank" class="fw-bold text-white text-decoration-none">{{ stock.symbol }}</a>
+                                                    <div class="small text-light-soft">{{ stock.company_name|truncatewords:3 }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="text-end">
+                                                <div class="text-white">${{ stock.price|stringformat:".2f" }}</div>
+                                                <div class="small fw-bold {% if stock.change >= 0 %}text-emerald{% else %}text-red{% endif %}">
+                                                    {% if stock.change >= 0 %}+{% endif %}{{ stock.change|stringformat:".2f" }}%
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Full List Button -->
+                            <div class="p-3 border-top border-secondary text-center bg-black">
+                                <button class="btn btn-outline-light w-100 text-uppercase" onclick="loadFullSectorList('{{ sec.sector|escapejs }}', '{{ forloop.counter }}')">
+                                    <i class="bi bi-list-ul me-2"></i>View Full Constituent List
+                                </button>
+                            </div>
+                            
+                            <!-- Hidden Full List Container -->
+                            <div id="full-list-container-{{ forloop.counter }}" style="display: none;" class="border-top border-secondary bg-dark">
+                                <div class="table-responsive p-3" style="max-height: 400px;">
+                                    <table class="table table-dark table-sm table-hover mb-0">
+                                        <thead class="sticky-top bg-dark">
+                                            <tr>
+                                                <th class="text-light-soft">Symbol</th>
+                                                <th class="text-light-soft">Name</th>
+                                                <th class="text-end text-light-soft">Price</th>
+                                                <th class="text-end text-light-soft">Change</th>
+                                                <th class="text-end text-light-soft">Mkt Cap</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="full-list-body-{{ forloop.counter }}">
+                                            <tr><td colspan="5" class="text-center py-4"><div class="spinner-border text-light" role="status"></div></td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- SCRIPTS: KEEP LOGIC INTACT, UPDATED SELECTORS/COLORS ONLY -->
+<script>
+function startSectorRefresh() {
+    const btn = document.getElementById('refreshSectorBtn');
+    const icon = document.getElementById('refreshIcon');
+    const text = document.getElementById('refreshText');
+    
+    // Disable button
+    btn.disabled = true;
+    
+    // Start spinning icon
+    icon.classList.add('spinner-border', 'spinner-border-sm'); // Bootstrap spinner class
+    icon.classList.remove('bi-arrow-clockwise');
+    text.textContent = ' 0%';
+    
+    // Trigger refresh
+    fetch("{% url 'insight:update_sector_leaders' %}", {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            pollProgress();
+        } else {
+            alert('Failed to start refresh: ' + (data.message || 'Unknown error'));
+            resetButton();
+        }
+    })
+    .catch(error => {
+        alert('Error starting refresh: ' + error);
+        resetButton();
+    });
+    
+    function pollProgress() {
+        const interval = setInterval(() => {
+            fetch('/top200/progress/?task_name=sector_leaders')
+                .then(response => response.json())
+                .then(data => {
+                    const progress = data.progress || 0;
+                    text.textContent = ' ' + progress + '%';
+                    
+                    if (data.status === 'finished') {
+                        clearInterval(interval);
+                        
+                        // Show completion popup
+                        const message = data.message || 'Sector Leaders update complete!';
+                        // alert('✅ ' + message);
+                        
+                        // Reload page
+                        window.location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Progress check error:', error);
+                });
+        }, 800);
+    }
+    
+    function resetButton() {
+        btn.disabled = false;
+        icon.classList.remove('spinner-border', 'spinner-border-sm');
+        icon.classList.add('bi-arrow-clockwise');
+        text.textContent = 'REFRESH';
+    }
+}
+
+function loadFullSectorList(sectorName, id) {
+    const container = document.getElementById(`full-list-container-${id}`);
+    const body = document.getElementById(`full-list-body-${id}`);
+    
+    // Toggle
+    if (container.style.display !== 'none') {
+        container.style.display = 'none';
+        return;
+    }
+    container.style.display = 'block';
+    
+    // Fetch
+    fetch(`/insight/api/sector/${encodeURIComponent(sectorName)}/`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                body.innerHTML = `<tr><td colspan="5" class="text-center text-danger">${data.error}</td></tr>`;
+                return;
+            }
+            
+            const rows = data.constituents.map(stock => {
+                const colorClass = stock.change >= 0 ? 'text-emerald' : 'text-red';
+                const sign = stock.change >= 0 ? '+' : '';
+                
+                // Format Market Cap
+                let mcap = stock.market_cap;
+                let mcapStr = "-";
+                if (mcap >= 1e12) mcapStr = (mcap/1e12).toFixed(2) + " T";
+                else if (mcap >= 1e9) mcapStr = (mcap/1e9).toFixed(2) + " B";
+                else if (mcap >= 1e6) mcapStr = (mcap/1e6).toFixed(2) + " M";
+                
+                return `
+                    <tr>
+                        <td class="fw-bold"><a href="https://finance.yahoo.com/quote/${stock.symbol}" target="_blank" class="text-white text-decoration-none">${stock.symbol}</a></td>
+                        <td class="text-light-soft">${stock.name}</td>
+                        <td class="text-end">$${stock.price.toFixed(2)}</td>
+                        <td class="text-end fw-bold ${colorClass}">${sign}${stock.change.toFixed(2)}%</td>
+                        <td class="text-end text-light-muted">${mcapStr}</td>
+                    </tr>
+                `;
+            }).join('');
+            
+            body.innerHTML = rows;
+        })
+        .catch(err => {
+            console.error(err);
+            body.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Failed to load data.</td></tr>`;
+        });
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Flatpickr
+    const availableDates = {{ available_dates_json|safe }};
+    flatpickr("#datePickerInput", {
+        dateFormat: "Y-m-d",
+        defaultDate: "{{ date|date:'Y-m-d' }}",
+        enable: availableDates,
+        disableMobile: true,
+        onChange: (selectedDates, dateStr) => window.location.href = "?date=" + dateStr
+    });
+
+    // Chart logic setup
+    const sectorData = [
+        {% for sec in sectors %}
+        { name: "{{ sec.sector_display|truncatewords:2|safe|escapejs }}", change: {{ sec.change_percent }} },
+        {% endfor %}
+    ];
+
+    // Ranking Chart
+    const sortedSectors = [...sectorData].sort((a, b) => b.change - a.change);
+    
+    // Check if chart element exists (if no data, it might not)
+    const rankingEl = document.getElementById('rankingChart');
+    if(rankingEl) {
+        new Chart(rankingEl, {
+            type: 'bar',
+            data: {
+                labels: sortedSectors.map(s => s.name),
+                datasets: [{
+                    data: sortedSectors.map(s => s.change),
+                    backgroundColor: sortedSectors.map(s => s.change >= 0 
+                        ? 'rgba(16, 185, 129, 0.6)' 
+                        : 'rgba(239, 68, 68, 0.6)'),
+                    borderColor: sortedSectors.map(s => s.change >= 0 ? '#10B981' : '#EF4444'),
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0F172A',
+                        titleColor: '#A78BFA',
+                        bodyColor: '#fff',
+                        borderColor: '#334155',
+                        borderWidth: 1,
+                        padding: 10,
+                        callbacks: {
+                            label: ctx => ctx.parsed.x.toFixed(2) + '%'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(51, 65, 85, 0.5)' },
+                        ticks: { 
+                            color: '#94a3b8', 
+                            callback: v => v + '%' 
+                        }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { 
+                            color: '#fff', 
+                            font: { size: 12, family: 'Inter' } 
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Modal Charts (Trend History)
+    {% for sec in sectors %}
+    (function() {
+        const rawEl = document.getElementById('history-{{ forloop.counter }}');
+        if(!rawEl) return;
+        const raw = rawEl.value;
+        let data = [];
+        try { data = JSON.parse(raw); } catch(e) {}
+        if (!data.length) return;
+        
+        const vals = data.map(d => d.val);
+        const labels = data.map(d => d.date);
+        const lastVal = vals[vals.length - 1];
+        const color = lastVal >= 0 ? '#10B981' : '#EF4444';
+        
+        const createChart = (canvasId) => {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const bg = ctx.createLinearGradient(0, 0, 0, 200);
+            bg.addColorStop(0, lastVal >= 0 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)');
+            bg.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: vals,
+                        borderColor: color,
+                        backgroundColor: bg,
+                        borderWidth: 2,
+                        tension: 0.3,
+                        pointRadius: 0,
+                        pointHoverRadius: 4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: '#0F172A',
+                            titleColor: '#A78BFA',
+                            bodyColor: '#fff',
+                            borderColor: color,
+                            borderWidth: 1,
+                            callbacks: {
+                                label: ctx => ctx.parsed.y.toFixed(2) + '%'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: { 
+                            grid: { color: 'rgba(51, 65, 85, 0.3)' },
+                            ticks: { 
+                                color: '#64748b',
+                                callback: v => v + '%'
+                            }
+                        }
+                    }
+                }
+            });
+        };
+        
+        // Wait for modal to show to render chart properly? 
+        // Or render immediately if simple. ChartJS usually fine hidden if dimensions exist.
+        // But better to render when modal opens if possible using Bootstrap events, 
+        // OR just render all now. 
+        // The original code rendered immediately.
+        createChart('modalChart-{{ forloop.counter }}');
+    })();
+    {% endfor %}
+    
+    // Ensure modals are moved to body
+    document.querySelectorAll('.modal').forEach(modal => {
+        document.body.appendChild(modal);
+    });
+});
+</script>
+{% endblock %}

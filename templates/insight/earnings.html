@@ -1,0 +1,431 @@
+
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Earnings Report - {{ symbol|default:"Search" }}{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --vp-bg: #0f172a;
+        --vp-card: #1e293b;
+        --vp-accent: #3b82f6;
+        --vp-text: #e2e8f0;
+        --vp-glass: rgba(30, 41, 59, 0.7);
+    }
+    body {
+        background-color: var(--vp-bg) !important;
+        color: var(--vp-text) !important;
+        font-family: 'Outfit', sans-serif !important;
+    }
+    .card {
+        background-color: var(--vp-card);
+        border: 1px solid rgba(255,255,255,0.05);
+        color: white;
+    }
+    .form-control {
+        background-color: #334155;
+        border: 1px solid #475569;
+        color: white;
+    }
+    .form-control:focus {
+        background-color: #334155;
+        color: white;
+        border-color: var(--vp-accent);
+        box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+    }
+    .input-group-text {
+        background-color: #334155;
+        border: 1px solid #475569;
+        color: #94a3b8;
+    }
+    .table {
+        color: #e2e8f0;
+        --bs-table-bg: transparent; /* Remove Bootstrap default white */
+        --bs-table-color: #e2e8f0;
+    }
+    .table-light {
+        background-color: #334155; /* Override bootstrap */
+        color: white;
+    }
+    .table-hover tbody tr:hover {
+        color: white;
+        background-color: rgba(255,255,255,0.05);
+    }
+    .bg-light {
+        background-color: rgba(255,255,255,0.05) !important;
+    }
+    .text-muted {
+        color: #94a3b8 !important;
+    }
+    .text-dark {
+        color: white !important;
+    }
+    /* Explicitly target cells to overwrite user agent styles */
+    .table > :not(caption) > * > * {
+        background-color: transparent !important;
+        color: #e2e8f0 !important;
+        border-bottom-color: rgba(255,255,255,0.1);
+    }
+    /* Specific fix for the Revenue Breakdown table */
+    .table thead th {
+        background-color: #334155 !important;
+        color: #cbd5e1 !important;
+        border-bottom: none;
+    }
+    h5, h6, h2 {
+        color: white;
+    }
+    .text-gray-200 { color: #e2e8f0 !important; }
+    .text-gray-300 { color: #cbd5e1 !important; }
+</style>
+
+<div class="container" style="max-width: 1400px;">
+    
+    <div class="mb-5 mt-4">
+        <div class="d-flex align-items-center mb-2">
+            <h2 class="fw-bold mb-0 text-white" style="font-size: 2.5rem; letter-spacing: -1px;">
+                <i class="bi bi-robot me-3" style="color: #60a5fa;"></i>
+                <span style="background: linear-gradient(90deg, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">AI Earnings Analysis</span>
+            </h2>
+            <span class="badge ms-3" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); font-weight: 500;">
+                <i class="bi bi-lightning-charge-fill me-1"></i> Gemini 2.5 Flash
+            </span>
+        </div>
+        <p class="text-gray-400 ms-1 mb-0" style="font-size: 1.05rem;">
+            Deep-dive into SEC 8-K filings with next-gen AI reasoning.
+        </p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="card mb-5 border-0 shadow-lg" style="background: linear-gradient(145deg, #1e293b, #0f172a); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);">
+        <div class="card-body p-4">
+            <form method="post" class="d-flex gap-2" id="earningsForm" onsubmit="showLoading()">
+                {% csrf_token %}
+                <div class="input-group input-group-lg bg-transparent" style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 4px; border: 1px solid rgba(255,255,255,0.1);">
+                    <span class="input-group-text border-0 bg-transparent text-secondary ps-3"><i class="bi bi-search fs-5"></i></span>
+                    <input type="text" name="symbol" class="form-control border-0 bg-transparent text-white shadow-none" 
+                           placeholder="Enter Stock Symbol (e.g. ADBE, NVDA, TSLA)..." 
+                           value="{{ symbol|default:'' }}" required 
+                           style="font-size: 1.15rem; font-weight: 500;" autocomplete="off">
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg px-5 border-0 d-flex align-items-center justify-content-center" 
+                        id="analyzeBtn" 
+                        style="border-radius: 12px; background: linear-gradient(135deg, #3b82f6, #2563eb); font-weight: 600; font-size: 1.1rem; min-width: 140px; transition: all 0.2s;">
+                    <span class="btn-text">Anlayze</span>
+                    <span class="btn-loader d-none"><span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Analyzing...</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showLoading() {
+            const btn = document.getElementById('analyzeBtn');
+            btn.querySelector('.btn-text').classList.add('d-none');
+            btn.querySelector('.btn-loader').classList.remove('d-none');
+            btn.disabled = true;
+        }
+    </script>
+
+    {% if error %}
+    <div class="alert alert-danger shadow-sm border-0 bg-danger text-white bg-opacity-25">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error }}
+    </div>
+    {% endif %}
+
+    {% if success %}
+    <div class="alert alert-success shadow-sm border-0 bg-success text-white bg-opacity-25">
+        <i class="bi bi-check-circle-fill me-2"></i> {{ success }}
+    </div>
+    {% endif %}
+
+    {% if data %}
+    <div class="row g-4">
+        <!-- Left Column: Summary, Breakdown, Guidance -->
+        <div class="col-lg-8">
+            <!-- Executive Summary -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header border-0 pt-4 ps-4 bg-transparent">
+                    <h5 class="fw-bold mb-0 text-white"><i class="bi bi-file-text me-2 text-primary"></i> Executive Summary</h5>
+                </div>
+                <div class="card-body p-4">
+                    <p class="lead mb-0 text-gray-200" style="line-height: 1.8; color: #e2e8f0;">{{ data.summary }}</p>
+                </div>
+            </div>
+
+            <!-- Quarterly Comparison -->
+            {% if data.quarterly_comparison %}
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header border-0 pt-4 ps-4 bg-transparent">
+                    <h5 class="fw-bold mb-0 text-white"><i class="bi bi-arrow-repeat me-2 text-primary"></i> Year-over-Year Comparison (YoY)</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <div class="p-3 rounded shadow-sm" style="background: rgba(255,255,255,0.03);">
+                                <small class="text-muted d-block mb-1">Revenue Change</small>
+                                <span class="fw-bold text-primary fs-5">{{ data.quarterly_comparison.revenue_change }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded shadow-sm" style="background: rgba(255,255,255,0.03);">
+                                <small class="text-muted d-block mb-1">EPS Change</small>
+                                <span class="fw-bold text-primary fs-5">{{ data.quarterly_comparison.eps_change }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3 rounded shadow-sm" style="background: rgba(255,255,255,0.03);">
+                        <small class="text-muted d-block mb-2">Key Differences</small>
+                        <ul class="mb-0 ps-3 text-gray-300">
+                            {% for diff in data.quarterly_comparison.key_differences %}
+                            <li>{{ diff }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Key Takeaways -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header border-0 pt-4 ps-4 bg-transparent">
+                    <h5 class="fw-bold mb-0 text-white"><i class="bi bi-check-circle-fill me-2 text-success"></i> Key Takeaways</h5>
+                </div>
+                <div class="card-body p-4">
+                    <ul class="list-group list-group-flush">
+                        {% for point in data.key_takeaways %}
+                        <li class="list-group-item border-0 ps-0 py-2 d-flex align-items-start bg-transparent text-white">
+                            <i class="bi bi-dot fs-3 text-secondary me-2" style="margin-top: -8px;"></i>
+                            <span>{{ point }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Revenue Breakdown -->
+            {% if data.revenue_breakdown %}
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header border-0 pt-4 ps-4 bg-transparent">
+                    <h5 class="fw-bold mb-0 text-white"><i class="bi bi-pie-chart-fill me-2 text-primary"></i> Revenue Breakdown</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="table-responsive">
+                        <table class="table align-middle" style="color:#e2e8f0;">
+                            <thead class="" style="background:#334155;">
+                                <tr>
+                                    <th style="background:#334155; color:#94a3b8;">Segment</th>
+                                    <th class="text-end" style="background:#334155; color:#94a3b8;">Value</th>
+                                    <th scope="col" class="text-end" style="background:#334155; color:#94a3b8;">CHANGE (YoY)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in data.revenue_breakdown %}
+                                <tr style="border-color: rgba(255,255,255,0.1);">
+                                    <td class="fw-bold text-white">{{ item.segment }}</td>
+                                    <td class="text-end text-gray-300">{{ item.value }}</td>
+                                    <td class="text-end">
+                                        {% if '-' in item.change %}
+                                        <span class="text-danger">{{ item.change }}</span>
+                                        {% else %}
+                                        <span class="text-success">{{ item.change }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Guidance & Outlook -->
+            {% if data.guidance %}
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header border-0 pt-4 ps-4 bg-transparent">
+                    <h5 class="fw-bold mb-0 text-white"><i class="bi bi-binoculars-fill me-2 text-warning"></i> Future Guidance</h5>
+                </div>
+                <div class="card-body p-4">
+                    <p class="mb-0 text-gray-300">{{ data.guidance }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Column: Stats, Prediction, Targets -->
+        <div class="col-lg-4">
+            <!-- Sentiment Badge -->
+            <div class="card shadow-sm border-0 mb-4 text-center">
+                <div class="card-body p-4">
+                    <h6 class="text-uppercase text-muted fw-bold mb-3" style="font-size: 0.8rem; letter-spacing: 1px;">AI Sentiment</h6>
+                    {% if data.sentiment == 'Positive' %}
+                        <span class="badge rounded-pill bg-success fs-5 px-4 py-2">Positive 🚀</span>
+                    {% elif data.sentiment == 'Negative' %}
+                        <span class="badge rounded-pill bg-danger fs-5 px-4 py-2">Negative 📉</span>
+                    {% else %}
+                        <span class="badge rounded-pill bg-secondary fs-5 px-4 py-2">Neutral 😐</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Financial Table (Grid) -->
+            {% if data.financial_table %}
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header border-0 pt-4 ps-4 bg-transparent">
+                    <h5 class="fw-bold mb-0 text-white"><i class="bi bi-grid-fill me-2 text-warning"></i> Key Financials</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="p-3 rounded text-center" style="background: rgba(255,255,255,0.03);">
+                                <small class="text-muted d-block mb-1">Revenue</small>
+                                <span class="fw-bold fs-6 text-white">{{ data.financial_table.Revenue|default:"N/A" }}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 rounded text-center" style="background: rgba(255,255,255,0.03);">
+                                <small class="text-muted d-block mb-1">EPS</small>
+                                <span class="fw-bold fs-6 text-white">{{ data.financial_table.EPS|default:"N/A" }}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 rounded text-center" style="background: rgba(255,255,255,0.03);">
+                                <small class="text-muted d-block mb-1">PER</small>
+                                <span class="fw-bold fs-6 text-white">{{ data.financial_table.PER|default:"N/A (Neg)" }}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 rounded text-center" style="background: rgba(255,255,255,0.03);">
+                                <small class="text-muted d-block mb-1">PBR</small>
+                                <span class="fw-bold fs-6 text-white">{{ data.financial_table.PBR|default:"N/A" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Gemini Prediction -->
+            {% if data.gemini_prediction %}
+            <div class="card shadow-sm border-0 mb-4 text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="card-header border-0 pt-4 ps-4 bg-transparent text-white">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-stars me-2"></i> Gemini Prediction (6M)</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-end mb-3">
+                        <div>
+                            <small class="text-white-50 d-block">Target Price</small>
+                            <span class="display-6 fw-bold">{{ data.gemini_prediction.price_6m }}</span>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-white-50 d-block">Premium</small>
+                            <span class="fs-4 fw-bold text-warning">{{ data.gemini_prediction.premium }}</span>
+                        </div>
+                    </div>
+                    <p class="small text-white-50 mb-0 border-top border-white-50 pt-3">
+                        {{ data.gemini_prediction.rationale }}
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Institutional Targets -->
+            {% if data.institutional_targets %}
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header border-0 pt-4 ps-4 bg-transparent">
+                    <h5 class="fw-bold mb-0 text-white"><i class="bi bi-bullseye me-2 text-danger"></i> Analyst Targets</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Low</span>
+                        <span class="text-muted">Mean</span>
+                        <span class="text-muted">High</span>
+                    </div>
+                    <div class="progress mb-3" style="height: 10px; background-color: #334155;">
+                        <!-- Visual representation -->
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: 33%" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 34%" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 33%" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="d-flex justify-content-between fw-bold text-white">
+                        <span>${{ data.institutional_targets.low }}</span>
+                        <span class="text-primary">${{ data.institutional_targets.mean }}</span>
+                        <span>${{ data.institutional_targets.high }}</span>
+                    </div>
+                    <p class="small text-muted mt-3 mb-0">
+                        {{ data.institutional_targets.summary }}
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- CEO Quote -->
+            {% if data.ceo_quote %}
+            <div class="card shadow-sm border-0 mb-4" style="background: rgba(255,255,255,0.03);">
+                <div class="card-body p-4 position-relative">
+                    <i class="bi bi-quote position-absolute top-0 start-0 ms-3 mt-2 fs-1 text-secondary opacity-25"></i>
+                    <blockquote class="blockquote mb-0 mt-3 text-center position-relative" style="z-index: 1;">
+                        <p class="fs-6 fst-italic text-white">"{{ data.ceo_quote }}"</p>
+                        <footer class="blockquote-footer mt-2 text-muted">Management</footer>
+                    </blockquote>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Actions: Source & Email -->
+            <div class="d-grid gap-2">
+                <a href="{% url 'insight:earnings_source' symbol=symbol %}" target="_blank" class="btn btn-outline-secondary text-white border-secondary">
+                    <i class="bi bi-file-earmark-text me-2"></i> View Original 8-K Source
+                </a>
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#emailModal">
+                    <i class="bi bi-envelope me-2"></i> Email Report (PDF)
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Email Modal -->
+<div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="background-color: var(--vp-card); color: white; border: 1px solid rgba(255,255,255,0.1);">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title" id="emailModalLabel">Send Report via Email</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="post" action="{% url 'insight:email_earnings' %}">
+          {% csrf_token %}
+          <input type="hidden" name="symbol" value="{{ symbol }}">
+          <input type="hidden" name="data" value="{{ data_json }}">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="emailInput" class="form-label text-gray-300">Email address</label>
+              <input type="email" class="form-control" id="emailInput" name="email" placeholder="name@example.com" required style="background-color: #334155; color: white; border-color: #475569;">
+            </div>
+          </div>
+          <div class="modal-footer border-secondary">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Send PDF</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('earningsForm').addEventListener('submit', function() {
+        const btn = document.getElementById('analyzeBtn');
+        const input = this.querySelector('input[name="symbol"]');
+        
+        if (input.value.trim()) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>{% trans "Analyzing..." %}';
+        }
+    });
+</script>
+{% endblock %}

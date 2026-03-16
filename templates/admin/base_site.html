@@ -1,0 +1,70 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}Vestiq Admin{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">Vestiq Admin</a></h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block userlinks %}
+    <a href="/">{% trans 'Back to Vestiq' %}</a> / 
+    {{ block.super }}
+{% endblock %}
+
+{% block extrahead %}
+<style>
+    /* Force Admin Filter to Right Side */
+    #changelist {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: flex-start !important;
+    }
+    #changelist-form {
+        flex: 1 !important;
+        min-width: 0 !important; /* Prevent overflow */
+    }
+    #changelist-filter {
+        width: 160px !important; /* Even smaller width */
+        margin-left: 10px !important;
+        background: #fff !important;
+        border: 1px solid #eaeaea !important;
+        flex-shrink: 0 !important;
+        order: 2 !important; /* Ensure it's on the right */
+        font-size: 0.8rem !important; /* Smaller text in filter */
+    }
+    
+    /* Table Scrolling & Compact View */
+    .results {
+        width: 100% !important;
+        overflow-x: auto !important; /* Enable horizontal scroll on the container */
+        display: block !important;
+        border: 1px solid #eee; /* Visual cue */
+    }
+    .results table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .results td, .results th {
+        white-space: nowrap !important; /* Prevent wrapping */
+        padding: 5px 8px !important; /* Compact padding */
+        font-size: 0.85rem !important; /* Compact font */
+    }
+
+    /* Responsive: Stack on small screens */
+    @media (max-width: 767px) {
+        #changelist {
+            flex-direction: column !important;
+        }
+        #changelist-filter {
+            width: 100% !important;
+            margin-left: 0 !important;
+            margin-bottom: 20px !important;
+            order: 0 !important; /* Top on mobile */
+        }
+    }
+</style>
+{{ block.super }}
+{% endblock %}

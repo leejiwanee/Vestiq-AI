@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">{% trans "Confirm Delete" %}</h4>
+                </div>
+                <div class="card-body">
+                    <p>{% trans "Are you sure you want to delete the trade record for" %} <strong>{{ object.ticker }}</strong>?</p>
+                    <p class="text-muted small">{% trans "This action cannot be undone." %}</p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'trade_list' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+                            <button type="submit" class="btn btn-danger">{% trans "Delete" %}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

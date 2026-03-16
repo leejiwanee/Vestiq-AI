@@ -1,0 +1,623 @@
+{% extends "base.html" %}
+{% load i18n humanize static %}
+
+{% block title %}Earnings Intelligence{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<style>
+    /* Vestiq Dark Theme Overrides */
+    .earnings-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    /* Glass Cards - Polished */
+    .glass-card {
+        background: #111827; /* Solid Dark bg as per Vestiq Theme */
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .glass-card:hover {
+        transform: translateY(-2px);
+        border-color: #374151;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Date Sections */
+    .date-header {
+        position: sticky;
+        top: 70px; /* Adjust based on navbar height */
+        z-index: 10;
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(8px);
+        padding: 15px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        margin-bottom: 25px;
+    }
+
+    /* Beat/Miss Badges */
+    .badge-beat {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        font-weight: 700;
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+    .badge-miss {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        font-weight: 700;
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+
+    /* Grid Layout - Larger Cards */
+    .earnings-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+    }
+
+    /* Logo Image */
+    .company-logo {
+        width: 48px; height: 48px;
+        object-fit: contain;
+        background: #1f2937;
+        border-radius: 10px;
+        padding: 4px;
+    }
+
+    /* Data Row Styling */
+    .data-row {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 8px; font-size: 0.9rem;
+    }
+    .data-label { color: #9ca3af; font-weight: 500; font-size: 0.8rem; }
+    .data-val { color: #f3f4f6; font-family: 'Roboto Mono', monospace; font-weight: 700; }
+    
+    /* Beat/Miss Bar - Button Style */
+    .status-bar {
+        margin-top: 15px;
+        padding: 10px;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        font-size: 0.85rem;
+        background: #1f2937;
+        color: #9ca3af;
+        transition: all 0.2s;
+    }
+    .status-beat { 
+        background-color: #065f46; /* Deep Green */
+        color: #6ee7b7; 
+        border: 1px solid #059669;
+        box-shadow: 0 2px 4px rgba(6, 95, 70, 0.3);
+    }
+    .status-miss { 
+        background-color: #7f1d1d; /* Deep Red */
+        color: #fca5a5;
+        border: 1px solid #b91c1c;
+        box-shadow: 0 2px 4px rgba(127, 29, 29, 0.3);
+    }
+
+    /* Typography */
+    .text-label { color: #94a3b8; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .text-val { color: #f1f5f9; font-weight: 600; font-family: 'Roboto Mono', monospace; }
+    .text-sub { color: #64748b; font-size: 0.8rem; }
+    
+</style>
+
+<div class="earnings-container">
+    
+    <!-- HEADER -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-end mb-5">
+        <div>
+            <h1 class="display-4 font-weight-bold mb-1" style="letter-spacing: -1px; background: linear-gradient(90deg, #ffffff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Earnings Calendar <span style="font-size: 0.5em; color: #64748b; -webkit-text-fill-color: #64748b; font-weight: 300; margin-left: 10px;">실적 캘린더</span>
+            </h1>
+            <p class="text-gray-400 lead mb-0" style="font-weight: 300; letter-spacing: 0.5px;">Turn market volatility into your competitive advantage.</p>
+        </div>
+        
+        <!-- Date Range Picker Form -->
+        <!-- Right Side: Date Picker + Refresh -->
+        <div class="d-flex align-items-center mt-4 mt-md-0">
+            <!-- Date Filter -->
+            <!-- Date Filter (Enhanced Capsule Design) -->
+            <form method="get" class="d-flex align-items-center position-relative glass-card px-1 py-1" 
+                  style="border-radius: 50px; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.15); height: 50px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); backdrop-filter: blur(8px); cursor: pointer; transition: all 0.3s ease;"
+                  onclick="document.getElementById('date-range')._flatpickr.open();"
+                  onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.5)'; this.style.boxShadow='0 8px 32px 0 rgba(59, 130, 246, 0.15)';"
+                  onmouseout="this.style.borderColor='rgba(255,255,255,0.15)'; this.style.boxShadow='0 8px 32px 0 rgba(0, 0, 0, 0.3)';">
+                
+                <!-- Label Capsule -->
+                <div class="d-flex align-items-center justify-content-center px-3 h-100 rounded-pill" 
+                     style="background: rgba(255,255,255,0.05); margin-right: 10px;">
+                    <span class="text-white-50 font-weight-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">Range</span>
+                </div>
+                
+                <!-- Icon -->
+                <i class="bi bi-calendar4-week text-primary mr-2" style="font-size: 1.1rem;"></i>
+                
+                <!-- Input -->
+                <input type="text" id="date-range" class="bg-transparent border-0 text-white font-weight-bold text-center" 
+                       style="font-size: 1.0rem; outline: none; box-shadow: none; width: 190px; caret-color: transparent; cursor: pointer; font-family: 'Roboto Mono', monospace;" 
+                       placeholder="Select Period"
+                       readonly="readonly"
+                       value="{{ start_date }} to {{ end_date }}">
+
+                <input type="hidden" name="start_date" id="start_date" value="{{ start_date }}">
+                <input type="hidden" name="end_date" id="end_date" value="{{ end_date }}">
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn rounded-circle text-white d-flex align-items-center justify-content-center shadow-lg" 
+                        style="width: 38px; height: 38px; background: linear-gradient(135deg, #3b82f6, #2563eb); border: none; flex-shrink: 0; margin-left: 5px; transition: transform 0.2s;"
+                        onmouseover="this.style.transform='scale(1.1)'"
+                        onmouseout="this.style.transform='scale(1)'"
+                        onclick="event.stopPropagation();">
+                    <i class="bi bi-arrow-right" style="font-size: 1.1rem;"></i>
+                </button>
+            </form>
+
+            <!-- Refresh Button -->
+            <a href="?start_date={{ start_date }}&end_date={{ end_date }}&refresh=true" class="btn rounded-circle text-white d-flex align-items-center justify-content-center shadow-lg ml-3 glass-card"
+               style="width: 50px; height: 50px; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.15); transition: transform 0.2s;"
+               onmouseover="this.style.transform='rotate(180deg)'; this.style.borderColor='rgba(59, 130, 246, 0.5)';"
+               onmouseout="this.style.transform='rotate(0deg)'; this.style.borderColor='rgba(255,255,255,0.15)'"
+               title="Force Refresh Data">
+                <i class="bi bi-arrow-clockwise" style="font-size: 1.2rem;"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    {% if not calendar_data %}
+    <div class="text-center py-5 text-gray-500">
+        <i class="bi bi-calendar-x display-1 mb-3"></i>
+        <h4>No earnings found for this range.</h4>
+        <p>Try selecting a different date range.</p>
+    </div>
+    {% endif %}
+
+    {% for day_info in calendar_data %}
+    {% if day_info.earnings %}
+    <div class="mb-5 day-section" data-date="{{ day_info.date|date:'Y-m-d' }}" id="section-{{ day_info.date|date:'Y-m-d' }}">
+        <!-- Sticky Date Header -->
+        <div class="date-header d-flex align-items-center">
+            <div class="h3 font-weight-bold text-white mb-0 mr-3" style="width: 50px; text-align: center; line-height: 1;">
+                <div style="font-size: 0.9rem; color: #ef4444;">{{ day_info.date|date:"M"|upper }}</div>
+                <div>{{ day_info.date|date:"d" }}</div>
+            </div>
+            <div class="border-left border-gray-700 pl-3">
+                <h4 class="h5 font-weight-bold text-white mb-0">
+                    {{ day_info.date|date:"l" }}
+                    {% if day_info.date|date:"Y-m-d" == now|date:"Y-m-d" %} <span class="badge badge-primary ml-2 rounded-pill text-xs">TODAY</span>{% endif %}
+                </h4>
+                <div class="text-label">{{ day_info.earnings|length }} Companies</div>
+            </div>
+        </div>
+
+        <!-- Grid -->
+        <div class="earnings-grid">
+            {% for e in day_info.earnings %}
+            <div class="glass-card p-4 d-flex flex-column h-100" 
+                 style="cursor: pointer;"
+                 onclick="openProfile({
+                    symbol: '{{ e.symbol }}',
+                    name: '{{ e.name|escapejs }}',
+                    logo: '{{ e.logo|default:""|escapejs }}',
+                    market_cap: '{% if e.market_cap %}${{ e.market_cap|intword }}{% else %}--{% endif %}',
+                    sector: '{{ e.sector|default:""|escapejs }}',
+                    industry: '{{ e.industry|default:""|escapejs }}',
+                    pe_ratio: '{{ e.pe_ratio|default:"--" }}',
+                    pb_ratio: '{{ e.pb_ratio|default:"--" }}'
+                 })">
+                
+                <!-- 1. Header: Logo Left, Text Stack Right -->
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div class="d-flex align-items-start" style="width: 100%;">
+                        {% if e.logo %}
+                            <div class="mr-3 pt-1">
+                                <img src="{{ e.logo }}" alt="{{ e.symbol }}" class="company-logo">
+                            </div>
+                        {% endif %}
+                        <div class="flex-grow-1" style="min-width: 0;"> <!-- min-width: 0 for truncation to work -->
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h2 class="font-weight-bold text-white mb-0" style="font-size: 1.5rem; line-height: 1.1;">{{ e.symbol }}</h2>
+                                <!-- Time / DNS Badge -->
+                                <div class="ml-2 flex-shrink-0">
+                                     {% if e.time == 'bmo' %}
+                                        <!-- <i class="bi bi-brightness-high-fill text-warning" title="BMO" style="font-size: 1.1rem;"></i> -->
+                                        <span class="badge badge-dark border border-warning text-warning" style="font-size: 0.65rem;">BMO</span>
+                                    {% elif e.time == 'amc' %}
+                                        <!-- <i class="bi bi-moon-stars-fill text-info" title="AMC" style="font-size: 1.0rem;"></i> -->
+                                        <span class="badge badge-dark border border-info text-info" style="font-size: 0.65rem;">AMC</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="text-gray-400 text-sm text-truncate mb-1" style="font-weight: 500;">{{ e.name }}</div>
+                            <div class="text-sm text-gray-400 font-weight-bold">
+                                <span class="text-gray-500 font-weight-normal">Market Cap:</span> 
+                                {% if e.market_cap %}${{ e.market_cap|intword }}{% else %}--{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Body: Data Grid (EPS & Rev) -->
+                <div class="mb-3 px-1">
+                    <div class="row">
+                        <!-- EPS Column -->
+                        <div class="col-6">
+                            <div class="text-label mb-2">EPS</div>
+                            <div class="data-row">
+                                <span class="data-label">Est</span>
+                                <span class="data-val text-gray-300">{{ e.eps_estimated|default_if_none:"--"|floatformat:2 }}</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="data-label">Act</span>
+                                <span class="data-val {% if e.eps_actual is not None and e.eps_estimated is not None %}{% if e.eps_actual >= e.eps_estimated %}text-success{% else %}text-danger{% endif %}{% else %}text-white{% endif %}">
+                                    {{ e.eps_actual|default_if_none:"--"|floatformat:2 }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Revenue Column -->
+                        <div class="col-6">
+                            <div class="text-label mb-2">Revenue</div>
+                            <div class="data-row">
+                                <span class="data-label">Est</span>
+                                <span class="data-val text-gray-300">{% if e.revenue_estimated %}{{ e.revenue_estimated|intword }}{% else %}--{% endif %}</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="data-label">Act</span>
+                                <span class="data-val {% if e.revenue_actual is not None and e.revenue_estimated is not None %}{% if e.revenue_actual >= e.revenue_estimated %}text-success{% else %}text-danger{% endif %}{% else %}text-white{% endif %}">
+                                    {% if e.revenue_actual %}{{ e.revenue_actual|intword }}{% else %}--{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Footer: Big Beat/Miss Bar -->
+                <!-- 3. Footer: Split Beat/Miss Bar -->
+                <div class="mt-auto">
+                    {% if e.eps_actual is not None and e.eps_estimated is not None %}
+                         <div class="d-flex gap-2">
+                            <!-- EPS Status -->
+                            {% if e.eps_actual >= e.eps_estimated %}
+                                <div class="status-bar status-beat flex-fill m-0" style="font-size: 0.75rem;">
+                                    EPS BEAT
+                                </div>
+                            {% else %}
+                                <div class="status-bar status-miss flex-fill m-0" style="font-size: 0.75rem;">
+                                    EPS MISS
+                                </div>
+                            {% endif %}
+
+                            <!-- Revenue Status -->
+                            {% if e.revenue_actual is not None and e.revenue_estimated is not None %}
+                                {% if e.revenue_actual >= e.revenue_estimated %}
+                                    <div class="status-bar status-beat flex-fill m-0" style="font-size: 0.75rem;">
+                                        REV BEAT
+                                    </div>
+                                {% else %}
+                                    <div class="status-bar status-miss flex-fill m-0" style="font-size: 0.75rem;">
+                                        REV MISS
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <!-- No Revenue Data -->
+                                <div class="status-bar flex-fill m-0" style="font-size: 0.75rem; background:#374151; color:#9ca3af;">
+                                    REV N/A
+                                </div>
+                            {% endif %}
+                         </div>
+                    {% else %}
+                        <!-- Future / Scheduled -->
+                        {% if e.time == 'bmo' or e.time == 'amc' %}
+                            <div class="status-bar">
+                                UPCOMING
+                            </div>
+                        {% else %}
+                             <div class="status-bar">
+                                SCHEDULED
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    <!-- FAB Refresh Removed -->
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ... (Existing Flatpickr & Scroll Logic) ...
+        const startDateInput = document.getElementById('start_date');
+        const endDateInput = document.getElementById('end_date');
+        const rangeDisplay = document.getElementById('date-range');
+
+        flatpickr("#date-range", {
+            mode: "range",
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "M j, Y",
+            showMonths: 2,
+            defaultDate: ["{{ start_date }}", "{{ end_date }}"],
+            theme: "dark",
+            onChange: function(selectedDates, dateStr, instance) {
+                if (selectedDates.length === 2) {
+                    const start = instance.formatDate(selectedDates[0], "Y-m-d");
+                    const end = instance.formatDate(selectedDates[1], "Y-m-d");
+                    startDateInput.value = start;
+                    endDateInput.value = end;
+                }
+            }
+        });
+
+        // Auto-Scroll Logic
+        const todayStr = new Date().toISOString().split('T')[0];
+        const sections = document.querySelectorAll('.day-section');
+        let targetSection = null;
+        targetSection = document.getElementById('section-' + todayStr);
+        if (!targetSection) {
+            for (let section of sections) {
+                if (section.dataset.date >= todayStr) {
+                    targetSection = section;
+                    break;
+                }
+            }
+        }
+        if (!targetSection && sections.length > 0) targetSection = sections[0];
+        if (targetSection) {
+            const offset = 100; 
+            const elementPosition = targetSection.getBoundingClientRect().top + window.scrollY;
+            window.scrollTo({ top: elementPosition - offset, behavior: "smooth" });
+        }
+    });
+
+    // --- Profile Modal Logic ---
+    function openProfile(data) {
+        // Populate Modal Data
+        document.getElementById('pm-symbol').innerText = data.symbol;
+        document.getElementById('pm-name').innerText = data.name;
+        document.getElementById('pm-mktcap').innerText = data.market_cap;
+        
+        // Sector & Industry
+        const sectorEl = document.getElementById('pm-sector');
+        const sectorBadge = document.getElementById('pm-sector-badge');
+        if(data.sector && data.sector !== "None") {
+            sectorEl.innerText = data.sector;
+            sectorBadge.style.display = 'inline-block';
+        } else {
+            sectorBadge.style.display = 'none';
+        }
+        
+        const indEl = document.getElementById('pm-industry');
+        const indBadge = document.getElementById('pm-industry-badge');
+        if(data.industry && data.industry !== "None") {
+            indEl.innerText = data.industry;
+            indBadge.style.display = 'inline-block';
+        } else {
+            indBadge.style.display = 'none';
+        }
+
+        // PE Ratio 
+        const peEl = document.getElementById('pm-pe');
+        if(peEl) {
+             // Basic formatting if number
+             let val = data.pe_ratio;
+             if(val && val !== "None" && val !== "--") {
+                 let f = parseFloat(val);
+                 if(!isNaN(f)) val = f.toFixed(2);
+             } else {
+                 val = "--";
+             }
+             peEl.innerText = val;
+        }
+
+        // PB Ratio
+        const pbEl = document.getElementById('pm-pb');
+        if(pbEl) {
+             let val = data.pb_ratio;
+             if(val && val !== "None" && val !== "--") {
+                 let f = parseFloat(val);
+                 if(!isNaN(f)) val = f.toFixed(2);
+             } else {
+                 val = "--";
+             }
+             pbEl.innerText = val;
+        }
+
+
+
+        // Logo
+        const logoImg = document.getElementById('pm-logo');
+        if (data.logo) {
+            logoImg.src = data.logo;
+            logoImg.style.display = 'block';
+        } else {
+            logoImg.style.display = 'none';
+        }
+
+        // Chart Button Action
+        const chartBtn = document.getElementById('pm-chart-btn');
+        chartBtn.onclick = function() {
+            // Close Profile Modal first
+            const profileModalEl = document.getElementById('profileModal');
+            const modal = bootstrap.Modal.getInstance(profileModalEl);
+            modal.hide();
+            
+            // Open Chart Only (Simpler)
+            openEarningsChartOnly(data.symbol, data.name);
+        };
+
+        // Show Modal
+        const modalEl = document.getElementById('profileModal');
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+    }
+
+    // --- CHART ONLY LOGIC (Earnings specific) ---
+    async function openEarningsChartOnly(symbol, name) {
+        // Reuse Global Modal DOM but control visibility manually
+        const modalEl = document.getElementById('chartModalGlobal');
+        if(!modalEl) return;
+
+        // 1. Setup Logic
+        const titleEl = document.getElementById('chartModalTitleGlobal');
+        if(titleEl) titleEl.innerText = `${symbol} Chart`;
+        
+        // HIDE AI REPORT CONTAINER
+        const aiContainer = document.getElementById('aiReportContainerGlobal');
+        if(aiContainer) {
+            aiContainer.style.display = 'none'; // Hide it!
+            aiContainer.innerHTML = ''; // Clear it to be safe
+        }
+
+        // Show Loading
+        const loadingEl = document.getElementById('chartLoadingGlobal');
+        if(loadingEl) loadingEl.style.display = 'block';
+
+        // Clear previous chart
+        if(window.chartGlobal) window.chartGlobal.clear();
+
+        // Show Modal
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+        
+        // CRITICAL: Force resize after modal is shown and layout changes
+        modalEl.addEventListener('shown.bs.modal', function () {
+             if(window.chartGlobal) window.chartGlobal.resize();
+        }, { once: true });
+        
+        // Also force resize immediately in case it's already open/visible from a quick swap
+        requestAnimationFrame(() => {
+             if(window.chartGlobal) window.chartGlobal.resize();
+        });
+
+        try {
+            // 2. Fetch Chart Data ONLY
+            const chartRes = await fetch(`/scanner/chart/${symbol}/`);
+            const data = await chartRes.json();
+            
+            if(data.error) throw new Error(data.error);
+
+            // 3. Render
+            if(window.renderGlobalEChart) {
+                window.renderGlobalEChart(data, symbol);
+                // Resize again after data render just to be safe
+                if(window.chartGlobal) window.chartGlobal.resize();
+            }
+            
+            if(loadingEl) loadingEl.style.display = 'none';
+
+        } catch (error) {
+            console.error(error);
+            if(loadingEl) loadingEl.style.display = 'none';
+        }
+        
+        // Reset AI Container visibility when modal closes so we don't break Global Scanner??
+        // We should add a 'hidden.bs.modal' listener to reset it, otherwise Scanner might show hidden AI report.
+        modalEl.addEventListener('hidden.bs.modal', function () {
+             if(aiContainer) aiContainer.style.display = 'block'; // Restore for other pages
+        }, { once: true });
+    }
+</script>
+
+<!-- PROFILE MODAL (Photo Card) -->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(8px);">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card border-0 shadow-2xl" 
+             style="background: linear-gradient(145deg, #1e293b, #0f172a); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; overflow: hidden; position: relative;">
+            
+            <!-- Close 'X' Button -->
+            <button type="button" class="btn-close btn-close-white position-absolute" data-bs-dismiss="modal" aria-label="Close" 
+                    style="top: 20px; right: 20px; z-index: 10; opacity: 0.8;"></button>
+
+            <div class="modal-body p-0">
+                <!-- Top Design Accent -->
+                <div style="height: 6px; background: linear-gradient(90deg, #3b82f6, #8b5cf6);"></div>
+                
+                <div class="p-5 text-center">
+                    <!-- Logo -->
+                    <div class="mb-4 d-inline-block p-3 rounded-2xl shadow-lg" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
+                        <img id="pm-logo" src="" alt="Logo" style="width: 72px; height: 72px; object-fit: contain; border-radius: 12px;">
+                    </div>
+                    
+                    <!-- Text Info -->
+                    <h2 id="pm-symbol" class="display-5 font-weight-bold text-white mb-1" style="letter-spacing: -1px;">SYMBOL</h2>
+                    <p id="pm-name" class="lead text-gray-400 mb-2">Company Name</p>
+                    
+                    <!-- Stats Row -->
+                    <div class="d-flex justify-content-center gap-2 mb-4">
+                        <div class="px-3 py-2 rounded-3 border border-secondary border-opacity-25 text-center" style="background: rgba(255,255,255,0.03); min-width: 120px;">
+                            <div class="text-white-50 text-uppercase mb-1" style="font-size: 0.65rem; letter-spacing: 1px;">Market Cap</div>
+                            <div id="pm-mktcap" class="fw-bold text-white">--</div>
+                        </div>
+                        <div class="px-3 py-2 rounded-3 border border-secondary border-opacity-25 text-center" style="background: rgba(255,255,255,0.03); min-width: 90px;">
+                            <div class="text-white-50 text-uppercase mb-1" style="font-size: 0.65rem; letter-spacing: 1px;">PER</div>
+                            <div id="pm-pe" class="fw-bold text-white">--</div>
+                        </div>
+                        <div class="px-3 py-2 rounded-3 border border-secondary border-opacity-25 text-center" style="background: rgba(255,255,255,0.03); min-width: 90px;">
+                            <div class="text-white-50 text-uppercase mb-1" style="font-size: 0.65rem; letter-spacing: 1px;">PBR</div>
+                            <div id="pm-pb" class="fw-bold text-white">--</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Badges (Sector / Industry) -->
+                    <div class="mb-4 d-flex justify-content-center flex-wrap gap-2">
+                        <span id="pm-sector-badge" class="badge bg-primary bg-opacity-10 border border-primary border-opacity-25 text-primary px-3 py-2 rounded-pill" style="display:none;">
+                            <span id="pm-sector">--</span>
+                        </span>
+                        <span id="pm-industry-badge" class="badge bg-secondary bg-opacity-10 border border-secondary border-opacity-25 text-secondary px-3 py-2 rounded-pill" style="display:none;">
+                            <span id="pm-industry">--</span>
+                        </span>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-3">
+                        <button id="pm-chart-btn" class="btn btn-primary btn-lg rounded-xl font-weight-bold py-3 shadow-lg hover-scale" 
+                                style="background: linear-gradient(135deg, #3b82f6, #2563eb); border: none;">
+                            <i class="bi bi-graph-up-arrow mr-2"></i> View Chart
+                        </button>
+                        <!-- Close Button Text: Changed to 'text-white' as requested -->
+                        <button type="button" class="btn btn-outline-secondary rounded-xl py-2 border-0 text-white" data-bs-dismiss="modal">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-xl { border-radius: 12px; }
+    .rounded-2xl { border-radius: 16px; }
+    .hover-scale { transition: transform 0.2s; }
+    .hover-scale:active { transform: scale(0.98); }
+</style>
+
+{% endblock %}

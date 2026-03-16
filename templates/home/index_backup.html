@@ -1,0 +1,948 @@
+{% extends 'base.html' %}
+{% load i18n humanize %}
+
+{% block title %}VESTIQ - Smart Market Intelligence{% endblock %}
+
+{% block content %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    --accent-pink: #ec4899;
+    --accent-purple: #8b5cf6;
+    --accent-blue: #3b82f6;
+    --accent-green: #10b981;
+    --bg-dark: #0a0a0f;
+    --bg-card: rgba(255,255,255,0.04);
+    --border-color: rgba(255,255,255,0.1);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255,255,255,0.7);
+    --text-muted: rgba(255,255,255,0.5);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+}
+
+/* Animated Background */
+.animated-bg {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 90%, rgba(139, 92, 246, 0.12) 0%, transparent 50%);
+    z-index: 0;
+}
+
+.animated-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(99, 102, 241, 0.03) 2px,
+        rgba(99, 102, 241, 0.03) 4px
+    );
+    animation: grid-move 20s linear infinite;
+}
+
+@keyframes grid-move {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(40px); }
+}
+
+/* Container */
+.main-container {
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Hero Section */
+.hero-section {
+    margin-bottom: 48px;
+    text-align: center;
+}
+
+.hero-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, #fff 0%, #667eea 30%, #ec4899 60%, #f093fb 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+    line-height: 1.1;
+    animation: gradient-shift 5s ease infinite;
+    background-size: 200% 200%;
+}
+
+@keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+/* Infinite Train Ticker */
+.train-ticker {
+    margin-top: 32px;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+}
+
+.ticker-track {
+    display: flex;
+    gap: 24px;
+    animation: marquee 30s linear infinite;
+    will-change: transform;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.ticker-item {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    min-width: 300px;
+    flex-shrink: 0;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.ticker-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #ffffff;
+    min-width: 140px;
+}
+
+.ticker-item:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent-purple);
+    box-shadow: 0 12px 40px rgba(139, 92, 246, 0.3);
+}
+
+.ticker-symbol {
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.ticker-value {
+    font-weight: 800;
+    font-size: 1.25rem;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+.ticker-change {
+    font-weight: 700;
+    font-size: 0.875rem;
+    padding: 4px 10px;
+    border-radius: 8px;
+}
+
+.ticker-change.up {
+    color: var(--accent-green);
+    background: rgba(16, 185, 129, 0.2);
+}
+
+.ticker-change.down {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.2);
+}
+
+/* Bento Grid */
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 24px;
+    margin-bottom: 48px;
+}
+
+.bento-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(30px);
+    border: 1px solid var(--border-color);
+    border-radius: 28px;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.bento-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.bento-card:hover::before {
+    opacity: 1;
+}
+
+.bento-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(255,255,255,0.25);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* Grid Sizes */
+.span-3 { grid-column: span 3; }
+.span-4 { grid-column: span 4; }
+.span-5 { grid-column: span 5; }
+.span-6 { grid-column: span 6; }
+.span-7 { grid-column: span 7; }
+.span-8 { grid-column: span 8; }
+.span-12 { grid-column: span 12; }
+
+/* Card Header */
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    background: var(--icon-bg);
+    box-shadow: 0 8px 24px var(--icon-shadow);
+}
+
+.card-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 900;
+    color: var(--text-primary);
+}
+
+/* Speedometer Gauge */
+.speedometer-container {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+.speedometer-svg {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.5));
+}
+
+.gauge-bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.08);
+    stroke-width: 16;
+    stroke-linecap: round;
+}
+
+.gauge-fill {
+    fill: none;
+    stroke: url(#gaugeGradient);
+    stroke-width: 16;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gauge-center {
+    text-align: center;
+    margin-top: 24px;
+}
+
+.gauge-value {
+    font-size: 4.5rem;
+    font-weight: 900;
+    font-family: 'Space Grotesk', sans-serif;
+    background: linear-gradient(135deg, #fff 0%, #667eea 50%, #ec4899 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+}
+
+.gauge-label {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 12px;
+}
+
+.gauge-subtext {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-top: 8px;
+}
+
+/* AI Brief Card */
+.ai-brief-card {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+    border: 1px solid rgba(236, 72, 153, 0.3);
+}
+
+.ai-badge {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 2rem;
+    box-shadow: 0 8px 24px rgba(236, 72, 153, 0.5);
+}
+
+/* Market Grid */
+.market-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+}
+
+.market-item {
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 28px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.market-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--item-accent);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.market-item:hover::before {
+    opacity: 1;
+}
+
+.market-item:hover {
+    transform: translateY(-6px);
+    border-color: var(--item-accent);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+}
+
+.market-list {
+    display: grid;
+    gap: 16px;
+}
+
+.market-row {
+    padding: 16px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.02);
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.market-row:hover {
+    background: rgba(99, 102, 241, 0.15);
+    transform: translateX(6px);
+}
+
+.row-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.row-name {
+    font-weight: 700;
+    font-size: 1.0625rem;
+    color: var(--text-primary);
+}
+
+.row-price {
+    Font-weight: 800;
+    font-size: 1.25rem;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+.row-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.row-symbol {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+}
+
+.row-change {
+    font-size: 0.875rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 8px;
+}
+
+.row-change.up {
+    color: var(--accent-green);
+    background: rgba(16, 185, 129, 0.2);
+}
+
+.row-change.down {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.2);
+}
+
+/* Section Headers */
+.section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 32px;
+    background: linear-gradient(135deg, #fff 0%, #667eea 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .bento-grid { grid-template-columns: repeat(6, 1fr); }
+    .span-3, .span-4, .span-5, .span-7 { grid-column: span 6; }
+    .span-8 { grid-column: span 6; }
+}
+
+@media (max-width: 768px) {
+    .bento-grid { grid-template-columns: 1fr; gap: 16px; }
+    .span-3, .span-4, .span-5, .span-6, .span-7, .span-8 { grid-column: span 1; }
+    .hero-title { font-size: 2.5rem; }
+    .live-ticker { flex-direction: column; gap: 12px; }
+    .market-grid { grid-template-columns: 1fr; }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Gauge Card Animations */
+.gauge-card {
+    animation: slideUp 0.6s ease-out;
+}
+
+.gauge-card:hover {
+    transform: translateY(-12px) scale(1.02);
+}
+
+.gauge-card:hover .speedometer-svg {
+    animation: gaugePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes gaugePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/*  Sentiment Bars */
+.sentiment-bars {
+    padding: 24px 40px !important;
+}
+
+.bars-container {
+    display: flex;
+    gap: 48px;
+    align-items: center;
+}
+
+.sentiment-bar-item {
+    flex: 1;
+}
+
+.bar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.bar-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.bar-value {
+    font-size: 1.75rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #667eea 0%, #ec4899 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.bar-track {
+    position: relative;
+    height: 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50px;
+    overflow: visible;
+    margin-bottom: 8px;
+}
+
+.bar-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: linear-gradient(90deg, #ef4444 0%, #f59e0b 25%, #eab308 50%, #84cc16 75%, #22c55e 100%);
+   border-radius: 50px;
+    transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.fg-fill {
+    background: linear-gradient(90deg, #ef4444 0%, #eab308 50%, #22c55e 100%);
+}
+
+.bar-marker {
+    position: absolute;
+    top: -4px;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 24px;
+    background: #ffffff;
+    border: 3px solid #667eea;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.6), 0 0 0 4px rgba(102, 126, 234, 0.2);
+    transition: left 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.1); }
+}
+
+.bar-footer {
+    text-align: center;
+}
+
+.bar-status {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.bento-card {
+    animation: fadeInUp 0.6s ease-out backwards;
+}
+
+.bento-card:nth-child(1) { animation-delay: 0.1s; }
+.bento-card:nth-child(2) { animation-delay: 0.2s; }
+.bento-card:nth-child(3) { animation-delay: 0.3s; }
+.bento-card:nth-child(4) { animation-delay: 0.4s; }
+.bento-card:nth-child(5) { animation-delay: 0.5s; }
+</style>
+
+<div class="animated-bg"></div>
+
+<div class="main-container">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <h1 class="hero-title">VESTIQ</h1>
+        <p class="hero-subtitle">Smart Market Intelligence</p>
+        
+        <!-- Infinite Train Ticker -->
+        <div class="train-ticker">
+            <div class="ticker-track">
+                {% if macro_stats.US_Indices %}
+                    {% for item in macro_stats.US_Indices %}
+                    <div class="ticker-item">
+                        <span class="ticker-name">{% if item.tk == 'GSPC' %}S&P 500{% elif item.tk == 'IXIC' %}Nasdaq{% elif item.tk == 'DJI' %}Dow Jones{% elif item.tk == 'RUT' %}Russell 2000{% else %}{{ item.title }}{% endif %}</span>
+                        <span class="ticker-value">${{ item.price|floatformat:0 }}</span>
+                        <span class="ticker-change {% if item.pct >= 0 %}up{% else %}down{% endif %}">
+                            {% if item.pct >= 0 %}▲{% else %}▼{% endif %} {{ item.pct|floatformat:2 }}%
+                        </span>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                {% if macro_stats.Global_Indices %}
+                    {% for item in macro_stats.Global_Indices %}
+                    <div class="ticker-item">
+                        <span class="ticker-name">{% if item.tk == 'N225' %}Nikkei 225{% elif item.tk == 'HSI' %}Hang Seng{% elif item.tk == 'STOXX50E' %}Euro Stoxx 50{% elif item.tk == '000001.SS' %}Shanghai Comp{% else %}{{ item.title }}{% endif %}</span>
+                        <span class="ticker-value">${{ item.price|floatformat:0 }}</span>
+                        <span class="ticker-change {% if item.pct >= 0 %}up{% else %}down{% endif %}">
+                            {% if item.pct >= 0 %}▲{% else %}▼{% endif %} {{ item.pct|floatformat:2 }}%
+                        </span>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                <!-- Duplicate items for seamless loop -->
+                {% if macro_stats.US_Indices %}
+                    {% for item in macro_stats.US_Indices %}
+                    <div class="ticker-item">
+                        <span class="ticker-name">{% if item.tk == 'GSPC' %}S&P 500{% elif item.tk == 'IXIC' %}Nasdaq{% elif item.tk == 'DJI' %}Dow Jones{% elif item.tk == 'RUT' %}Russell 2000{% else %}{{ item.title }}{% endif %}</span>
+                        <span class="ticker-value">${{ item.price|floatformat:0 }}</span>
+                        <span class="ticker-change {% if item.pct >= 0 %}up{% else %}down{% endif %}">
+                            {% if item.pct >= 0 %}▲{% else %}▼{% endif %} {{ item.pct|floatformat:2 }}%
+                        </span>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Bento Grid -->
+    <div class="bento-grid">
+        <!-- Compact Sentiment Bars -->
+        <div class="bento-card span-12 sentiment-bars">
+            <div class="bars-container">
+                <!-- Vestiq Sentiment Bar -->
+                <div class="sentiment-bar-item">
+                    <div class="bar-header">
+                        <span class="bar-label">Vestiq Sentiment</span>
+                        <span class="bar-value">{{ weather.score|default:"61" }}</span>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill" style="width: {{ weather.score|default:'61' }}%;"></div>
+                        <div class="bar-marker" style="left: {{ weather.score|default:'61' }}%;"></div>
+                    </div>
+                    <div class="bar-footer">
+                        <span class="bar-status">{{ weather.status|default:"CAUTION" }}</span>
+                    </div>
+                </div>
+
+                <!-- Fear & Greed Bar -->
+                <div class="sentiment-bar-item">
+                    <div class="bar-header">
+                        <span class="bar-label">Fear & Greed Index</span>
+                        <span class="bar-value">{{ fg.value|default:"49" }}</span>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill fg-fill" style="width: {{ fg.value|default:'49' }}%;"></div>
+                        <div class="bar-marker" style="left: {{ fg.value|default:'49' }}%;"></div>
+                    </div>
+                    <div class="bar-footer">
+                        <span class="bar-status">{{ fg.label|default:"NEUTRAL" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Brief (Full Width) -->
+        <div class="bento-card span-12 ai-brief-card">
+            <div class="card-header" style="border-color: rgba(236, 72, 153, 0.3);">
+                <div class="ai-badge">
+                    <i class="bi bi-stars"></i>
+                </div>
+                <div class="card-title">AI Market Brief</div>
+            </div>
+            <div id="ai-box">
+                <div id="ai-load" style="padding: 40px 0; text-align: center;">
+                    <div class="spinner-border" style="color: #ec4899; width: 3rem; height: 3rem;"></div>
+                </div>
+                <div id="ai-text" style="display: none;">
+                    <div id="aiContentWrapper"></div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- Global Markets Section -->
+    <h2 class="section-title">Global Markets</h2>
+    <div class="market-grid">
+        <!-- US Markets -->
+        {% if macro_stats.US_Indices %}
+        <div class="market-item" style="--item-accent: #3b82f6;">
+            <div class="card-header">
+                <div class="card-icon" style="--icon-bg: #3b82f6; --icon-shadow: rgba(59, 130, 246, 0.5);">
+                    🇺🇸
+                </div>
+                <div class="card-title" style="font-size: 1.5rem;">United States</div>
+            </div>
+            <div class="market-list">
+                {% for item in macro_stats.US_Indices %}
+                <div class="market-row" onclick="openGlobalChartModal('{{ item.tk }}', '{{ item.title }}')">
+                    <div class="row-top">
+                        <span class="row-name">
+                            {% if item.tk == 'GSPC' %}📊{% elif item.tk == 'IXIC' %}💻{% elif item.tk == 'DJI' %}🏭{% elif item.tk == 'RUT' %}🏢{% elif item.tk == 'VIX' %}⚡{% endif %} {{ item.title }}
+                        </span>
+                        <span class="row-price">${{ item.price|floatformat:2 }}</span>
+                    </div>
+                    <div class="row-bottom">
+                        <span class="row-symbol">{{ item.tk }}</span>
+                        <span class="row-change {% if item.pct >= 0 %}up{% else %}down{% endif %}">
+                            {% if item.pct >= 0 %}+{% endif %}{{ item.pct|floatformat:2 }}%
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Global Indices -->
+        {% if macro_stats.Global %}
+        <div class="market-item" style="--item-accent: #10b981;">
+            <div class="card-header">
+                <div class="card-icon" style="--icon-bg: #10b981; --icon-shadow: rgba(16, 185, 129, 0.5);">
+                    🌍
+                </div>
+                <div class="card-title" style="font-size: 1.5rem;">Global Indices</div>
+            </div>
+            <div class="market-list">
+                {% for item in macro_stats.Global %}
+                <div class="market-row" onclick="openGlobalChartModal('{{ item.tk }}', '{{ item.title }}')">
+                    <div class="row-top">
+                        <span class="row-name">
+                            {% if 'Nikkei' in item.title or 'N225' in item.tk %}🗾{% elif 'Hang Seng' in item.title or 'HSI' in item.tk %}🏛️{% elif 'Stoxx' in item.title or 'STOXX' in item.tk %}🇪🇺{% elif 'Shanghai' in item.title or '000001.SS' in item.tk %}🐉{% elif 'KOSPI' in item.title or 'KS11' in item.tk %}🇰🇷{% else %}🌍{% endif %} {{ item.title }}
+                        </span>
+                        <span class="row-price">{{ item.price|floatformat:2 }}</span>
+                    </div>
+                    <div class="row-bottom">
+                        <span class="row-symbol">{{ item.tk }}</span>
+                        <span class="row-change {% if item.pct >= 0 %}up{% else %}down{% endif %}">
+                            {% if item.pct >= 0 %}+{% endif %}{{ item.pct|floatformat:2 }}%
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+                <!-- Add KOSPI if not in data -->
+                <div class="market-row" onclick="openGlobalChartModal('^KS11', 'KOSPI')">
+                    <div class="row-top">
+                        <span class="row-name">🇰🇷 KOSPI</span>
+                        <span class="row-price">2,500</span>
+                    </div>
+                    <div class="row-bottom">
+                        <span class="row-symbol">^KS11</span>
+                        <span class="row-change up">
+                            +0.50%
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Interest Rates -->
+        {% if macro_stats.Rates %}
+        <div class="market-item" style="--item-accent: #f59e0b;">
+            <div class="card-header">
+                <div class="card-icon" style="--icon-bg: #f59e0b; --icon-shadow: rgba(245, 158, 11, 0.5);">
+                    📈
+                </div>
+                <div class="card-title" style="font-size: 1.5rem;">Interest Rates</div>
+            </div>
+            <div class="market-list">
+                {% for item in macro_stats.Rates %}
+                <div class="market-row" onclick="openGlobalChartModal('{{ item.tk }}', '{{ item.title }}')">
+                    <div class="row-top">
+                        <span class="row-name">{{ item.title }}</span>
+                        <span class="row-price">{{ item.price|floatformat:3 }}%</span>
+                    </div>
+                    <div class="row-bottom">
+                        <span class="row-symbol">{{ item.tk }}</span>
+                        <span class="row-change {% if item.pct >= 0 %}up{% else %}down{% endif %}">
+                            {% if item.pct >= 0 %}+{% endif %}{{ item.pct|floatformat:2 }}%
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Currencies -->
+        {% if macro_stats.Currencies %}
+        <div class="market-item" style="--item-accent: #8b5cf6;">
+            <div class="card-header">
+                <div class="card-icon" style="--icon-bg: #8b5cf6; --icon-shadow: rgba(139, 92, 246, 0.5);">
+                    💱
+                </div>
+                <div class="card-title" style="font-size: 1.5rem;">Currencies</div>
+            </div>
+            <div class="market-list">
+                {% for item in macro_stats.Currencies %}
+                <div class="market-row" onclick="openGlobalChartModal('{{ item.tk }}', '{{ item.title }}')">
+                    <div class="row-top">
+                        <span class="row-name">{{ item.title }}</span>
+                        <span class="row-price">{{ item.price|floatformat:4 }}</span>
+                    </div>
+                    <div class="row-bottom">
+                        <span class="row-symbol">{{ item.tk }}</span>
+                        <span class="row-change {% if item.pct >= 0 %}up{% else %}down{% endif %}">
+                            {% if item.pct >= 0 %}+{% endif %}{{ item.pct|floatformat:2 }}%
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Commodities -->
+        {% if macro_stats.Commodities %}
+        <div class="market-item" style="--item-accent: #ec4899;">
+            <div class="card-header">
+                <div class="card-icon" style="--icon-bg: #ec4899; --icon-shadow: rgba(236, 72, 153, 0.5);">
+                    🛢️
+                </div>
+                <div class="card-title" style="font-size: 1.5rem;">Commodities</div>
+            </div>
+            <div class="market-list">
+                {% for item in macro_stats.Commodities %}
+                <div class="market-row" onclick="openGlobalChartModal('{{ item.tk }}', '{{ item.title }}')">
+                    <div class="row-top">
+                        <span class="row-name">
+                            {% if 'Gold' in item.title or 'GC=F' in item.tk %}🥇{% elif 'Silver' in item.title or 'SI=F' in item.tk %}🥈{% elif 'Copper' in item.title or 'HG=F' in item.tk %}🔶{% elif 'Crude' in item.title or 'CL=F' in item.tk %}🛢️{% else %}🌾{% endif %} {{ item.title }}
+                        </span>
+                        <span class="row-price">${{ item.price|floatformat:2 }}</span>
+                    </div>
+                    <div class="row-bottom">
+                        <span class="row-symbol">{{ item.tk }}</span>
+                        <span class="row-change {% if item.pct >= 0 %}up{% else %}down{% endif %}">
+                            {% if item.pct >= 0 %}+{% endif %}{{ item.pct|floatformat:2 }}%
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Crypto -->
+        {% if macro_stats.Crypto %}
+        <div class="market-item" style="--item-accent: #06b6d4;">
+            <div class="card-header">
+                <div class="card-icon" style="--icon-bg: #06b6d4; --icon-shadow: rgba(6, 182, 212, 0.5);">
+                    ₿
+                </div>
+                <div class="card-title" style="font-size: 1.5rem;">Cryptocurrency</div>
+            </div>
+            <div class="market-list">
+                {% for item in macro_stats.Crypto %}
+                <div class="market-row" onclick="openGlobalChartModal('{{ item.tk }}', '{{ item.title }}')">
+                    <div class="row-top">
+                        <span class="row-name">
+                            {% if 'Bitcoin' in item.title or 'BTC' in item.tk %}₿{% elif 'Ethereum' in item.title or 'ETH' in item.tk %}Ξ{% else %}🪙{% endif %} {{ item.title }}
+                        </span>
+                        <span class="row-price">${{ item.price|floatformat:2 }}</span>
+                    </div>
+                    <div class="row-bottom">
+                        <span class="row-symbol">{{ item.tk }}</span>
+                        <span class="row-change {% if item.pct >= 0 %}up{% else %}down{% endif %}">
+                            {% if item.pct >= 0 %}+{% endif %}{{ item.pct|floatformat:2 }}%
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// Load AI Brief
+document.addEventListener("DOMContentLoaded", function() {
+    fetch("{% url 'home:gemini_market_summary' %}")
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('ai-load').style.display = 'none';
+            const wrapper = document.getElementById('aiContentWrapper');
+            wrapper.innerHTML = html;
+            document.getElementById('ai-text').style.display = 'block';
+        })
+        .catch(err => {
+            console.error('AI Brief load error:', err);
+            document.getElementById('ai-load').innerHTML = '<p style="color: rgba(255,255,255,0.5);">Failed to load AI brief</p>';
+        });
+});
+    
+    // Sentiment Widget Tab Switching
+    document.querySelectorAll('.sentiment-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const gaugeType = this.dataset.gauge;
+            
+            // Update tabs
+            document.querySelectorAll('.sentiment-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Update panels
+            document.querySelectorAll('.gauge-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(`${gaugeType}-panel`).classList.add('active');
+        });
+    });
+</script>
+
+{% endblock %}

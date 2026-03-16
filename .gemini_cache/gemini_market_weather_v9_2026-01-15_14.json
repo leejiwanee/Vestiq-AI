@@ -1,0 +1,174 @@
+{
+  "en": {
+    "title": "Risk-On Vibes as Indices Climb, But Retail Woes Linger",
+    "summary": "Wall Street largely shrugged off lingering inflation concerns today, with major indices closing higher and small caps leading the charge. Energy took a hit as crude oil prices tumbled, while traditional retail grappled with fresh bankruptcy headlines, painting a complex picture.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6965.81 (+0.57%)",
+        "comment": "Broad market looking bright with steady gains."
+      },
+      {
+        "label": "Nasdaq Composite",
+        "value": "23629.91 (+0.67%)",
+        "comment": "Tech stays on its game, continuing its upward trajectory."
+      },
+      {
+        "label": "Russell 2000",
+        "value": "2685.19 (+1.27%)",
+        "comment": "Small caps are having a moment, leading the broader market today!"
+      },
+      {
+        "label": "Bitcoin",
+        "value": "95792.58 (-1.17%)",
+        "comment": "The crypto king takes a breather, dipping slightly after recent moves."
+      }
+    ],
+    "macro": {
+      "title": "Macro Vibes",
+      "points": [
+        "<b>Treasury Yields Tick Up</b>: The 5-year Treasury yield saw a notable increase, signaling some upward pressure on rates, yet the broader market remained largely unfazed by this movement.",
+        "<b>Oil Takes a Spill</b>: Crude oil prices dropped sharply by nearly 5%, possibly easing broader inflation fears for consumers but certainly hitting the energy sector hard today.",
+        "<b>Volatility Takes a Dive</b>: The VIX, often dubbed the market's fear gauge, decreased significantly, indicating a reduction in investor anxiety and an uptick in market confidence.",
+        "<b>Dollar Strengthens</b>: The US Dollar index saw a modest gain, potentially signaling safe-haven demand or a responsive move to the uptick in Treasury yields.",
+        "<b>Political Healthcare Blueprint</b>: Trump's unveiling of a healthcare plan outline injects a new layer of political discussion into a sector already grappling with ongoing Obamacare subsidy debates in Congress."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "Technology",
+        "change": "Up",
+        "comment": "Nasdaq's continued strength likely carried tech stocks higher, driving overall market gains."
+      },
+      {
+        "name": "Financials",
+        "change": "Up",
+        "comment": "Small-cap leadership often benefits regional banks and broader financials, riding the positive sentiment."
+      },
+      {
+        "name": "Industrials",
+        "change": "Up",
+        "comment": "Benefited from the overall positive market sentiment and the robust small-cap rally."
+      },
+      {
+        "name": "Energy",
+        "change": "Down",
+        "comment": "Crude oil's significant drop was a clear and present headwind, pushing energy stocks lower."
+      },
+      {
+        "name": "Consumer Staples",
+        "change": "Flat to Down",
+        "comment": "Often underperform in 'risk-on' environments as investors chase growth rather than defensive plays."
+      },
+      {
+        "name": "Healthcare",
+        "change": "Mixed",
+        "comment": "Amidst political uncertainty regarding new healthcare plans, the sector saw a mixed bag of performance."
+      }
+    ],
+    "themes": [
+      {
+        "name": "Traditional Retail Stress",
+        "change": "Negative",
+        "comment": "Saks' bankruptcy news and Amazon's reaction highlight the ongoing and intense challenges for brick-and-mortar retail."
+      },
+      {
+        "name": "Prediction Market Popularity",
+        "change": "Rising Interest",
+        "comment": "Reports suggest a growing boom in prediction markets, particularly capturing the interest of younger demographics."
+      },
+      {
+        "name": "Sports Content Value",
+        "change": "Increasing",
+        "comment": "NBCUniversal's strategic focus emphasizes the premium and enduring value of live sports content in the media landscape."
+      }
+    ]
+  },
+  "ko": {
+    "title": "지수 상승 속 위험 선호 심리 회복, 그러나 소매 부문은 여전히 침체",
+    "summary": "오늘 월스트리트는 인플레이션 우려를 대체로 털어내고 주요 지수가 상승 마감했으며, 소형주가 시장 상승을 이끌었습니다. 반면 국제 유가 급락으로 에너지 부문은 타격을 입었고, 전통 소매업계는 새로운 파산 소식에 씨름하며 복잡한 시장 상황을 그렸습니다.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6965.81 (+0.57%)",
+        "comment": "광범위한 시장이 꾸준한 상승세로 밝아 보입니다."
+      },
+      {
+        "label": "나스닥 종합",
+        "value": "23629.91 (+0.67%)",
+        "comment": "기술주는 여전히 건재하며 상승 궤도를 이어갑니다."
+      },
+      {
+        "label": "러셀 2000",
+        "value": "2685.19 (+1.27%)",
+        "comment": "소형주가 오늘 광범위한 시장을 이끌며 주목받고 있습니다!"
+      },
+      {
+        "label": "비트코인",
+        "value": "95792.58 (-1.17%)",
+        "comment": "암호화폐의 왕이 최근 움직임 이후 잠시 숨 고르기에 들어갔습니다."
+      }
+    ],
+    "macro": {
+      "title": "매크로 경제",
+      "points": [
+        "<b>국채 수익률 소폭 상승</b>: 5년 만기 국채 수익률이 눈에 띄게 상승하며 금리 인상 압력을 시사했지만, 광범위한 시장은 이러한 움직임에 크게 동요하지 않았습니다.",
+        "<b>유가 급락</b>: 국제 유가가 거의 5% 급락하며 소비자들의 광범위한 인플레이션 우려를 완화했을 수 있지만, 오늘 에너지 부문에는 분명한 타격을 주었습니다.",
+        "<b>변동성 지수 하락</b>: 시장의 공포 지수로 불리는 VIX 지수가 크게 하락하여 투자자 불안이 줄어들고 시장 신뢰가 높아졌음을 나타냈습니다.",
+        "<b>달러 강세</b>: 미국 달러 지수가 소폭 상승했으며, 이는 안전자산 선호 또는 국채 수익률 상승에 대한 반응일 수 있습니다.",
+        "<b>정치적 헬스케어 청사진</b>: 트럼프 대통령이 헬스케어 계획의 윤곽을 발표하면서 의회의 오바마케어 보조금 논쟁으로 이미 고심 중인 부문에 새로운 정치적 논의가 더해졌습니다."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "기술",
+        "change": "상승",
+        "comment": "나스닥의 지속적인 강세가 기술주를 더 높이 끌어올려 전반적인 시장 상승을 견인했을 가능성이 큽니다."
+      },
+      {
+        "name": "금융",
+        "change": "상승",
+        "comment": "소형주 주도 시장은 종종 지역 은행 및 광범위한 금융 부문에 긍정적으로 작용하며 긍정적인 심리를 탔습니다."
+      },
+      {
+        "name": "산업재",
+        "change": "상승",
+        "comment": "전반적인 긍정적 시장 심리와 강력한 소형주 랠리의 혜택을 받았습니다."
+      },
+      {
+        "name": "에너지",
+        "change": "하락",
+        "comment": "국제 유가의 상당한 하락이 분명하고 강력한 역풍으로 작용하여 에너지 주식을 하락시켰습니다."
+      },
+      {
+        "name": "필수 소비재",
+        "change": "횡보 또는 하락",
+        "comment": "'위험 선호' 환경에서는 투자자들이 방어적인 종목보다는 성장을 좇으면서 종종 실적이 부진합니다."
+      },
+      {
+        "name": "헬스케어",
+        "change": "혼조",
+        "comment": "새로운 헬스케어 계획에 대한 정치적 불확실성 속에서 해당 부문은 혼조세를 보였습니다."
+      }
+    ],
+    "themes": [
+      {
+        "name": "전통 소매업 스트레스",
+        "change": "부정적",
+        "comment": "삭스의 파산 소식과 아마존의 반응은 오프라인 소매업이 겪고 있는 지속적이고 심각한 도전을 부각합니다."
+      },
+      {
+        "name": "예측 시장 인기",
+        "change": "관심 증가",
+        "comment": "특히 젊은 층 사이에서 예측 시장 붐이 커지고 있다는 보도가 나오며 높은 관심을 보입니다."
+      },
+      {
+        "name": "스포츠 콘텐츠 가치",
+        "change": "증가",
+        "comment": "NBCUniversal의 전략적 초점은 미디어 환경에서 라이브 스포츠 콘텐츠의 프리미엄적이고 지속적인 가치를 강조합니다."
+      }
+    ]
+  },
+  "last_updated": "2026-01-15 02:17 PM EST",
+  "last_updated_ts": "2026-01-15T14:17:00.989909-05:00"
+}

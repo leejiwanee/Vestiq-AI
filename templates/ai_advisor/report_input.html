@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "AI Stock Report" %} - Vestiq{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9 col-md-10">
+            
+            <!-- Main Card -->
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <!-- Decorative Header Background -->
+                <div class="p-4 text-center bg-primary bg-gradient text-white position-relative" style="min-height: 140px;">
+                    <div class="position-absolute top-50 start-50 translate-middle">
+                        <i class="bi bi-robot" style="font-size: 4rem; opacity: 0.9;"></i>
+                    </div>
+                    <div class="position-absolute bottom-0 start-0 w-100 overflow-hidden" style="height: 40px;">
+                         <!-- Optional: Wave SVG or simple curve could go here for extra polish -->
+                    </div>
+                </div>
+
+                <div class="card-body p-5 text-center bg-white">
+                    
+                    <h2 class="fw-bold mb-2 display-6">{% trans "AI Stock Analyst" %}</h2>
+                    <p class="text-muted mb-4 fs-5">
+                        {% trans "Get institutional-grade analysis for any stock in seconds." %}
+                    </p>
+
+                    <form id="reportForm" class="position-relative mb-4">
+                        <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden border">
+                            <span class="input-group-text bg-white border-0 ps-4 text-muted">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" id="symbolInput" 
+                                   class="form-control border-0 ps-2" 
+                                   placeholder="{% trans 'Enter Ticker (e.g. AAPL)' %}" 
+                                   style="text-transform: uppercase; font-weight: 600; letter-spacing: 1px;" 
+                                   required>
+                            <button type="submit" class="btn btn-primary px-4 fw-bold">
+                                {% trans "Generate Report" %}
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Popular Tickers -->
+                    <div class="d-flex justify-content-center align-items-center gap-2 flex-wrap">
+                        <span class="text-muted small fw-bold text-uppercase me-1">{% trans "Trending:" %}</span>
+                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 ticker-chip" onclick="setTicker('NVDA')">NVDA</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 ticker-chip" onclick="setTicker('TSLA')">TSLA</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 ticker-chip" onclick="setTicker('PLTR')">PLTR</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 ticker-chip" onclick="setTicker('AAPL')">AAPL</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 ticker-chip" onclick="setTicker('AMD')">AMD</button>
+                    </div>
+                </div>
+                
+                <!-- Footer / Trust Indicators -->
+                <div class="card-footer bg-light border-0 py-3 text-center">
+                    <div class="row g-0 text-muted small">
+                        <div class="col">
+                            <i class="bi bi-lightning-charge-fill text-warning me-1"></i> {% trans "Real-time Data" %}
+                        </div>
+                        <div class="col border-start">
+                            <i class="bi bi-file-earmark-text-fill text-secondary me-1"></i> {% trans "Comprehensive Report" %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Disclaimer -->
+            <p class="text-center text-muted mt-4 small opacity-75">
+                {% trans "* AI analysis is based on historical data and probabilistic models. Not investment advice." %}
+            </p>
+
+        </div>
+    </div>
+</div>
+
+<script>
+function setTicker(symbol) {
+    document.getElementById('symbolInput').value = symbol;
+    // Optional: Auto submit? Maybe better to let user click to confirm
+    // document.getElementById('reportForm').dispatchEvent(new Event('submit'));
+}
+
+document.getElementById('reportForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const symbol = document.getElementById('symbolInput').value.trim().toUpperCase();
+    if (symbol) {
+        // Show loading state on button
+        const btn = this.querySelector('button[type="submit"]');
+        // const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>{% trans "Processing..." %}';
+        
+        window.location.href = "{% url 'ai_advisor:report_result' 'SYMBOL' %}".replace('SYMBOL', symbol);
+    }
+});
+</script>
+
+<style>
+    .ticker-chip:hover {
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+        color: #0d6efd;
+        transform: translateY(-1px);
+        transition: all 0.2s;
+    }
+    .form-control:focus {
+        box-shadow: none;
+    }
+</style>
+{% endblock %}

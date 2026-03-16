@@ -1,0 +1,172 @@
+{
+  "en": {
+    "title": "Market Momentum Builds, Fear Subsides, Banks Shrug Off Political Noise",
+    "summary": "Global equities marched higher today, with U.S. indices seeing broad gains and small caps leading the charge, as market volatility plummeted. Investors largely dismissed political rhetoric surrounding credit card interest rate caps, while strong tech and digital advertising stories added to the optimistic mood.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6875.62 (+1.16%)",
+        "comment": "The broad market benchmark notched solid gains, riding the wave of optimism."
+      },
+      {
+        "label": "Nasdaq Composite",
+        "value": "23224.82 (+1.18%)",
+        "comment": "Tech and growth stocks continued their upward trajectory, fueling the rally."
+      },
+      {
+        "label": "Small Caps (Russell 2000)",
+        "value": "2698.17 (+2.00%)",
+        "comment": "Smaller companies outshined, signaling broad market confidence and risk appetite."
+      },
+      {
+        "label": "Bitcoin",
+        "value": "90054.84 (+1.97%)",
+        "comment": "The crypto king continues its impressive run, adding to the risk-on sentiment."
+      }
+    ],
+    "macro": {
+      "title": "Macro Vibes",
+      "points": [
+        "<b>Bond Yields Take a Breather</b>: U.S. Treasury yields across the board, notably the 10-year (^TNX) and 30-year (^TYX), saw declines, easing borrowing cost concerns and likely supporting the broader equity rally.",
+        "<b>Banks Shrug Off Rate Cap Talk</b>: Despite former President Trump's call for a 10% credit card interest rate cap and Jamie Dimon's related commentary, bank stocks surprisingly rose, suggesting investors may be dismissing the immediate legislative threat or finding other positives.",
+        "<b>Housing Market Chills Out</b>: December's pending home sales took a sharp dive, signaling a potential slowdown in the housing sector and possibly dampening future economic growth expectations for 2026.",
+        "<b>Volatility Vanishes</b>: The VIX, often called the market's fear gauge, plummeted over 15%, indicating a significant reduction in investor anxiety and contributing to the day's robust equity performance."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "Financials",
+        "change": "Up (inferred)",
+        "comment": "Bank stocks showed resilience, rising despite proposed credit card rate caps."
+      },
+      {
+        "name": "Communication Services",
+        "change": "Up (inferred)",
+        "comment": "Boosted by positive news regarding Netflix's advertising strategy paying off."
+      },
+      {
+        "name": "Information Technology",
+        "change": "Up (inferred)",
+        "comment": "Strong Nasdaq performance and crypto gains suggest a healthy tech environment."
+      },
+      {
+        "name": "Real Estate",
+        "change": "Down (inferred)",
+        "comment": "Pending home sales drop suggests headwinds for the sector. (Inferred relative underperformance)"
+      },
+      {
+        "name": "Utilities",
+        "change": "Down (inferred)",
+        "comment": "Often underperform in a risk-on environment, showing relative weakness. (Inferred relative underperformance)"
+      },
+      {
+        "name": "Consumer Staples",
+        "change": "Down (inferred)",
+        "comment": "Defensive plays typically lag in broad market rallies. (Inferred relative underperformance)"
+      }
+    ],
+    "themes": [
+      {
+        "name": "Risk-On Resurgence",
+        "change": "Strong",
+        "comment": "Broad market rally, small-cap outperformance, and significant VIX drop signal increased investor confidence."
+      },
+      {
+        "name": "Banking Sector's Defiance",
+        "change": "Resilient",
+        "comment": "Financials rose despite political noise around credit card interest rate caps, showcasing underlying strength."
+      },
+      {
+        "name": "Digital Advertising Momentum",
+        "change": "Positive",
+        "comment": "Netflix's success with its ad strategy highlights a potential tailwind for digital ad spending."
+      }
+    ]
+  },
+  "ko": {
+    "title": "시장 모멘텀 구축, 불안감 해소, 은행들은 정치적 잡음에 개의치 않아",
+    "summary": "오늘 글로벌 증시는 미국 지수들이 광범위하게 상승하고 소형주들이 강세를 이끌면서 전반적으로 상승세를 보였으며, 시장 변동성은 급락했습니다. 투자자들은 신용카드 금리 상한선 관련 정치적 수사를 대체로 무시했으며, 강력한 기술주와 디지털 광고 관련 소식이 낙관적인 분위기를 더했습니다.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6875.62 (+1.16%)",
+        "comment": "광범위한 시장 벤치마크가 견조한 상승세를 기록하며 낙관론에 힘입었습니다."
+      },
+      {
+        "label": "나스닥 종합지수",
+        "value": "23224.82 (+1.18%)",
+        "comment": "기술주와 성장주들이 계속해서 상승 궤도를 그리며 랠리를 이끌었습니다."
+      },
+      {
+        "label": "소형주 (러셀 2000)",
+        "value": "2698.17 (+2.00%)",
+        "comment": "소규모 기업들이 뛰어난 성과를 보이며 광범위한 시장 신뢰와 위험 선호 심리를 나타냈습니다."
+      },
+      {
+        "label": "비트코인",
+        "value": "90054.84 (+1.97%)",
+        "comment": "암호화폐 왕좌는 인상적인 상승세를 이어가며 위험 선호 심리에 힘을 보탰습니다."
+      }
+    ],
+    "macro": {
+      "title": "매크로 경제",
+      "points": [
+        "<b>채권 수익률 한숨 돌리다</b>: 10년물(^TNX) 및 30년물(^TYX) 등 미국 국채 수익률이 전반적으로 하락하여 차입 비용 우려를 완화하고 광범위한 주식 랠리를 지지했습니다.",
+        "<b>은행주는 금리 상한선 논의에 개의치 않아</b>: 트럼프 전 대통령의 신용카드 금리 10% 상한선 제안과 제이미 다이먼의 관련 발언에도 불구하고 은행주가 의외로 상승하여, 투자자들이 즉각적인 입법 위협을 무시하거나 다른 긍정적인 요소를 찾고 있을 수 있음을 시사했습니다.",
+        "<b>주택 시장 냉각</b>: 12월 잠정 주택 판매가 급격히 감소하여 주택 부문의 잠재적 둔화를 시사하고 2026년 경제 전망을 약화시킬 수 있습니다.",
+        "<b>변동성 사라지다</b>: 시장의 공포 지수로 불리는 VIX가 15% 이상 급락하여 투자자들의 불안감이 크게 줄어들고 오늘의 견조한 주식 성과에 기여했음을 나타냈습니다."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "금융",
+        "change": "상승 (추론)",
+        "comment": "은행주가 제안된 신용카드 금리 상한선에도 불구하고 회복력을 보여주며 상승했습니다."
+      },
+      {
+        "name": "통신 서비스",
+        "change": "상승 (추론)",
+        "comment": "넷플릭스의 광고 전략 성공에 대한 긍정적인 소식으로 힘을 얻었습니다."
+      },
+      {
+        "name": "정보 기술",
+        "change": "상승 (추론)",
+        "comment": "견조한 나스닥 실적과 암호화폐 상승은 건강한 기술 환경을 시사합니다."
+      },
+      {
+        "name": "부동산",
+        "change": "하락 (추론)",
+        "comment": "잠정 주택 판매 감소는 해당 부문의 역풍을 시사합니다. (상대적 저조 추론)"
+      },
+      {
+        "name": "유틸리티",
+        "change": "하락 (추론)",
+        "comment": "위험 선호 환경에서 종종 저조한 실적을 보이며 상대적 약세를 나타냅니다. (상대적 저조 추론)"
+      },
+      {
+        "name": "필수 소비재",
+        "change": "하락 (추론)",
+        "comment": "방어적인 종목들은 일반적으로 광범위한 시장 랠리에서 뒤처집니다. (상대적 저조 추론)"
+      }
+    ],
+    "themes": [
+      {
+        "name": "위험 선호 심리 부활",
+        "change": "강세",
+        "comment": "광범위한 시장 랠리, 소형주 강세, 상당한 VIX 하락은 투자자 신뢰 증가를 나타냅니다."
+      },
+      {
+        "name": "은행 부문의 저항력",
+        "change": "회복력 있는",
+        "comment": "신용카드 금리 상한선에 대한 정치적 잡음에도 불구하고 금융주가 상승하며 근본적인 강세를 보여주었습니다."
+      },
+      {
+        "name": "디지털 광고 모멘텀",
+        "change": "긍정적",
+        "comment": "넷플릭스의 광고 전략 성공은 디지털 광고 지출의 잠재적 순풍을 강조합니다."
+      }
+    ]
+  },
+  "last_updated": "2026-01-21 10:14 PM EST",
+  "last_updated_ts": "2026-01-21T22:14:17.702069-05:00"
+}

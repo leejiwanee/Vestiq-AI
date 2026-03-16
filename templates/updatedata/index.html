@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Stock Data{% endblock %}
+
+{% block content %}
+<h3 class="mb-3">Universe (S&P500 · NASDAQ100 · Russell2000)</h3>
+
+{% if messages %}
+  {% for m in messages %}
+    <div class="alert alert-{{ m.tags }} py-2 mb-3">{{ m }}</div>
+  {% endfor %}
+{% endif %}
+
+<div class="d-flex gap-2 mb-3">
+  <form method="post" action="{% url 'updatetop200:update_union_all' %}">
+    {% csrf_token %}
+    <button class="btn btn-primary">
+      <i class="bi bi-cloud-arrow-up me-1"></i> Update Universe
+    </button>
+  </form>
+
+    <button class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-clockwise me-1"></i> Refresh Russell 2000 (Excel)
+    </button>
+  </form>
+
+  <form method="post" action="{% url 'updatedata:refresh_scha' %}">
+    {% csrf_token %}
+    <button class="btn btn-outline-info">
+      <i class="bi bi-arrow-clockwise me-1"></i> Refresh SCHA (CSV)
+    </button>
+  </form>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col"> 
+    <div class="card h-100 shadow-sm border-0">
+      <div class="card-body text-center">
+        <div class="text-muted small mb-1">Total Tickers</div>
+        <div class="h4 mb-0">{{ count }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card h-100 shadow-sm border-0">
+      <div class="card-body text-center">
+        <div class="text-muted small mb-1">S&P 500</div>
+        <div class="h4 mb-0 text-primary">{{ by_market.sp500|default:"0" }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card h-100 shadow-sm border-0">
+      <div class="card-body text-center">
+        <div class="text-muted small mb-1">Nasdaq 100</div>
+        <div class="h4 mb-0 text-info">{{ by_market.nasdaq100|default:"0" }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card h-100 shadow-sm border-0">
+      <div class="card-body text-center">
+        <div class="text-muted small mb-1">Russell 1000</div>
+        <div class="h4 mb-0">{{ by_market.russell1000|default:"0" }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if latest %}
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-light fw-semibold">
+      <i class="bi bi-list-check me-1"></i> Latest Updates
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover table-striped mb-0 align-middle custom-table">
+          <thead class="table-light">
+            <tr class="text-muted small">
+              <th>Symbol</th>
+              <th>Market</th>
+              <th>Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for t in latest %}
+              <tr>
+                <td class="fw-semibold">{{ t.symbol }}</td>
+                <td>
+                  {% if "sp500" in t.market %}
+                    <span class="badge bg-primary">SP500</span>
+                  {% elif "nasdaq100" in t.market %}
+                    <span class="badge bg-info text-dark">NASDAQ100</span>
+                  {% elif "russell1000" in t.market %}
+                    <span class="badge bg-secondary">RUSSELL 1000</span>
+                  {% else %}
+                    <span class="text-muted small">-</span>
+                  {% endif %}
+                </td>
+                <td class="text-muted small">{{ t.created_at|date:"Y-m-d H:i" }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+<style>
+  /* Style 유지 */
+  .custom-table thead th {
+    background: #f9fafb;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+  .custom-table tbody tr:hover {
+    background: rgba(0, 123, 255, 0.06);
+  }
+  .custom-table td, .custom-table th {
+    padding: 0.6rem 0.9rem;
+    vertical-align: middle;
+  }
+  .card-header {
+    background: linear-gradient(90deg, #f2f6ff 0%, #e8ecf7 100%);
+    border-bottom: 1px solid rgba(0,0,0,.05);
+  }
+</style>
+{% endblock %}

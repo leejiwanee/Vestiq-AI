@@ -1,0 +1,152 @@
+{
+  "en": {
+    "title": "Market Mood Swings: Tech Takes a Hit, VIX Jumps, and Homeowners Feel the Pinch",
+    "summary": "Wall Street wrapped up a mixed but largely down day, with major indices retreating as volatility surged. While AI continues to grab headlines with impressive prospects, broader economic concerns like weakening home equity seem to be fueling investor jitters, sending crypto lower and safe-haven gold higher.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6826.79 (-1.08%)",
+        "comment": "Taking a breather after recent highs."
+      },
+      {
+        "label": "Nasdaq",
+        "value": "23203.01 (-1.66%)",
+        "comment": "Tech-heavy index feeling the pinch from risk-off sentiment."
+      },
+      {
+        "label": "Russell 2000",
+        "value": "2562.13 (-1.10%)",
+        "comment": "Small caps follow the broader market down."
+      },
+      {
+        "label": "Bitcoin",
+        "value": "89997.52 (-2.72%)",
+        "comment": "Crypto's wild ride takes a dip amidst market uncertainty."
+      }
+    ],
+    "macro": {
+      "title": "Macro Vibes",
+      "points": [
+        "<b>Market Uncertainty & Volatility Soars</b>: The VIX, often called the 'fear gauge,' spiked over 10% today. This surge in volatility comes amidst news that homeowners are losing thousands in equity due to weakening prices, signaling potential erosion of consumer wealth and broader economic softening, which tends to make investors nervous.",
+        "<b>Bond Yields Edge Upwards</b>: Key US Treasury yields, including the benchmark 10-year and 30-year, saw increases. Rising bond yields suggest tighter financial conditions, which can be a headwind for growth stocks and overall market valuations.",
+        "<b>Cryptocurrency Correction</b>: Both Bitcoin and Ethereum experienced notable declines. This often indicates a 'risk-off' sentiment, as speculative assets are among the first to be sold when market uncertainty rises.",
+        "<b>Dollar Holds Firm</b>: The US Dollar Index showed a slight uptick. In times of global uncertainty, the dollar often acts as a safe-haven asset, attracting demand."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "Precious Metals",
+        "change": "Up",
+        "comment": "Gold's strong performance points to a flight to safety amidst broader market weakness."
+      },
+      {
+        "name": "Technology",
+        "change": "Down",
+        "comment": "Nasdaq's decline and Rivian's capital concerns weighed on the sector."
+      },
+      {
+        "name": "Consumer Discretionary",
+        "change": "Down",
+        "comment": "Lululemon's struggles and weakening home equity suggest headwinds for consumer spending."
+      },
+      {
+        "name": "Real Estate",
+        "change": "Down",
+        "comment": "Weakening home prices indicate pressure on this interest-rate sensitive sector."
+      }
+    ],
+    "themes": [
+      {
+        "name": "Artificial Intelligence",
+        "change": "Mixed",
+        "comment": "Still a hot topic with strong future potential (Rivian, holiday sales) despite broader tech weakness."
+      },
+      {
+        "name": "Defensive Assets",
+        "change": "Up",
+        "comment": "Gold's rise highlights investor demand for safety amidst uncertainty."
+      },
+      {
+        "name": "Consumer Health & Wellness",
+        "change": "Emerging",
+        "comment": "The 'fiber as the next protein' trend shows evolving consumer preferences in groceries."
+      }
+    ]
+  },
+  "ko": {
+    "title": "시장 분위기 급변: 기술주 하락, 변동성 급증, 주택 소유주 시름",
+    "summary": "월스트리트는 주요 지수들이 하락하며 혼조세를 보였고, 변동성이 크게 치솟았습니다. AI는 여전히 헤드라인을 장식하며 인상적인 전망을 제시하고 있지만, 주택 가치 하락과 같은 광범위한 경제적 우려가 투자자들의 불안을 부추기며 암호화폐는 하락하고 안전자산인 금은 상승했습니다.",
+    "snapshot": [
+      {
+        "label": "S&P 500 지수",
+        "value": "6826.79 (-1.08%)",
+        "comment": "최근 상승세 이후 숨 고르기."
+      },
+      {
+        "label": "나스닥 지수",
+        "value": "23203.01 (-1.66%)",
+        "comment": "위험 회피 심리로 기술주 중심 지수 하락."
+      },
+      {
+        "label": "러셀 2000 지수",
+        "value": "2562.13 (-1.10%)",
+        "comment": "소형주 또한 시장 전반의 하락세에 동참."
+      },
+      {
+        "label": "비트코인",
+        "value": "89997.52 (-2.72%)",
+        "comment": "시장 불확실성 속 암호화폐의 격렬한 변동성, 하락세."
+      }
+    ],
+    "macro": {
+      "title": "매크로 경제",
+      "points": [
+        "<b>시장 불확실성 및 변동성 급증</b>: '공포 지수'로 불리는 VIX가 오늘 10% 이상 급등했습니다. 이러한 변동성 증가는 주택 가격 약화로 인해 주택 소유주들이 수천 달러의 자산 가치를 잃고 있다는 소식과 맞물려 나타났습니다. 이는 잠재적인 소비자 부의 침식과 전반적인 경제 둔화를 시사하며, 투자자들을 불안하게 만드는 요인으로 작용했습니다.",
+        "<b>채권 수익률 상승</b>: 벤치마크 10년물 및 30년물을 포함한 주요 미국 국채 수익률이 상승했습니다. 채권 수익률 상승은 금융 환경이 긴축되고 있음을 시사하며, 이는 성장주와 전반적인 시장 가치 평가에 부담으로 작용할 수 있습니다.",
+        "<b>암호화폐 조정</b>: 비트코인과 이더리움 모두 눈에 띄는 하락을 경험했습니다. 이는 시장 불확실성이 증가할 때 투기성 자산이 가장 먼저 매도되는 경향이 있어, 전반적인 '위험 회피' 심리를 나타내는 경우가 많습니다.",
+        "<b>달러 강세 유지</b>: 미국 달러 지수는 소폭 상승했습니다. 글로벌 불확실성 시기에 달러는 종종 안전자산 역할을 하며 수요를 끌어들입니다."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "귀금속",
+        "change": "상승",
+        "comment": "금의 강세는 광범위한 시장 약세 속에서 안전자산 선호 심리를 보여줍니다."
+      },
+      {
+        "name": "기술주",
+        "change": "하락",
+        "comment": "나스닥 하락과 리비안의 자본 우려가 해당 부문에 부담을 주었습니다."
+      },
+      {
+        "name": "경기소비재",
+        "change": "하락",
+        "comment": "룰루레몬의 어려움과 주택 자산 가치 약화는 소비자 지출의 역풍을 시사합니다."
+      },
+      {
+        "name": "부동산",
+        "change": "하락",
+        "comment": "주택 가격 약화는 이자율에 민감한 이 부문에 대한 압력을 나타냅니다."
+      }
+    ],
+    "themes": [
+      {
+        "name": "인공지능",
+        "change": "혼조",
+        "comment": "광범위한 기술주 약세에도 불구하고 여전히 강력한 미래 잠재력을 가진 뜨거운 주제입니다 (리비안, 연말 쇼핑 매출)."
+      },
+      {
+        "name": "방어적 자산",
+        "change": "상승",
+        "comment": "금 가격 상승은 불확실성 속에서 안전에 대한 투자자 수요를 강조합니다."
+      },
+      {
+        "name": "소비재 건강 및 웰니스",
+        "change": "부상 중",
+        "comment": "'다음 단백질'로서 섬유질에 대한 관심은 식료품 분야에서 진화하는 소비자 선호를 보여줍니다."
+      }
+    ]
+  },
+  "last_updated": "2025-12-12 12:34 PM EST",
+  "last_updated_ts": "2025-12-12T12:34:03.670415-05:00"
+}

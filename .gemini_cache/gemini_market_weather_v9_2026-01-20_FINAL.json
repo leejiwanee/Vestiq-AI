@@ -1,0 +1,170 @@
+{
+  "en": {
+    "title": "Yields Jump, Stocks Stumble: A Volatile Turn for Markets",
+    "summary": "US equities took a dive today, dragging global markets down amidst rising bond yields and a notable surge in market volatility. Investors seem to be seeking safe havens as precious metals shine brightly while cryptocurrencies take a significant hit, signaling broad uncertainty.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6796.86 (-2.06%)",
+        "comment": "A significant tumble, reflecting broad market anxiety."
+      },
+      {
+        "label": "Nasdaq Composite",
+        "value": "22954.32 (-2.39%)",
+        "comment": "Tech heavyweights feeling the pinch, leading the downside."
+      },
+      {
+        "label": "Russell 2000",
+        "value": "2645.36 (-1.21%)",
+        "comment": "Small caps also catching a chill, though less severe than large tech."
+      },
+      {
+        "label": "Bitcoin",
+        "value": "89185.88 (-3.64%)",
+        "comment": "The crypto king sees a sharp correction amidst the risk-off mood."
+      }
+    ],
+    "macro": {
+      "title": "Macro Vibes",
+      "points": [
+        "<b>Rising Bond Yields</b>: US Treasury yields across the curve jumped today, with the 10-year (TNX) up 1.51% and the 30-year (TYX) up 1.65%. This typically makes equities less attractive and can signal concerns about inflation or tighter monetary policy ahead, putting pressure on growth sectors.",
+        "<b>Volatility Spike</b>: The VIX, often called the 'fear gauge,' surged by a whopping 26.67% to 20.09. Volatility has increased amidst general market uncertainty, as there are no specific macroeconomic news headlines provided that would directly explain such a sharp rise, despite positive individual company news from Netflix and United Airlines.",
+        "<b>Precious Metals Rally</b>: Gold (GC) and Silver (SI) saw significant gains, up 5.25% and 6.69% respectively. This flight to safe-haven assets suggests growing investor caution and potential hedging against broader market instability or inflation concerns."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "Materials",
+        "change": "Up (Inferred)",
+        "comment": "Buoyed by strong performance in gold, silver, and copper prices."
+      },
+      {
+        "name": "Energy",
+        "change": "Up (Inferred)",
+        "comment": "Crude oil's modest rise likely provided some tailwind."
+      },
+      {
+        "name": "Utilities",
+        "change": "Less Down (Inferred)",
+        "comment": "Often considered defensive, potentially attracting investors seeking stability in a downturn."
+      },
+      {
+        "name": "Technology",
+        "change": "Down (Inferred)",
+        "comment": "Hit hard, as evidenced by the Nasdaq's significant drop and cryptocurrency weakness."
+      },
+      {
+        "name": "Communication Services",
+        "change": "Down (Inferred)",
+        "comment": "Likely dragged down by broader tech weakness despite Netflix's earnings beat."
+      },
+      {
+        "name": "Consumer Discretionary",
+        "change": "Down (Inferred)",
+        "comment": "Typically vulnerable during periods of market uncertainty and rising rates."
+      }
+    ],
+    "themes": [
+      {
+        "name": "Flight to Safety",
+        "change": "Strong",
+        "comment": "Evident in the surge of precious metals and rising bond yields."
+      },
+      {
+        "name": "Tech/Growth Sell-off",
+        "change": "Pronounced",
+        "comment": "Nasdaq and cryptocurrencies bore the brunt of risk aversion."
+      },
+      {
+        "name": "Rising Volatility",
+        "change": "Significant",
+        "comment": "The VIX spike points to growing investor fear and market choppiness."
+      }
+    ]
+  },
+  "ko": {
+    "title": "수익률 급등, 주식 시장 휘청: 변동성 장세 돌입",
+    "summary": "오늘 미국 증시는 채권 수익률 상승과 시장 변동성 급등 속에 하락세를 면치 못하며 글로벌 시장 전반에 찬물을 끼얹었습니다. 투자자들은 안전 자산으로 피신하는 듯하며, 귀금속은 빛나고 암호화폐는 큰 폭으로 하락했습니다.",
+    "snapshot": [
+      {
+        "label": "S&P 500",
+        "value": "6796.86 (-2.06%)",
+        "comment": "상당한 하락세를 보이며 광범위한 시장 불안감을 반영합니다."
+      },
+      {
+        "label": "나스닥 종합",
+        "value": "22954.32 (-2.39%)",
+        "comment": "기술주 대형주들이 고통받으며 하락세를 주도했습니다."
+      },
+      {
+        "label": "러셀 2000",
+        "value": "2645.36 (-1.21%)",
+        "comment": "중소형주 역시 한파를 맞았지만, 대형 기술주보다는 덜 심각했습니다."
+      },
+      {
+        "label": "비트코인",
+        "value": "89185.88 (-3.64%)",
+        "comment": "위험 회피 분위기 속에서 암호화폐의 왕도 급격한 조정을 겪었습니다."
+      }
+    ],
+    "macro": {
+      "title": "매크로 경제",
+      "points": [
+        "<b>채권 수익률 급등</b>: 오늘 미국 국채 수익률이 전 구간에 걸쳐 상승했습니다. 10년물(TNX)은 1.51%, 30년물(TYX)은 1.65% 상승하며 주식 시장의 매력을 떨어뜨리고 인플레이션 또는 통화 긴축에 대한 우려를 시사하며 성장주에 압력을 가했습니다.",
+        "<b>변동성 폭증</b>: '공포 지수'로 불리는 VIX 지수가 무려 26.67%나 급등하여 20.09를 기록했습니다. 넷플릭스와 유나이티드 항공의 긍정적인 개별 기업 뉴스에도 불구하고, 이러한 급격한 상승을 직접적으로 설명할 거시 경제 관련 뉴스가 제공되지 않아 전반적인 시장 불확실성 속에서 변동성이 증가했습니다.",
+        "<b>귀금속 랠리</b>: 금(GC)과 은(SI)은 각각 5.25%, 6.69% 급등하며 강세를 보였습니다. 이러한 안전 자산으로의 도피는 투자자들의 신중함과 광범위한 시장 불안정성 또는 인플레이션 우려에 대한 헤징 심리를 반영합니다."
+      ]
+    },
+    "sectors": [
+      {
+        "name": "소재",
+        "change": "상승 (추정)",
+        "comment": "금, 은, 구리 가격의 강한 상승세에 힘입어."
+      },
+      {
+        "name": "에너지",
+        "change": "상승 (추정)",
+        "comment": "원유의 완만한 상승세가 일부 뒷받침했을 가능성."
+      },
+      {
+        "name": "유틸리티",
+        "change": "하락폭 적음 (추정)",
+        "comment": "일반적으로 방어적인 성격을 띠며, 하락장에서 안정성을 찾는 투자자들을 끌어들였을 수 있습니다."
+      },
+      {
+        "name": "기술",
+        "change": "하락 (추정)",
+        "comment": "나스닥의 큰 폭 하락과 암호화폐 약세로 볼 때 큰 타격을 입었습니다."
+      },
+      {
+        "name": "커뮤니케이션 서비스",
+        "change": "하락 (추정)",
+        "comment": "넷플릭스의 실적 호조에도 불구하고 광범위한 기술주 약세에 끌려 내려갔을 가능성이 높습니다."
+      },
+      {
+        "name": "경기소비재",
+        "change": "하락 (추정)",
+        "comment": "시장 불확실성과 금리 상승기에 일반적으로 취약합니다."
+      }
+    ],
+    "themes": [
+      {
+        "name": "안전 자산 선호",
+        "change": "강세",
+        "comment": "귀금속의 급등과 채권 수익률 상승에서 명확히 드러납니다."
+      },
+      {
+        "name": "기술/성장주 매도세",
+        "change": "두드러짐",
+        "comment": "나스닥과 암호화폐가 위험 회피의 직격탄을 맞았습니다."
+      },
+      {
+        "name": "변동성 확대",
+        "change": "상당함",
+        "comment": "VIX 지수 급등은 투자자들의 공포와 시장의 불안정성 증가를 나타냅니다."
+      }
+    ]
+  },
+  "last_updated": "2026-01-20 09:24 PM EST",
+  "last_updated_ts": "2026-01-20T21:24:12.493236-05:00"
+}

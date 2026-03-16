@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load i18n %}
+
+{% block title %}{% trans "Correlation Matrix" %}{% endblock %}
+
+{% block content %}
+<style>
+    body { background-color: #f8f9fa; }
+    .page-header { background: white; border-bottom: 1px solid #e5e7eb; padding: 24px 0; margin-bottom: 24px; }
+    .heatmap-container { position: relative; height: 500px; width: 100%; background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); }
+</style>
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="fw-bold mb-1 text-dark">🔗 {% trans "Correlation Matrix" %}</h3>
+                <p class="text-muted mb-0 small">{% trans "Analyze 6-month correlation between assets (-1.0 to +1.0)" %}</p>
+            </div>
+        </div>
+        <form class="mt-3" method="GET">
+            <div class="input-group">
+                <span class="input-group-text bg-white">{% trans "Tickers" %}</span>
+                <input type="text" class="form-control" name="tickers" placeholder="AAPL, MSFT, TSLA..." value="{{ tickers_str }}">
+                <button class="btn btn-primary" type="submit">{% trans "Analyze" %}</button>
+            </div>
+            <div class="form-text">{% trans "Enter up to 10 tickers separated by commas." %}</div>
+        </form>
+    </div>
+</div>
+
+<div class="container pb-5">
+    {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    {% if heatmap_data %}
+    <div class="heatmap-container mb-4">
+        <canvas id="correlationChart"></canvas>
+    </div>
+    
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title">{% trans "How to read this chart" %}</h5>
+            <ul class="mb-0">
+                <li><strong class="text-danger">{% trans "Red (+1.0)" %}</strong>: {% trans "Perfect positive correlation. Assets move together." %}</li>
+                <li><strong class="text-primary">{% trans "Blue (-1.0)" %}</strong>: {% trans "Perfect negative correlation. Assets move in opposite directions (Hedge)." %}</li>
+                <li><strong class="text-muted">{% trans "Grey (0.0)" %}</strong>: {% trans "No correlation. Assets move independently." %}</li>
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@1.1.1/dist/chartjs-chart-matrix.min.js"></script>
+<script>
+    const ctx = document.getElementById('correlationChart');
+    if (ctx) {
+        const labels = JSON.parse('{{ labels|safe }}');
+        const rawData = JSON.parse('{{ heatmap_data|safe }}');
+        
+        // Chart.js Matrix expects data in {x, y, v} format where x and y are indices or values matching scales
+        // We will use category scales, so x and y should be the ticker names
+        
+        // Color function
+        function getColor(value) {
+            // -1 (Blue) -> 0 (Grey) -> 1 (Red)
+            if (value === null) return 'rgba(200,200,200,0.3)';
+            
+            if (value >= 0) {
+                // Red intensity
+                const alpha = 0.2 + (value * 0.8);
+                return `rgba(239, 68, 68, ${alpha})`;
+            } else {
+                // Blue intensity
+                const alpha = 0.2 + (Math.abs(value) * 0.8);
+                return `rgba(59, 130, 246, ${alpha})`;
+            }
+        }
+
+        const data = {
+            datasets: [{
+                label: 'Correlation',
+                data: rawData,
+                backgroundColor(context) {
+                    const value = context.dataset.data[context.dataIndex].v;
+                    return getColor(value);
+                },
+                borderColor: 'white',
+                borderWidth: 1,
+                width: ({chart}) => (chart.chartArea || {}).width / labels.length - 1,
+                height: ({chart}) => (chart.chartArea || {}).height / labels.length - 1
+            }]
+        };
+
+        new Chart(ctx, {
+            type: 'matrix',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            title() { return ''; },
+                            label(context) {
+                                const v = context.raw;
+                                return `${v.x} vs ${v.y}: ${v.v}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'category',
+                        labels: labels,
+                        grid: { display: false }
+                    },
+                    y: {
+                        type: 'category',
+                        labels: labels,
+                        offset: true,
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}
