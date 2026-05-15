@@ -47,4 +47,5 @@ debug_*.py
 
 test*
 
-_archive_scripts/*
+_archive_scripts/
+.gemini_cache/
