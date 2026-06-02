@@ -18,8 +18,8 @@
    ================================================================
 */
 :root {
-    --navy-deep: #0A1929;
-    --navy-light: #132F4C;
+    --navy-deep: var(--bg-body, #0f172a);
+    --navy-light: var(--bg-surface, #1e293b);
     --violet-primary: #7C3AED;
     --violet-light: #A78BFA;
     --white: #FFFFFF;
@@ -38,7 +38,6 @@
 
 /* GLOBAL */
 body {
-    background: var(--navy-deep);
     color: var(--white);
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
     overflow-x: hidden;
@@ -80,13 +79,8 @@ nav.top-navbar, .top-navbar {
 }
 
 #sidebar-wrapper {
-    background: var(--navy-deep) !important;
+    background: var(--bg-body) !important;
     border-right: 1px solid rgba(255,255,255,0.08) !important;
-}
-
-footer {
-    background: var(--navy-deep) !important;
-    border-top: 1px solid rgba(255,255,255,0.08) !important;
 }
 
 /* CONTAINER */

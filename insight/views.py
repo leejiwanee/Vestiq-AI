@@ -1768,7 +1768,7 @@ def _fetch_and_save_mongo(guru_key: str):
         doc.holdings = saved_holdings
         doc.total_value = total_val
         doc.count = len(holdings_list)
-        doc.updated_at = datetime.datetime.now()
+        doc.updated_at = datetime.now()
         doc.save()
 
         print(f"[EDGAR] [Success] Saved {doc.count} holdings for {guru_key}")

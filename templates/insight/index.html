@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static i18n %}
 
 {% block title %}Galaxy Market Lab{% endblock %}
 
@@ -13,17 +13,17 @@
 <div class="d-flex align-items-center justify-content-between mb-2">
   <p class="text-muted small mb-0">
     {% if view_mode == "constellation" %}
-      🔍 {{ universe_label }} 스냅샷 기준 · 원의 크기 = 시가총액, 색상 = 당일 수익률, 섹터별로 자동 클러스터링됩니다.
+      🔍 {{ universe_label }} · {% trans "Circle size = Market Cap, Color = Daily Return, auto-clustered by sector." %}
     {% elif view_mode == "sector" %}
-      🧊 {{ universe_label }} · 섹터별 합산 시가총액과 캡-가중 수익률을 Heatmap 스타일로 보여줍니다.
+      🧊 {{ universe_label }} · {% trans "Sector-aggregated market cap and cap-weighted returns displayed as a heatmap." %}
     {% elif view_mode == "factor" %}
-      🧮 {{ universe_label }} · Large/Small × Up/Down 2×2 Factor Grid 로 종목 분포를 표시합니다.
+      🧮 {{ universe_label }} · {% trans "Stock distribution shown as a Large/Small × Up/Down 2×2 Factor Grid." %}
     {% elif view_mode == "risk" %}
-      ⚠️ {{ universe_label }} · 섹터별 일간 변동성(평균 절대 수익률)을 Radar 차트로 표현합니다.
+      ⚠️ {{ universe_label }} · {% trans "Daily volatility (avg. absolute return) by sector displayed as a Radar chart." %}
     {% else %}
-      🌊 {{ universe_label }} · 섹터별 상승/하락 시가총액의 순변화를 Flow Orbit 스타일로 보여줍니다.
+      🌊 {{ universe_label }} · {% trans "Net change in sector market cap (up/down) shown as a Flow Orbit." %}
     {% endif %}
-    <span class="ms-2 text-muted">표본 종목 수: {{ snapshot_count }}</span>
+    <span class="ms-2 text-muted">{% trans "Sample size:" %} {{ snapshot_count }}</span>
   </p>
 
   <form id="galaxy-form" method="get" class="d-flex align-items-center gap-2">

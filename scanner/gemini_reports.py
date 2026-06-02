@@ -274,7 +274,22 @@ def generate_ai_report_structured(
     try:
         client = _client()
         prompt = _build_prompt(symbol, stats, company, financials, language=language)
-        r = client.models.generate_content(model=MODEL, contents=prompt)
+        # Try primary model first, fallback to lite/alternative models if experiencing 503/errors
+        r = None
+        try:
+            r = client.models.generate_content(model=MODEL, contents=prompt)
+        except Exception as e:
+            for fallback_model in ["gemini-2.5-flash-lite", "gemini-2.0-flash"]:
+                if fallback_model == MODEL:
+                    continue
+                try:
+                    r = client.models.generate_content(model=fallback_model, contents=prompt)
+                    if r:
+                        break
+                except Exception:
+                    pass
+            if not r:
+                raise e
 
         # genai 라이브러리 응답 구조에 따라 조정 필요할 수 있음
         text = getattr(r, "text", "") or ""

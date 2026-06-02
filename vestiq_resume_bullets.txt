@@ -1,0 +1,28 @@
+프로젝트 명: Vestiq AI (AI 기반 미국 주식 퀀트 분석 및 투자 전략 웹 서비스)
+기간: YYYY.MM ~ YYYY.MM
+역할: 백엔드/풀스택 엔지니어 (본인 역할에 맞게 수정)
+사용 기술 (Tech Stack): 
+- Backend: Python, Django, APScheduler (Cron Job)
+- Frontend: HTML5, CSS3, Bootstrap, JavaScript
+- Data & AI: Google Gemini API, yfinance, FMP API, Tiingo, SEC EDGAR
+- DB & DevOps: SQLite / PostgreSQL, Git, GitHub
+
+[주요 업무 및 성과]
+
+▶ 대용량 금융 데이터 파이프라인 설계 및 자동화
+- yfinance, FMP, Tiingo 등 다중 외부 API와 SEC EDGAR 데이터를 연동하여 미국 주식 500여 개 종목의 일일 주가, 재무제표, 13F 기관 보유 내역 수집 파이프라인 구축
+- APScheduler를 활용한 백그라운드 스케줄링(Cron Job) 환경을 구성하여 주기적인 데이터 업데이트 및 누락된 데이터 백필(Backfill) 자동화 구현
+- API 호출 Rate Limit 방어 및 네트워크 에러(403 Forbidden 등)에 대비한 Retry 알고리즘과 예외 처리 로직 설계로 데이터 수집 안정성 확보
+
+▶ AI 기반 시장 분석 및 요약 엔진 개발 (Generative AI 연동)
+- Google Gemini API를 연동하여 매일 수집되는 방대한 금융/경제 뉴스와 시장 지표를 분석하고 핵심 시황을 요약하는 'Market Weather' 기능 개발
+- 생성된 AI 요약 결과를 JSON 형태로 로컬 서버에 캐싱(Caching)하여 불필요한 외부 API 중복 호출을 방지하고 페이지 렌더링 속도 개선
+
+▶ 퀀트 투자 전략 알고리즘 최적화 및 대시보드 시각화
+- 7개 이상의 다중 자체 퀀트 검색 조건(Gurum Rocket, Zenith, Prime 등)을 Python 알고리즘으로 모델링하여 실시간 주식 스크리닝 기능 서비스화
+- GICS(글로벌 산업 분류 표준) 및 자체 정의 테마(AI 반도체, 클린 에너지 등 15+개 섹터)를 매핑해 'Top 5 Leading Sectors'를 선별하는 로직 개발
+- 분석 및 가공된 종목 데이터를 사용자 친화적인 대시보드(Sector Map)로 시각화하여 투자자에게 직관적인 인사이트 제공
+
+▶ 백엔드 아키텍처 및 서버 유지보수 고도화
+- Django ORM 쿼리 최적화를 통해 수백 건 이상의 종목 데이터를 단일 페이지에서 렌더링할 때 발생하는 데이터베이스 병목 현상 개선
+- 독립적으로 실행 가능한 데이터 검증(Audit) 및 강제 복구(Recovery) 모듈을 스크립트화하여 예기치 않은 서버 중단 및 데이터 결측 시 즉시 복구 가능한 체계 마련
