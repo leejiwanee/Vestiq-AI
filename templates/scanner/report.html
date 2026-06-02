@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% load i18n humanize %}  {% block title %}AI Report · {{ symbol }}{% endblock %}
+{% load i18n humanize %}
+{% block title %}AI Report · {{ symbol }}{% endblock %}
 
 {% block content %}
 <!-- Header -->
@@ -227,7 +228,7 @@
          const lastSigVal = getLast(macdSignal);
          const lastHistVal = getLast(macdHist);
 
-         const formatVal = (v) => v !== null ? v.toFixed(2) : '-';
+         const formatVal = (v) => (v !== null && v !== undefined) ? v.toFixed(2) : '-';
          
          // Color helpers
          const getRSIColor = (v) => v > 70 ? '#ef4444' : v < 30 ? '#22c55e' : '#facc15';
@@ -245,7 +246,7 @@
                 { 
                     text: `RSI: ${formatVal(lastRSIVal)}`, 
                     right: '30', top: '63%', 
-                    textStyle: { color: lastRSIVal !== null ? getRSIColor(lastRSIVal) : '#94a3b8', fontSize: 11, fontWeight: 'bold', textShadowBlur: 5, textShadowColor: lastRSIVal !== null ? getRSIColor(lastRSIVal) : 'transparent' } 
+                    textStyle: { color: (lastRSIVal !== null && lastRSIVal !== undefined) ? getRSIColor(lastRSIVal) : '#94a3b8', fontSize: 11, fontWeight: 'bold', textShadowBlur: 5, textShadowColor: (lastRSIVal !== null && lastRSIVal !== undefined) ? getRSIColor(lastRSIVal) : 'transparent' } 
                 },
                 { 
                     text: `MACD: ${formatVal(lastMACDVal)}  Sig: ${formatVal(lastSigVal)}  Hist: ${formatVal(lastHistVal)}`, 
@@ -377,7 +378,7 @@
                      {}, {}, {},
                      { 
                          text: `RSI: ${formatVal(r)}`, 
-                         textStyle: { color: r !== null ? getRSIColor(r) : '#94a3b8' } 
+                         textStyle: { color: (r !== null && r !== undefined) ? getRSIColor(r) : '#94a3b8' } 
                      },
                      { 
                          text: `MACD: ${formatVal(m)}  Sig: ${formatVal(s)}  Hist: ${formatVal(h)}`
@@ -405,7 +406,7 @@
                      {}, {}, {},
                      { 
                          text: `RSI: ${formatVal(lastRSIVal)}`, 
-                         textStyle: { color: lastRSIVal !== null ? getRSIColor(lastRSIVal) : '#94a3b8' } 
+                         textStyle: { color: (lastRSIVal !== null && lastRSIVal !== undefined) ? getRSIColor(lastRSIVal) : '#94a3b8' } 
                      },
                      { 
                          text: `MACD: ${formatVal(lastMACDVal)}  Sig: ${formatVal(lastSigVal)}  Hist: ${formatVal(lastHistVal)}`

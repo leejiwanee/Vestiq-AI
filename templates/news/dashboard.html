@@ -1,114 +1,337 @@
 {% extends "base.html" %}
 {% load static humanize i18n %}
 
-{% block title %}{% trans "Market News" %}{% endblock %}
+{% block title %}{% trans "Market News" %} — Vestiq{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 py-5 space-y-6">
+<style>
+  .news-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
 
-    <!-- Header -->
-    <div class="news-header mb-4">
-        <div>
-            <h2 class="fw-bold mb-1"><i class="bi bi-newspaper me-2"></i>{% trans "Market News Feed" %}</h2>
-            <div class="small opacity-75">{% trans "Latest financial headlines from NewsAPI" %}</div>
-        </div>
+  /* ── Page Header ── */
+  .news-page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .news-page-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.02em;
+    margin: 0;
+  }
+
+  .news-page-subtitle {
+    font-size: 0.8rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 4px;
+  }
+
+  .live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #D4AF37;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    padding: 4px 12px;
+    border-radius: 2px;
+  }
+
+  .live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #D4AF37;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ── News Article List ── */
+  .news-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .news-item {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 1.5rem;
+    padding: 1.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    transition: all 0.25s ease;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+  }
+
+  .news-item::before {
+    content: '';
+    position: absolute;
+    left: -1.5rem;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--accent-gold);
+    transform: scaleY(0);
+    transition: transform 0.25s ease;
+    transform-origin: bottom;
+  }
+
+  .news-item:hover::before {
+    transform: scaleY(1);
+  }
+
+  .news-item:hover .news-headline {
+    color: var(--accent-gold);
+  }
+
+  .news-item:first-child {
+    padding-top: 0;
+  }
+
+  /* ── Thumbnail ── */
+  .news-thumb {
+    width: 120px;
+    height: 80px;
+    border-radius: 2px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #111;
+    border: 1px solid #1a1a1a;
+    filter: brightness(0.9);
+  }
+
+  .news-thumb-placeholder {
+    width: 120px;
+    height: 80px;
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* ── Content ── */
+  .news-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .news-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .news-source {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent-gold);
+  }
+
+  .news-dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #444;
+  }
+
+  .news-time {
+    font-size: 0.72rem;
+    color: #555;
+    letter-spacing: 0.04em;
+  }
+
+  .news-headline {
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: #e5e4e2;
+    line-height: 1.5;
+    transition: color 0.2s ease;
+    margin: 0;
+    /* Clamp to 2 lines */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .news-description {
+    font-size: 0.85rem;
+    color: #555;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin: 0;
+  }
+
+  /* ── Empty State ── */
+  .news-empty {
+    text-align: center;
+    padding: 5rem 2rem;
+    color: #444;
+  }
+
+  /* ── Pagination ── */
+  .news-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    margin-top: 3rem;
+  }
+
+  .page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #666;
+    background: transparent;
+    border: 1px solid #1a1a1a;
+    border-radius: 2px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .page-btn:hover {
+    color: #fff;
+    border-color: #333;
+    background: #111;
+  }
+
+  .page-btn.active {
+    color: #000;
+    background: var(--accent-gold);
+    border-color: var(--accent-gold);
+  }
+
+  .page-btn.disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+</style>
+
+<div class="news-page">
+
+  <!-- Page Header -->
+  <div class="news-page-header">
+    <div>
+      <h1 class="news-page-title">{% trans "Market News" %}</h1>
+      <div class="news-page-subtitle">{% trans "Financial Headlines" %}</div>
     </div>
-
-    <!-- News List -->
-    <div class="card shadow-sm">
-        <div class="card-header bg-white py-3">
-            <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>{% trans "Latest Articles" %}</h5>
-        </div>
-        <div class="card-body p-0">
-            {% if articles %}
-                <div class="list-group list-group-flush">
-                {% for article in articles %}
-                    <div class="list-group-item p-4 hover:bg-gray-50 transition-colors duration-200">
-                        <div class="d-flex align-items-start">
-                            <!-- Image (Left) -->
-                            <div class="flex-shrink-0 me-4">
-                                {% if article.image_url %}
-                                    <img src="{{ article.image_url }}" alt="News Image" class="rounded shadow-sm" style="width: 120px; height: 80px; object-fit: cover;" referrerpolicy="no-referrer" onerror="this.src='https://placehold.co/120x80?text=News';">
-                                {% else %}
-                                    <img src="https://placehold.co/120x80?text=News" alt="No Image" class="rounded shadow-sm" style="width: 120px; height: 80px; object-fit: cover;">
-                                {% endif %}
-                            </div>
-
-                            <!-- Content (Right) -->
-                            <div class="flex-grow-1">
-                                <div class="d-flex align-items-center mb-2">
-                                    <span class="badge bg-light text-dark border me-2">{{ article.source }}</span>
-                                    <small class="text-muted">
-                                        <i class="bi bi-clock me-1"></i>{{ article.published_at|naturaltime }}
-                                    </small>
-                                </div>
-                                <h5 class="mb-2 fw-bold">
-                                    <a href="{{ article.url }}" target="_blank" class="text-decoration-none text-dark stretched-link">
-                                        {% get_current_language as LANGUAGE_CODE %}
-                                        {% if LANGUAGE_CODE == 'ko' and article.title_ko %}
-                                            {{ article.title_ko }}
-                                        {% else %}
-                                            {{ article.title }}
-                                        {% endif %}
-                                    </a>
-                                </h5>
-                                {% if article.description %}
-                                    <p class="text-muted mb-0 small line-clamp-2">{{ article.description|striptags }}</p>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-                </div>
-
-                <!-- Pagination Controls -->
-                {% if articles.has_other_pages %}
-                <div class="card-footer bg-white py-3">
-                    <nav aria-label="News pagination">
-                        <ul class="pagination justify-content-center mb-0">
-                            {% if articles.has_previous %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ articles.previous_page_number }}" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
-                                </li>
-                            {% else %}
-                                <li class="page-item disabled">
-                                    <span class="page-link">&laquo;</span>
-                                </li>
-                            {% endif %}
-
-                            {% for i in articles.paginator.page_range %}
-                                {% if articles.number == i %}
-                                    <li class="page-item active"><span class="page-link">{{ i }}</span></li>
-                                {% else %}
-                                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
-                                {% endif %}
-                            {% endfor %}
-
-                            {% if articles.has_next %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ articles.next_page_number }}" aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
-                                </li>
-                            {% else %}
-                                <li class="page-item disabled">
-                                    <span class="page-link">&raquo;</span>
-                                </li>
-                            {% endif %}
-                        </ul>
-                    </nav>
-                </div>
-                {% endif %}
-            {% else %}
-                <div class="text-center py-5">
-                    <div class="text-muted mb-3">{% trans "No news articles found." %}</div>
-                    <p class="small text-muted">{% trans "Please wait while we fetch the latest updates..." %}</p>
-                </div>
-            {% endif %}
-        </div>
+    <div class="live-badge">
+      <span class="live-dot"></span>
+      {% trans "Live Feed" %}
     </div>
+  </div>
+
+  <!-- News List -->
+  {% if articles %}
+  <div class="news-list">
+    {% for article in articles %}
+    <a href="{{ article.url }}" target="_blank" rel="noopener noreferrer" class="news-item">
+
+      <!-- Thumbnail -->
+      {% if article.image_url %}
+        <img src="{{ article.image_url }}" alt="" class="news-thumb"
+             referrerpolicy="no-referrer"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="news-thumb-placeholder" style="display:none;">
+          <i class="bi bi-image" style="font-size: 1.5rem; color: #2a2a2a;"></i>
+        </div>
+      {% else %}
+        <div class="news-thumb-placeholder">
+          <i class="bi bi-newspaper" style="font-size: 1.5rem; color: #2a2a2a;"></i>
+        </div>
+      {% endif %}
+
+      <!-- Content -->
+      <div class="news-content">
+        <div class="news-meta">
+          <span class="news-source">{{ article.source }}</span>
+          <span class="news-dot"></span>
+          <span class="news-time">{{ article.published_at|naturaltime }}</span>
+        </div>
+        <p class="news-headline">
+          {% get_current_language as LANGUAGE_CODE %}
+          {% if LANGUAGE_CODE == 'ko' and article.title_ko %}
+            {{ article.title_ko }}
+          {% else %}
+            {{ article.title }}
+          {% endif %}
+        </p>
+        {% if article.description %}
+        <p class="news-description">{{ article.description|striptags }}</p>
+        {% endif %}
+      </div>
+
+    </a>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% if articles.has_other_pages %}
+  <nav class="news-pagination" aria-label="{% trans 'News pagination' %}">
+    {% if articles.has_previous %}
+      <a href="?page={{ articles.previous_page_number }}" class="page-btn" aria-label="Previous">‹</a>
+    {% else %}
+      <span class="page-btn disabled">‹</span>
+    {% endif %}
+
+    {% for i in articles.paginator.page_range %}
+      {% if articles.number == i %}
+        <span class="page-btn active">{{ i }}</span>
+      {% elif i > articles.number|add:"-4" and i < articles.number|add:"4" %}
+        <a href="?page={{ i }}" class="page-btn">{{ i }}</a>
+      {% endif %}
+    {% endfor %}
+
+    {% if articles.has_next %}
+      <a href="?page={{ articles.next_page_number }}" class="page-btn" aria-label="Next">›</a>
+    {% else %}
+      <span class="page-btn disabled">›</span>
+    {% endif %}
+  </nav>
+  {% endif %}
+
+  {% else %}
+  <div class="news-empty">
+    <i class="bi bi-newspaper" style="font-size: 3rem; display: block; margin-bottom: 1rem; opacity: 0.2;"></i>
+    <p>{% trans "No news articles found." %}</p>
+    <p class="small" style="opacity: 0.5;">{% trans "Please wait while we fetch the latest updates..." %}</p>
+  </div>
+  {% endif %}
 
 </div>
 {% endblock %}

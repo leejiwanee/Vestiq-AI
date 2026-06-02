@@ -1,819 +1,698 @@
 {% extends "base.html" %}
 {% load humanize i18n %}
 
-{% block title %}AI Trading Recommendations{% endblock %}
+{% block title %}{% trans "AI Trading Recommendations" %} — Vestiq{% endblock %}
 
 {% block extra_head %}
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-    body {
-        background-color: #f1f5f9;
-        font-family: 'Outfit', sans-serif;
-    }
-
-    /* Header Section */
-    .rec-header-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 2.5rem 2rem;
-        border-radius: 20px;
-        margin-bottom: 2rem;
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .rec-header-section::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 400px;
-        height: 400px;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-        border-radius: 50%;
-        transform: translate(30%, -30%);
-    }
-
-    .rec-header-section h1 {
-        font-size: 2.5rem;
-        font-weight: 800;
-        margin-bottom: 0.5rem;
-        position: relative;
-        z-index: 1;
-    }
-
-    .rec-header-section .subtitle {
-        font-size: 1.1rem;
-        opacity: 0.95;
-        margin-bottom: 0.25rem;
-        position: relative;
-        z-index: 1;
-    }
-
-    .rec-header-section .date {
-        font-size: 0.9rem;
-        opacity: 0.8;
-        position: relative;
-        z-index: 1;
-    }
-
-    .back-btn {
-        background: rgba(255, 255, 255, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        color: white;
-        padding: 0.6rem 1.5rem;
-        border-radius: 12px;
-        font-weight: 600;
-        font-size: 0.95rem;
-        transition: all 0.3s;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .back-btn:hover {
-        background: rgba(255, 255, 255, 0.3);
-        color: white;
-        transform: translateX(-4px);
-    }
-
-    /* Market Status Card */
-    .market-card {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 16px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        transition: all 0.3s;
-    }
-
-    .market-card:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    }
-
-    .market-card h4 {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #0f172a;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .mood-badge {
-        display: inline-block;
-        padding: 0.75rem 2rem;
-        border-radius: 50px;
-        font-weight: 700;
-        font-size: 1.1rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .mood-bullish {
-        background: linear-gradient(135deg, #10b981, #059669);
-        color: white;
-    }
-
-    .mood-bearish {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
-        color: white;
-    }
-
-    .mood-neutral {
-        background: linear-gradient(135deg, #64748b, #475569);
-        color: white;
-    }
-
-    .market-data-item {
-        display: flex;
-        justify-content: space-between;
-        padding: 0.75rem 0;
-        border-bottom: 1px solid #f1f5f9;
-        font-size: 0.95rem;
-    }
-
-    .market-data-item:last-child {
-        border-bottom: none;
-    }
-
-    .market-data-item .name {
-        color: #64748b;
-        font-weight: 500;
-    }
-
-    .market-data-item .value {
-        font-weight: 700;
-    }
-
-    .market-data-item .value.positive {
-        color: #10b981;
-    }
-
-    .market-data-item .value.negative {
-        color: #ef4444;
-    }
-
-    /* Generate Button */
-    .generate-btn {
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
-        border: none;
-        color: white;
-        padding: 1rem 2rem;
-        border-radius: 12px;
-        font-weight: 700;
-        font-size: 1rem;
-        transition: all 0.3s;
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .generate-btn:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
-    }
-
-    .generate-btn:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-
-    /* Warning Alert */
-    .warning-alert {
-        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05));
-        border: 1px solid rgba(239, 68, 68, 0.2);
-        border-radius: 16px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-        color: #991b1b;
-        display: flex;
-        align-items: flex-start;
-        gap: 1rem;
-    }
-
-    .warning-alert i {
-        font-size: 1.5rem;
-        color: #ef4444;
-        flex-shrink: 0;
-    }
-
-    .warning-alert strong {
-        color: #dc2626;
-    }
-
-    /* Cash Holding Alert */
-    .cash-alert {
-        background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.05));
-        border: 1px solid rgba(245, 158, 11, 0.3);
-        border-radius: 16px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        text-align: center;
-    }
-
-    .cash-alert i {
-        font-size: 4rem;
-        color: #f59e0b;
-        margin-bottom: 1rem;
-    }
-
-    .cash-alert h3 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #92400e;
-        margin-bottom: 0.5rem;
-    }
-
-    .cash-alert p {
-        color: #78350f;
-        font-size: 1rem;
-    }
-
-    /* Recommendations Section */
-    .section-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #0f172a;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    /* Recommendation Cards */
-    .rec-card {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 16px;
-        padding: 2rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .rec-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #10b981, #059669);
-        opacity: 1;
-    }
-
-    .rec-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    }
-
-    .rec-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 1.5rem;
-        padding-bottom: 1.5rem;
-        border-bottom: 1px solid #f1f5f9;
-    }
-
-    .stock-info h3 {
-        font-size: 1.8rem;
-        font-weight: 800;
-        color: #0f172a;
-        margin: 0 0 0.5rem 0;
-    }
-
-    .stock-info .company-name {
-        color: #64748b;
-        margin: 0 0 1rem 0;
-        font-size: 1rem;
-    }
-
-    .stock-metrics {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-
-    .metric-badge {
-        padding: 0.5rem 1rem;
-        border-radius: 10px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .tech-score {
-        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-        color: white;
-    }
-
-    .price-change {
-        background: rgba(16, 185, 129, 0.1);
-        border: 1px solid rgba(16, 185, 129, 0.3);
-        color: #059669;
-    }
-
-    .price-change.negative {
-        background: rgba(239, 68, 68, 0.1);
-        border: 1px solid rgba(239, 68, 68, 0.3);
-        color: #dc2626;
-    }
-
-    .volume-change {
-        background: rgba(59, 130, 246, 0.1);
-        border: 1px solid rgba(59, 130, 246, 0.3);
-        color: #2563eb;
-    }
-
-    .rec-badge {
-        padding: 0.75rem 1.5rem;
-        border-radius: 12px;
-        font-weight: 700;
-        font-size: 1.1rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        background: linear-gradient(135deg, #10b981, #059669);
-        color: white;
-    }
-
-    /* Price Targets Grid */
-    .price-targets {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin: 1.5rem 0;
-    }
-
-    .price-box {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 1.25rem;
-        text-align: center;
-        transition: all 0.3s;
-    }
-
-    .price-box:hover {
-        background: #f1f5f9;
-        border-color: #cbd5e1;
-        transform: translateY(-2px);
-    }
-
-    .price-label {
-        color: #64748b;
-        font-size: 0.8rem;
-        font-weight: 600;
-        margin-bottom: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-    }
-
-    .price-value {
-        font-size: 1.6rem;
-        font-weight: 800;
-        color: #0f172a;
-        margin: 0.5rem 0;
-    }
-
-    .price-pct {
-        font-size: 0.95rem;
-        font-weight: 700;
-        margin-top: 0.5rem;
-    }
-
-    .price-pct.positive {
-        color: #10b981;
-    }
-
-    .price-pct.negative {
-        color: #ef4444;
-    }
-
-    .price-current {
-        font-size: 0.8rem;
-        color: #94a3b8;
-        margin-top: 0.25rem;
-    }
-
-    /* AI Rationale */
-    .rationale {
-        background: linear-gradient(135deg, #fef3c7, #fef9e7);
-        border-left: 4px solid #f59e0b;
-        padding: 1.25rem;
-        border-radius: 12px;
-        color: #92400e;
-        line-height: 1.7;
-        margin: 1.5rem 0;
-    }
-
-    .rationale strong {
-        color: #78350f;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-    }
-
-    /* Filters */
-    .filters-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-        margin-top: 1.5rem;
-    }
-
-    .filter-tag {
-        background: rgba(99, 102, 241, 0.1);
-        border: 1px solid rgba(99, 102, 241, 0.3);
-        color: #4f46e5;
-        padding: 0.4rem 1rem;
-        border-radius: 8px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-    }
-
-    /* TradingView Chart Container */
-    .chart-container {
-        margin: 1.5rem 0;
-        border-radius: 12px;
-        overflow: hidden;
-        border: 1px solid #e2e8f0;
-        background: white;
-    }
-
-    /* Empty State */
-    .empty-state {
-        text-align: center;
-        padding: 5rem 2rem;
-        background: white;
-        border-radius: 16px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    }
-
-    .empty-state i {
-        font-size: 5rem;
-        color: #cbd5e1;
-        margin-bottom: 1.5rem;
-    }
-
-    .empty-state h3 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #0f172a;
-        margin-bottom: 0.5rem;
-    }
-
-    .empty-state p {
-        color: #64748b;
-        font-size: 1rem;
-    }
-
-    /* Other Recommendations (Collapsible) */
-    .other-recs-section {
-        margin-top: 3rem;
-    }
-
-    .other-recs-toggle {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 1rem 1.5rem;
-        cursor: pointer;
-        transition: all 0.3s;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .other-recs-toggle:hover {
-        background: #f1f5f9;
-    }
-
-    .other-recs-toggle h4 {
-        margin: 0;
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #64748b;
-    }
-
-    .other-recs-content {
-        margin-top: 1rem;
-    }
-
-    .other-rec-card {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
-    }
-
-    .other-rec-card .rec-badge {
-        box-shadow: none;
-    }
+  /* ───── Page Layout ───── */
+  .rec-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 5rem;
+  }
+
+  /* ───── Page Header ───── */
+  .rec-page-header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .rec-page-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 0 0 4px;
+  }
+
+  .rec-page-subtitle {
+    font-size: 0.75rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    border: 1px solid #1a1a1a;
+    padding: 8px 16px;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .back-btn:hover {
+    color: #fff;
+    border-color: #333;
+    background: #111;
+  }
+
+  /* ───── Market Status Card ───── */
+  .market-card {
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    padding: 1.75rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .market-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: var(--accent-gold);
+  }
+
+  .market-card-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mood-badge {
+    display: inline-block;
+    padding: 6px 20px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    margin-bottom: 1rem;
+  }
+
+  .mood-bullish  { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+  .mood-bearish  { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+  .mood-neutral  { background: rgba(148,163,184,0.1); color: #94a3b8; border: 1px solid rgba(148,163,184,0.2); }
+
+  .market-message {
+    font-size: 0.9rem;
+    color: #888;
+    line-height: 1.7;
+    margin-top: 0.75rem;
+  }
+
+  .market-data-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.875rem;
+  }
+
+  .market-data-item:last-child { border-bottom: none; }
+  .market-data-item .name { color: #555; }
+  .market-data-item .value { font-weight: 600; }
+  .market-data-item .value.positive { color: #22c55e; }
+  .market-data-item .value.negative { color: #ef4444; }
+
+  /* ───── Generate Button ───── */
+  .generate-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    background: transparent;
+    border: 1px solid var(--accent-gold);
+    color: var(--accent-gold);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .generate-btn:hover:not(:disabled) {
+    background: var(--accent-gold);
+    color: #000;
+  }
+
+  .generate-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* ───── Warning Alert ───── */
+  .warning-alert {
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.2);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: #fca5a5;
+  }
+
+  /* ───── Section Title ───── */
+  .section-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ───── Recommendation Cards ───── */
+  .rec-card {
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    transition: border-color 0.3s ease;
+  }
+
+  .rec-card:hover {
+    border-color: #333;
+  }
+
+  .rec-card-accent {
+    position: absolute;
+    top: 0; left: 0;
+    right: 0; height: 2px;
+    background: linear-gradient(90deg, #22c55e, transparent);
+  }
+
+  .rec-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    gap: 1rem;
+  }
+
+  .stock-symbol {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 4px;
+    letter-spacing: -0.02em;
+  }
+
+  .stock-company {
+    font-size: 0.85rem;
+    color: #555;
+    margin: 0 0 1rem;
+  }
+
+  .stock-metrics {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .metric-badge {
+    padding: 4px 12px;
+    border-radius: 2px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.04em;
+  }
+
+  .badge-score   { background: rgba(139,92,246,0.15); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
+  .badge-pos     { background: rgba(34,197,94,0.1);   color: #22c55e; border: 1px solid rgba(34,197,94,0.2); }
+  .badge-neg     { background: rgba(239,68,68,0.1);   color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+  .badge-vol     { background: rgba(59,130,246,0.1);  color: #60a5fa; border: 1px solid rgba(59,130,246,0.2); }
+
+  .rec-badge {
+    padding: 8px 20px;
+    border-radius: 2px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .rec-buy   { background: rgba(34,197,94,0.15);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+  .rec-hold  { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+  .rec-avoid { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+
+  /* ───── Price Targets ───── */
+  .price-targets {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .price-box {
+    background: #040404;
+    border: 1px solid #1a1a1a;
+    padding: 1.25rem;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+
+  .price-box:hover { border-color: #2a2a2a; }
+
+  .price-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #444;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .price-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.02em;
+    margin: 6px 0;
+  }
+
+  .price-pct { font-size: 0.85rem; font-weight: 600; margin-top: 4px; }
+  .price-pct.positive { color: #22c55e; }
+  .price-pct.negative { color: #ef4444; }
+  .price-current { font-size: 0.72rem; color: #444; margin-top: 4px; }
+
+  /* ───── Chart Container ───── */
+  .chart-container {
+    margin: 1.5rem 0;
+    border: 1px solid #1a1a1a;
+    background: #000;
+    min-height: 420px;
+    overflow: hidden;
+  }
+
+  /* ───── AI Rationale ───── */
+  .rationale {
+    background: rgba(212,175,55,0.04);
+    border-left: 3px solid var(--accent-gold);
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+    color: #aaa;
+    line-height: 1.75;
+  }
+
+  .rationale-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ───── Filter Tags ───── */
+  .filters-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 1.25rem;
+  }
+
+  .filter-tag {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #666;
+    padding: 4px 12px;
+    border-radius: 2px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ───── Cash Alert ───── */
+  .cash-alert {
+    background: rgba(245,158,11,0.06);
+    border: 1px solid rgba(245,158,11,0.2);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .cash-alert-icon { font-size: 3rem; color: #f59e0b; display: block; margin-bottom: 1rem; }
+  .cash-alert h3 { font-size: 1.25rem; font-weight: 600; color: #f59e0b; margin-bottom: 0.5rem; }
+  .cash-alert p { color: #666; font-size: 0.9rem; }
+
+  /* ───── Empty State ───── */
+  .empty-state {
+    text-align: center;
+    padding: 5rem 2rem;
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+  }
+
+  .empty-state i { font-size: 4rem; color: #1a1a1a; display: block; margin-bottom: 1.5rem; }
+  .empty-state h3 { font-size: 1.25rem; font-weight: 600; color: #555; margin-bottom: 0.5rem; }
+  .empty-state p  { color: #444; font-size: 0.9rem; }
+
+  /* ───── Other Recs ───── */
+  .other-recs-section { margin-top: 3rem; }
+
+  .other-recs-toggle {
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: border-color 0.2s;
+  }
+
+  .other-recs-toggle:hover { border-color: #2a2a2a; }
+  .other-recs-toggle h4 { margin: 0; font-size: 0.8rem; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.1em; }
+
+  .other-rec-card {
+    background: #040404;
+    border: 1px solid #111;
+    border-top: none;
+    padding: 1.25rem 1.5rem;
+  }
 </style>
 <!-- TradingView Widget Script -->
 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 {% endblock %}
 
 {% block content %}
-<div class="container my-4">
-    <!-- Back Button -->
+<div class="rec-page">
+
+  <!-- Page Header -->
+  <div class="rec-page-header">
+    <div>
+      <h1 class="rec-page-title">
+        <i class="bi bi-stars" style="color: var(--accent-gold); font-size: 1.4rem; margin-right: 10px;"></i>
+        {% trans "AI Trading Recommendations" %}
+      </h1>
+      <div class="rec-page-subtitle">
+        {% trans "Powered by Scanner + News + Gemini AI" %} · {{ today|date:"Y-m-d" }}
+      </div>
+    </div>
     <a href="{% url 'ai_advisor:input' %}" class="back-btn">
-        <i class="bi bi-arrow-left"></i> {% trans "Back" %}
+      <i class="bi bi-arrow-left"></i> {% trans "Back" %}
     </a>
+  </div>
 
-    <!-- Header Section -->
-    <div class="rec-header-section">
-        <h1><i class="bi bi-stars"></i> {% trans "AI Trading Recommendations" %}</h1>
-        <p class="subtitle">{% trans "Trading recommendations based on Scanner + News + Gemini AI" %}</p>
-        <p class="date">{{ today|date:"Y-m-d" }} - {% trans "For Day/Swing Trading" %}</p>
-    </div>
-
-    <!-- Market Status Card -->
-    <div class="market-card">
-        <div class="row align-items-center">
-            <div class="col-md-7">
-                <h4><i class="bi bi-graph-up"></i> {% trans "Market Status" %}</h4>
-                <div class="mood-badge mood-{{ macro.mood|lower }}">
-                    {{ macro.mood }} {% trans "Market" %} ({% trans "Score" %}: {{ macro.score }})
-                </div>
-                <p style="color: #475569; margin-top: 1rem;">{{ macro.message }}</p>
-
-                {% if macro.market_data %}
-                <div class="mt-3">
-                    {% for name, data in macro.market_data.items %}
-                    <div class="market-data-item">
-                        <span class="name">{{ name }}</span>
-                        <span class="value {% if data.change_pct > 0 %}positive{% else %}negative{% endif %}">
-                            ${{ data.close }} ({{ data.change_pct|floatformat:2 }}%)
-                        </span>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-            </div>
-
-            <div class="col-md-5 text-end">
-                <button class="generate-btn" onclick="generateRecommendations()" {% if has_recommendations%}disabled{%endif %}>
-                    <i class="bi bi-lightning-charge-fill"></i>
-                    {% if has_recommendations %}{% trans "Already Generated" %}{% else %}{% trans "Generate Recommendations" %}{% endif %}
-                </button>
-                {% if has_recommendations %}
-                <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 1rem;">{% trans "Recommendations for today have already been generated" %}</p>
-                {% endif %}
-            </div>
+  <!-- Market Status Card -->
+  <div class="market-card">
+    <div class="row align-items-center g-4">
+      <div class="col-md-7">
+        <div class="market-card-title">
+          <i class="bi bi-activity"></i> {% trans "Market Status" %}
         </div>
-    </div>
-
-    <!-- Warning if market is too bearish -->
-    {% if macro.mood == "Bearish" and macro.score < 30 %} <div class="warning-alert">
-        <i class="bi bi-exclamation-triangle-fill"></i>
-        <div>
-            <strong>{% trans "Trading Hold Recommended:" %}</strong> {% trans "The market is currently extremely bearish. It is recommended to refrain from trading due to the risk of rapid losses." %}
+        <div class="mood-badge mood-{{ macro.mood|lower }}">
+          {{ macro.mood }} {% trans "Market" %} — {% trans "Score" %}: {{ macro.score }}
         </div>
-</div>
-{% endif %}
+        <p class="market-message">{{ macro.message }}</p>
 
-<!-- BUY Recommendations -->
-{% if has_buy_recs %}
-<h3 class="section-title">
-    <i class="bi bi-trophy-fill text-success"></i> {% trans "BUY Recommendations" %} ({{ buy_recommendations.count }})
-</h3>
+        {% if macro.market_data %}
+        <div class="mt-3">
+          {% for name, data in macro.market_data.items %}
+          <div class="market-data-item">
+            <span class="name">{{ name }}</span>
+            <span class="value {% if data.change_pct > 0 %}positive{% else %}negative{% endif %}">
+              ${{ data.close }} ({{ data.change_pct|floatformat:2 }}%)
+            </span>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
 
-{% for rec in buy_recommendations %}
-<div class="rec-card">
+      <div class="col-md-5 text-md-end">
+        <button class="generate-btn" onclick="generateRecommendations()"
+                {% if has_recommendations %}disabled{% endif %}>
+          <i class="bi bi-lightning-charge-fill"></i>
+          {% if has_recommendations %}{% trans "Already Generated" %}{% else %}{% trans "Generate Recommendations" %}{% endif %}
+        </button>
+        {% if has_recommendations %}
+        <p style="color: #444; font-size: 0.8rem; margin-top: 0.75rem;">
+          {% trans "Recommendations for today have already been generated" %}
+        </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Warning if extremely bearish -->
+  {% if macro.mood == "Bearish" and macro.score < 30 %}
+  <div class="warning-alert">
+    <i class="bi bi-exclamation-triangle-fill" style="font-size: 1.3rem; flex-shrink: 0;"></i>
+    <div>
+      <strong style="display: block; margin-bottom: 4px;">{% trans "Trading Hold Recommended" %}</strong>
+      {% trans "The market is currently extremely bearish. It is recommended to refrain from trading due to the risk of rapid losses." %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- BUY Recommendations -->
+  {% if has_buy_recs %}
+  <div class="section-title">
+    <i class="bi bi-trophy-fill" style="color: #22c55e;"></i>
+    {% trans "BUY Recommendations" %} ({{ buy_recommendations.count }})
+  </div>
+
+  {% for rec in buy_recommendations %}
+  <div class="rec-card">
+    <div class="rec-card-accent"></div>
     <div class="rec-header">
-        <div class="stock-info">
-            <h3>{{ rec.symbol }}</h3>
-            <p class="company-name">{{ rec.company_name }}</p>
+      <div class="stock-info">
+        <h3 class="stock-symbol">{{ rec.symbol }}</h3>
+        <p class="stock-company">{{ rec.company_name }}</p>
 
-            <div class="stock-metrics">
-                <div class="metric-badge tech-score">
-                    <i class="bi bi-trophy"></i>
-                    {% trans "Tech Score" %} {{ rec.technical_score|floatformat:1 }}/100
-                </div>
-                <div class="metric-badge price-change {% if rec.price_change_pct < 0 %}negative{% endif %}">
-                    <i class="bi bi-graph-up"></i>
-                    {{ rec.price_change_pct|floatformat:2 }}%
-                </div>
-                <div class="metric-badge volume-change">
-                    <i class="bi bi-bar-chart-fill"></i>
-                    Vol {{ rec.vol_change_pct|floatformat:1 }}%
-                </div>
-            </div>
+        <div class="stock-metrics">
+          <span class="metric-badge badge-score">
+            <i class="bi bi-trophy"></i>
+            {% trans "Score" %} {{ rec.technical_score|floatformat:1 }}/100
+          </span>
+          <span class="metric-badge {% if rec.price_change_pct >= 0 %}badge-pos{% else %}badge-neg{% endif %}">
+            <i class="bi bi-graph-up"></i>
+            {{ rec.price_change_pct|floatformat:2 }}%
+          </span>
+          <span class="metric-badge badge-vol">
+            <i class="bi bi-bar-chart-fill"></i>
+            Vol {{ rec.vol_change_pct|floatformat:1 }}%
+          </span>
         </div>
-        <div class="rec-badge">
-            <i class="bi bi-arrow-up-circle-fill"></i> {% trans "BUY" %}
-        </div>
+      </div>
+      <div class="rec-badge rec-buy">
+        <i class="bi bi-arrow-up-circle-fill"></i> {% trans "BUY" %}
+      </div>
     </div>
 
     <!-- Price Targets -->
     {% if rec.entry_price %}
     <div class="price-targets">
-        <div class="price-box">
-            <div class="price-label"><i class="bi bi-cash-coin"></i> {% trans "Entry Price" %}</div>
-            <div class="price-value">${{ rec.entry_price|floatformat:2 }}</div>
-            <div class="price-current">{% trans "Current Price:" %} ${{ rec.current_price|floatformat:2 }}</div>
-        </div>
+      <div class="price-box">
+        <div class="price-label"><i class="bi bi-cash-coin"></i> {% trans "Entry" %}</div>
+        <div class="price-value">${{ rec.entry_price|floatformat:2 }}</div>
+        <div class="price-current">{% trans "Now:" %} ${{ rec.current_price|floatformat:2 }}</div>
+      </div>
 
-        {% if rec.stop_loss %}
-        <div class="price-box">
-            <div class="price-label"><i class="bi bi-shield-x"></i> {% trans "Stop Loss" %}</div>
-            <div class="price-value">${{ rec.stop_loss|floatformat:2 }}</div>
-            {% with loss_pct=rec.entry_price|add:"-"|add:rec.stop_loss|floatformat:2 %}
-            {% if rec.entry_price %}
-            <div class="price-pct negative">{{ rec.potential_loss_pct|floatformat:1 }}%</div>
-            {% endif %}
-            {% endwith %}
-        </div>
+      {% if rec.stop_loss %}
+      <div class="price-box">
+        <div class="price-label"><i class="bi bi-shield-x"></i> {% trans "Stop Loss" %}</div>
+        <div class="price-value">${{ rec.stop_loss|floatformat:2 }}</div>
+        {% if rec.entry_price %}
+        <div class="price-pct negative">{{ rec.potential_loss_pct|floatformat:1 }}%</div>
         {% endif %}
+      </div>
+      {% endif %}
 
-        {% if rec.take_profit %}
-        <div class="price-box">
-            <div class="price-label"><i class="bi bi-trophy"></i> {% trans "Take Profit" %}</div>
-            <div class="price-value">${{ rec.take_profit|floatformat:2 }}</div>
-            {% if rec.entry_price %}
-            <div class="price-pct positive">+{{ rec.potential_gain_pct|floatformat:1 }}%</div>
-            {% endif %}
-        </div>
+      {% if rec.take_profit %}
+      <div class="price-box">
+        <div class="price-label"><i class="bi bi-trophy"></i> {% trans "Take Profit" %}</div>
+        <div class="price-value">${{ rec.take_profit|floatformat:2 }}</div>
+        {% if rec.entry_price %}
+        <div class="price-pct positive">+{{ rec.potential_gain_pct|floatformat:1 }}%</div>
         {% endif %}
+      </div>
+      {% endif %}
 
-        <div class="price-box">
-            <div class="price-label"><i class="bi bi-pie-chart"></i> {% trans "Position Size" %}</div>
-            <div class="price-value" style="font-size: 1.4rem;">{{ rec.position_size }}</div>
-            {% if rec.risk_reward_ratio %}
-            <div class="price-current">R:R {{ rec.risk_reward_ratio|floatformat:2 }}:1</div>
-            {% endif %}
-        </div>
+      <div class="price-box">
+        <div class="price-label"><i class="bi bi-pie-chart"></i> {% trans "Position" %}</div>
+        <div class="price-value" style="font-size: 1.3rem;">{{ rec.position_size }}</div>
+        {% if rec.risk_reward_ratio %}
+        <div class="price-current">R:R {{ rec.risk_reward_ratio|floatformat:2 }}:1</div>
+        {% endif %}
+      </div>
     </div>
     {% endif %}
 
     <!-- TradingView Chart -->
     <div class="chart-container">
-        <div id="chart-{{ rec.symbol }}" style="height: 400px;"></div>
+      <div id="chart-{{ rec.symbol }}" style="height: 420px;"></div>
     </div>
     <script type="text/javascript">
-        new TradingView.widget({
-            "width": "100%",
-            "height": 400,
-            "symbol": "{{ rec.symbol }}",
-            "interval": "D",
-            "timezone": "America/New_York",
-            "theme": "light",
-            "style": "1",
-            "locale": "{% if LANGUAGE_CODE == 'ko' %}kr{% else %}en{% endif %}",
-            "toolbar_bg": "#f1f3f6",
-            "enable_publishing": false,
-            "hide_side_toolbar": false,
-            "allow_symbol_change": false,
-            "container_id": "chart-{{ rec.symbol }}",
-            "studies": [
-                "MASimple@tv-basicstudies",
-                "RSI@tv-basicstudies",
-                "Volume@tv-basicstudies"
-            ]
-        });
+      new TradingView.widget({
+        "width": "100%", "height": 420,
+        "symbol": "{{ rec.symbol }}",
+        "interval": "D", "timezone": "America/New_York",
+        "theme": "dark", "style": "1",
+        "locale": "{% if LANGUAGE_CODE == 'ko' %}kr{% else %}en{% endif %}",
+        "toolbar_bg": "#000000",
+        "enable_publishing": false,
+        "hide_side_toolbar": false,
+        "allow_symbol_change": false,
+        "container_id": "chart-{{ rec.symbol }}",
+        "studies": ["MASimple@tv-basicstudies","RSI@tv-basicstudies","Volume@tv-basicstudies"]
+      });
     </script>
 
     <!-- AI Rationale -->
     {% if rec.rationale %}
     <div class="rationale">
-        <strong><i class="bi bi-lightbulb-fill"></i> {% trans "AI Analysis" %}</strong>
-        <div>{{ rec.rationale }}</div>
+      <div class="rationale-label"><i class="bi bi-lightbulb-fill"></i> {% trans "AI Analysis" %}</div>
+      {{ rec.rationale }}
     </div>
     {% endif %}
 
     <!-- Triggered Filters -->
     {% if rec.filters_triggered %}
     <div class="filters-list">
-        {% for filter in rec.filters_triggered %}
-        <span class="filter-tag"><i class="bi bi-check-circle-fill"></i> {{ filter }}</span>
-        {% endfor %}
+      {% for filter in rec.filters_triggered %}
+      <span class="filter-tag"><i class="bi bi-check-circle-fill"></i> {{ filter }}</span>
+      {% endfor %}
     </div>
     {% endif %}
-</div>
-{% endfor %}
+  </div>
+  {% endfor %}
 
-{% elif has_recommendations %}
-<!-- Cash Holding Message -->
-<div class="cash-alert">
-    <i class="bi bi-cash-stack"></i>
-    <h3><i class="bi bi-shield-check"></i> {% trans "Cash Holding Recommended" %}</h3>
+  {% elif has_recommendations %}
+  <!-- Cash Holding Message -->
+  <div class="cash-alert">
+    <i class="bi bi-cash-stack cash-alert-icon"></i>
+    <h3>{% trans "Cash Holding Recommended" %}</h3>
     <p>{% trans "There are currently no suitable stocks to buy. Please hold cash and wait until market conditions improve." %}</p>
-    <p style="margin-top: 1rem; font-weight: 600;">{% trans "Analyzed stocks have been rated as HOLD or AVOID." %}</p>
-</div>
+    <p style="margin-top: 0.75rem; font-weight: 600; color: #555;">{% trans "Analyzed stocks have been rated as HOLD or AVOID." %}</p>
+  </div>
 
-{% else %}
-<div class="empty-state">
+  {% else %}
+  <div class="empty-state">
     <i class="bi bi-inbox"></i>
     <h3>{% trans "Recommendations have not been generated yet" %}</h3>
     <p>{% trans "Click the \"Generate Recommendations\" button above" %}</p>
-</div>
-{% endif %}
+  </div>
+  {% endif %}
 
-<!-- Other Recommendations (HOLD/AVOID) - Collapsible -->
-{% if other_recommendations.exists %}
-<div class="other-recs-section">
+  <!-- Other Recommendations (HOLD/AVOID) -->
+  {% if other_recommendations.exists %}
+  <div class="other-recs-section">
     <div class="other-recs-toggle" onclick="toggleOtherRecs()">
-        <h4><i class="bi bi-eye-slash"></i> {% trans "Other Analyzed Stocks (HOLD/AVOID)" %} - {{ other_recommendations.count }}</h4>
-        <i class="bi bi-chevron-down" id="toggle-icon"></i>
+      <h4>
+        <i class="bi bi-eye-slash" style="margin-right: 8px;"></i>
+        {% trans "Other Analyzed Stocks (HOLD/AVOID)" %} — {{ other_recommendations.count }}
+      </h4>
+      <i class="bi bi-chevron-down" id="toggle-icon" style="color: #444;"></i>
     </div>
-    <div class="other-recs-content" id="other-recs-content" style="display: none;">
-        {% for rec in other_recommendations %}
-        <div class="other-rec-card">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-                <div>
-                    <h5 style="margin: 0; font-weight: 700;">{{ rec.symbol }}</h5>
-                    <p style="color: #64748b; margin: 0.25rem 0 0 0; font-size: 0.9rem;">{{ rec.company_name }}</p>
-                </div>
-                <span class="rec-badge rec-{{ rec.recommendation|lower }}"
-                    style="font-size: 0.9rem; padding: 0.5rem 1rem;">
-                    {{ rec.recommendation }}
-                </span>
-            </div>
-            {% if rec.rationale %}
-            <p style="color: #475569; font-size: 0.9rem; margin-top: 1rem;">{{ rec.rationale }}</p>
-            {% endif %}
+    <div id="other-recs-content" style="display: none;">
+      {% for rec in other_recommendations %}
+      <div class="other-rec-card">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h5 style="margin: 0; font-weight: 700; color: #fff; font-size: 1.1rem;">{{ rec.symbol }}</h5>
+            <p style="color: #444; margin: 4px 0 0; font-size: 0.85rem;">{{ rec.company_name }}</p>
+          </div>
+          <span class="rec-badge rec-{{ rec.recommendation|lower }}">
+            {{ rec.recommendation }}
+          </span>
         </div>
-        {% endfor %}
+        {% if rec.rationale %}
+        <p style="color: #555; font-size: 0.85rem; margin-top: 0.75rem; line-height: 1.6;">{{ rec.rationale }}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
     </div>
-</div>
-<style>
-    .rec-hold {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-        color: white;
-    }
+  </div>
+  {% endif %}
 
-    .rec-avoid {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
-        color: white;
-    }
-</style>
-{% endif %}
 </div>
 
 <script>
-    async function generateRecommendations() {
-        const btn = document.querySelector('.generate-btn');
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>{% trans "Generating..." %}';
+  async function generateRecommendations() {
+    const btn = document.querySelector('.generate-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>{% trans "Generating..." %}';
 
-        try {
-            const response = await fetch('{% url "ai_advisor:api_generate_recommendations" %}', {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/json'
-                }
-            });
+    try {
+      const response = await fetch('{% url "ai_advisor:api_generate_recommendations" %}', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json' }
+      });
 
-            const data = await response.json();
+      const data = await response.json();
 
-            if (data.success) {
-                alert(data.message);
-                location.reload();
-            } else {
-                alert('{% trans "Error:" %} ' + (data.message || data.error));
-                btn.disabled = false;
-                btn.innerHTML = '<i class="bi bi-lightning-charge-fill"></i> {% trans "Generate Recommendations" %}';
-            }
-        } catch (error) {
-            alert('네트워크 오류: ' + error.message);
-            btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-lightning-charge-fill"></i> 추천 생성하기';
-        }
+      if (data.success) {
+        alert(data.message);
+        location.reload();
+      } else {
+        alert('{% trans "Error:" %} ' + (data.message || data.error));
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-lightning-charge-fill"></i> {% trans "Generate Recommendations" %}';
+      }
+    } catch (error) {
+      alert('{% trans "Network error:" %} ' + error.message);
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-lightning-charge-fill"></i> {% trans "Generate Recommendations" %}';
     }
+  }
 
-    function toggleOtherRecs() {
-        const content = document.getElementById('other-recs-content');
-        const icon = document.getElementById('toggle-icon');
-        if (content.style.display === 'none') {
-            content.style.display = 'block';
-            icon.className = 'bi bi-chevron-up';
-        } else {
-            content.style.display = 'none';
-            icon.className = 'bi bi-chevron-down';
-        }
+  function toggleOtherRecs() {
+    const content = document.getElementById('other-recs-content');
+    const icon = document.getElementById('toggle-icon');
+    if (content.style.display === 'none') {
+      content.style.display = 'block';
+      icon.className = 'bi bi-chevron-up';
+    } else {
+      content.style.display = 'none';
+      icon.className = 'bi bi-chevron-down';
     }
+  }
 </script>
 {% endblock %}

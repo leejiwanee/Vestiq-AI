@@ -405,8 +405,19 @@ def get_gemini_market_weather(stats, theme_stats=None, sector_stats=None):
             }
         }
         
-        response = requests.post(url, json=payload, timeout=60)
-        response.raise_for_status()
+        response = None
+        last_err = None
+        for model in [model_id, "gemini-2.5-flash-lite", "gemini-2.0-flash"]:
+            target_url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+            try:
+                response = requests.post(target_url, json=payload, timeout=60)
+                response.raise_for_status()
+                break
+            except Exception as ex:
+                last_err = ex
+                continue
+        if response is None:
+            raise last_err
         
         data = response.json()
         

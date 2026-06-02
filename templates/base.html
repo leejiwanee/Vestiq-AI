@@ -226,7 +226,7 @@
                         <li><a class="dropdown-item" href="{% url 'scanner:dashboard' %}?mode=long">{% trans "Long Term" %}</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{% url 'scanner:backtest_lab' %}">{% trans "Backtest Lab" %}</a></li>
-                        <li><a class="dropdown-item" href="{% url 'scanner:vestiq_pick' %}">{% trans "Vestiq Pick" %}</a></li>
+
                     </ul>
                 </div>
 
@@ -280,7 +280,7 @@
                  <!-- Language Selector -->
                  <form action="{% url 'set_language' %}" method="post" class="d-flex align-items-center">
                     {% csrf_token %}
-                    <input name="next" type="hidden" value="{{ redirect_to }}">
+                    <input name="next" type="hidden" value="{{ redirect_to|default:request.get_full_path }}">
                     <select name="language" class="form-select form-select-sm border-0 bg-transparent text-muted text-uppercase fw-bold" style="width: auto; font-size: 0.75rem; cursor: pointer; padding-right: 1.5rem;" onchange="this.form.submit()">
                         {% get_current_language as LANGUAGE_CODE %}
                         {% get_available_languages as LANGUAGES %}
@@ -335,11 +335,10 @@
     </main>
 
     <!-- Footer -->
-    {% if request.resolver_match.view_name == 'home:index' %}
-    <footer class="text-center py-5 text-muted small border-top" style="background: #000; border-color: #111 !important;">
-        <div class="mb-2">VESTIQ &copy; {{ now|date:"Y" }}. EST. 2024</div>
+    <footer class="text-center py-4 text-muted small border-top" style="background: #000; border-color: #111 !important;">
+        <div class="mb-1" style="color: #333; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.15em;">VESTIQ &copy; {{ now|date:"Y" }}. EST. 2024</div>
+        <div style="color: #222; font-size: 0.65rem; letter-spacing: 0.08em;">FOR INFORMATIONAL PURPOSES ONLY. NOT FINANCIAL ADVICE.</div>
     </footer>
-    {% endif %}
 
   </div>
 
@@ -366,15 +365,6 @@
   
   <script>
     document.addEventListener("DOMContentLoaded", function(){
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        if(sidebarToggle){
-            sidebarToggle.addEventListener('click', event => {
-                event.preventDefault();
-                document.body.classList.toggle('sb-sidenav-toggled');
-                document.getElementById('wrapper').classList.toggle('toggled');
-            });
-        }
-        
         // --- GLOBAL SEARCH LOGIC ---
         const globalInput = document.getElementById('globalSearchInput');
         if (globalInput) {
@@ -382,14 +372,14 @@
                 if (e.key === 'Enter') {
                     const symbol = this.value.trim().toUpperCase();
                     if (symbol) {
-                        e.preventDefault(); 
+                        e.preventDefault();
                         openGlobalChartModal(symbol, null);
-                        this.value = ''; 
+                        this.value = '';
                     }
                 }
             });
         }
-        
+
         // ECharts Init for Modal
         const chartDom = document.getElementById('chart-main-global');
         if(chartDom) {
@@ -398,14 +388,12 @@
                  if(window.chartGlobal) window.chartGlobal.resize();
              });
         }
-        
-        // Resize chart when modal triggers (Fix for 100px width issue)
+
+        // Resize chart when modal is shown (fixes 100px width flash)
         const modalEl = document.getElementById('chartModalGlobal');
         if(modalEl) {
             modalEl.addEventListener('shown.bs.modal', function () {
-                if(window.chartGlobal) {
-                    window.chartGlobal.resize();
-                }
+                if(window.chartGlobal) window.chartGlobal.resize();
             });
         }
     });
