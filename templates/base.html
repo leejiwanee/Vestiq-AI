@@ -24,9 +24,9 @@
 
     :root {
       /* Palette */
-      --bg-body: #000000;       /* Pure Black */
-      --bg-surface: #0a0a0a;    /* Very Dark Grey */
-      --bg-highlight: #141414;  /* Lighter Grey for cards */
+      --bg-body: #0f172a;       /* Deep Slate (Brighter than black) */
+      --bg-surface: #1e293b;    /* Slate */
+      --bg-highlight: #334155;  /* Lighter Slate for cards */
       
       --accent-gold: #D4AF37;   /* Champagne Gold */
       --accent-silver: #E5E4E2; /* Platinum */
@@ -62,7 +62,7 @@
       position: sticky;
       top: 0;
       z-index: 1000;
-      background: rgba(0, 0, 0, 0.95); /* Nearly solid black for readability */
+      background: rgba(15, 23, 42, 0.95); /* Deep slate for readability */
       border-bottom: var(--border-thin);
       display: flex;
       align-items: center;
@@ -110,7 +110,7 @@
 
     /* Dropdowns (Sharp) */
     .dropdown-menu {
-        background: #000;
+        background: var(--bg-surface);
         border: var(--border-gold);
         border-radius: 0; 
         padding: 0;
@@ -132,7 +132,7 @@
     .dropdown-item:last-child { border-bottom: none; }
     
     .dropdown-item:hover {
-        background: #111;
+        background: var(--bg-highlight);
         color: var(--accent-gold);
         padding-left: 28px; 
     }
@@ -163,7 +163,7 @@
     .user-avatar {
         width: 28px; 
         height: 28px; 
-        background: #111;
+        background: var(--bg-highlight);
         border: 1px solid var(--accent-gold);
         border-radius: 50%;
         color: var(--accent-gold);
@@ -175,13 +175,13 @@
     }
     
     /* Global Bootstrap Overrides - Gilded Obsidian */
-    .card { background: #0a0a0a; border: 1px solid #1a1a1a; color: var(--text-main); border-radius: 0; }
-    .modal-content { background: #000; border: 1px solid var(--accent-gold); color: var(--text-main); border-radius: 0; }
+    .card { background: var(--bg-surface); border: 1px solid var(--bg-highlight); color: var(--text-main); border-radius: 0; }
+    .modal-content { background: var(--bg-body); border: 1px solid var(--accent-gold); color: var(--text-main); border-radius: 0; }
     
     /* Scrollbar (Thin Gold) */
     ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: #000; }
-    ::-webkit-scrollbar-thumb { background: #333; }
+    ::-webkit-scrollbar-track { background: var(--bg-body); }
+    ::-webkit-scrollbar-thumb { background: var(--bg-highlight); }
     ::-webkit-scrollbar-thumb:hover { background: var(--accent-gold); }
     
   </style>
@@ -226,7 +226,7 @@
                         <li><a class="dropdown-item" href="{% url 'scanner:dashboard' %}?mode=long">{% trans "Long Term" %}</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{% url 'scanner:backtest_lab' %}">{% trans "Backtest Lab" %}</a></li>
-
+                        <li><a class="dropdown-item" href="{% url 'scanner:vestiq_pick' %}">{% trans "Vestiq Pick" %}</a></li>
                     </ul>
                 </div>
 
@@ -335,9 +335,9 @@
     </main>
 
     <!-- Footer -->
-    <footer class="text-center py-4 text-muted small border-top" style="background: #000; border-color: #111 !important;">
-        <div class="mb-1" style="color: #333; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.15em;">VESTIQ &copy; {{ now|date:"Y" }}. EST. 2024</div>
-        <div style="color: #222; font-size: 0.65rem; letter-spacing: 0.08em;">FOR INFORMATIONAL PURPOSES ONLY. NOT FINANCIAL ADVICE.</div>
+    <footer class="text-center py-4 text-muted small border-top" style="background: var(--bg-body); border-color: var(--bg-highlight) !important;">
+        <div class="mb-1" style="color: #94a3b8; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.15em;">VESTIQ &copy; {{ now|date:"Y" }}. EST. 2024</div>
+        <div style="color: #64748b; font-size: 0.65rem; letter-spacing: 0.08em;">FOR INFORMATIONAL PURPOSES ONLY. NOT FINANCIAL ADVICE.</div>
     </footer>
 
   </div>

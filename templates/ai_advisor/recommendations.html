@@ -48,7 +48,7 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
     text-decoration: none;
-    border: 1px solid #1a1a1a;
+    border: 1px solid var(--bg-highlight);
     padding: 8px 16px;
     border-radius: 2px;
     transition: all 0.2s ease;
@@ -57,14 +57,14 @@
 
   .back-btn:hover {
     color: #fff;
-    border-color: #333;
-    background: #111;
+    border-color: #555;
+    background: var(--bg-highlight);
   }
 
   /* ───── Market Status Card ───── */
   .market-card {
-    background: #0a0a0a;
-    border: 1px solid #1a1a1a;
+    background: var(--bg-surface);
+    border: 1px solid var(--bg-highlight);
     padding: 1.75rem 2rem;
     margin-bottom: 2rem;
     position: relative;
@@ -186,8 +186,8 @@
 
   /* ───── Recommendation Cards ───── */
   .rec-card {
-    background: #0a0a0a;
-    border: 1px solid #1a1a1a;
+    background: var(--bg-surface);
+    border: 1px solid var(--bg-highlight);
     padding: 2rem;
     margin-bottom: 1.5rem;
     position: relative;
@@ -195,7 +195,7 @@
   }
 
   .rec-card:hover {
-    border-color: #333;
+    border-color: #555;
   }
 
   .rec-card-accent {
@@ -277,14 +277,14 @@
   }
 
   .price-box {
-    background: #040404;
-    border: 1px solid #1a1a1a;
+    background: var(--bg-body);
+    border: 1px solid var(--bg-highlight);
     padding: 1.25rem;
     text-align: center;
     transition: border-color 0.2s;
   }
 
-  .price-box:hover { border-color: #2a2a2a; }
+  .price-box:hover { border-color: #555; }
 
   .price-label {
     font-size: 0.68rem;
@@ -315,8 +315,8 @@
   /* ───── Chart Container ───── */
   .chart-container {
     margin: 1.5rem 0;
-    border: 1px solid #1a1a1a;
-    background: #000;
+    border: 1px solid var(--bg-highlight);
+    background: var(--bg-body);
     min-height: 420px;
     overflow: hidden;
   }
@@ -384,11 +384,11 @@
   .empty-state {
     text-align: center;
     padding: 5rem 2rem;
-    background: #0a0a0a;
-    border: 1px solid #1a1a1a;
+    background: var(--bg-surface);
+    border: 1px solid var(--bg-highlight);
   }
 
-  .empty-state i { font-size: 4rem; color: #1a1a1a; display: block; margin-bottom: 1.5rem; }
+  .empty-state i { font-size: 4rem; color: var(--bg-highlight); display: block; margin-bottom: 1.5rem; }
   .empty-state h3 { font-size: 1.25rem; font-weight: 600; color: #555; margin-bottom: 0.5rem; }
   .empty-state p  { color: #444; font-size: 0.9rem; }
 
@@ -396,8 +396,8 @@
   .other-recs-section { margin-top: 3rem; }
 
   .other-recs-toggle {
-    background: #0a0a0a;
-    border: 1px solid #1a1a1a;
+    background: var(--bg-surface);
+    border: 1px solid var(--bg-highlight);
     padding: 1rem 1.5rem;
     cursor: pointer;
     display: flex;
@@ -406,12 +406,12 @@
     transition: border-color 0.2s;
   }
 
-  .other-recs-toggle:hover { border-color: #2a2a2a; }
+  .other-recs-toggle:hover { border-color: #555; }
   .other-recs-toggle h4 { margin: 0; font-size: 0.8rem; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.1em; }
 
   .other-rec-card {
-    background: #040404;
-    border: 1px solid #111;
+    background: var(--bg-body);
+    border: 1px solid var(--bg-highlight);
     border-top: none;
     padding: 1.25rem 1.5rem;
   }
@@ -576,7 +576,7 @@
         "interval": "D", "timezone": "America/New_York",
         "theme": "dark", "style": "1",
         "locale": "{% if LANGUAGE_CODE == 'ko' %}kr{% else %}en{% endif %}",
-        "toolbar_bg": "#000000",
+        "toolbar_bg": "#1e293b",
         "enable_publishing": false,
         "hide_side_toolbar": false,
         "allow_symbol_change": false,

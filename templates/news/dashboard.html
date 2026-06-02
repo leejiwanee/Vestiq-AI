@@ -115,16 +115,16 @@
     border-radius: 2px;
     object-fit: cover;
     flex-shrink: 0;
-    background: #111;
-    border: 1px solid #1a1a1a;
+    background: var(--bg-highlight);
+    border: 1px solid var(--bg-highlight);
     filter: brightness(0.9);
   }
 
   .news-thumb-placeholder {
     width: 120px;
     height: 80px;
-    background: #0a0a0a;
-    border: 1px solid #1a1a1a;
+    background: var(--bg-surface);
+    border: 1px solid var(--bg-highlight);
     border-radius: 2px;
     display: flex;
     align-items: center;
@@ -218,7 +218,7 @@
     font-weight: 600;
     color: #666;
     background: transparent;
-    border: 1px solid #1a1a1a;
+    border: 1px solid var(--bg-highlight);
     border-radius: 2px;
     text-decoration: none;
     transition: all 0.2s ease;
@@ -226,8 +226,8 @@
 
   .page-btn:hover {
     color: #fff;
-    border-color: #333;
-    background: #111;
+    border-color: #555;
+    background: var(--bg-highlight);
   }
 
   .page-btn.active {
