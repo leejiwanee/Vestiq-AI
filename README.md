@@ -26,9 +26,13 @@
 ### 📸 Screenshots
 *(Please replace the placeholders below with your actual screenshots)*
 
-| Dashboard & Scanner | AI Trading Recommendations |
+| Scanner | Vestiq Pick |
 | :---: | :---: |
-| <img src="docs/images/dashboard.png" width="400" alt="Dashboard Screenshot" /> | <img src="docs/images/ai_recommendations.png" width="400" alt="AI Recommendations Screenshot" /> |
+| <img src="docs/images/scanner.png" width="400" alt="Scanner Screenshot" /> | <img src="docs/images/vestiq_pick.png" width="400" alt="Vestiq Pick Screenshot" /> |
+| **AI Report Summary** | **AI Pick** |
+| <img src="docs/images/ai_report.png" width="400" alt="AI Report Screenshot" /> | <img src="docs/images/ai_pick.png" width="400" alt="AI Pick Screenshot" /> |
+| **Stock Search** | **AI Portfolio** |
+| <img src="docs/images/stock_search.png" width="400" alt="Stock Search Screenshot" /> | <img src="docs/images/ai_portfolio.png" width="400" alt="AI Portfolio Screenshot" /> |
 | **Galaxy Market Lab (Insight)** | **13F Guru Holdings** |
 | <img src="docs/images/galaxy_insight.png" width="400" alt="Galaxy Insight Screenshot" /> | <img src="docs/images/13f_holdings.png" width="400" alt="13F Screenshot" /> |
 
@@ -93,9 +97,13 @@ graph LR
 ### 📸 스크린샷
 *(docs/images 폴더에 직접 캡처한 이미지를 넣어주세요)*
 
-| 마켓 대시보드 및 스캐너 | AI 트레이딩 추천 (Gemini 연동) |
+| 스캐너 (Scanner) | Vestiq Pick |
 | :---: | :---: |
-| <img src="docs/images/dashboard.png" width="400" alt="대시보드" /> | <img src="docs/images/ai_recommendations.png" width="400" alt="AI 추천" /> |
+| <img src="docs/images/scanner.png" width="400" alt="스캐너" /> | <img src="docs/images/vestiq_pick.png" width="400" alt="Vestiq Pick" /> |
+| **AI 리포트 요약** | **AI Pick** |
+| <img src="docs/images/ai_report.png" width="400" alt="AI 리포트 요약" /> | <img src="docs/images/ai_pick.png" width="400" alt="AI Pick" /> |
+| **종목 검색** | **AI 포트폴리오** |
+| <img src="docs/images/stock_search.png" width="400" alt="종목 검색" /> | <img src="docs/images/ai_portfolio.png" width="400" alt="AI 포트폴리오" /> |
 | **Galaxy Market Lab (시각화)** | **13F 구루 포트폴리오 (SEC 연동)** |
 | <img src="docs/images/galaxy_insight.png" width="400" alt="마켓 랩" /> | <img src="docs/images/13f_holdings.png" width="400" alt="13F 분석" /> |
 
