@@ -26,15 +26,17 @@
 ### 📸 Screenshots
 *(Please replace the placeholders below with your actual screenshots)*
 
-| Scanner | Vestiq Pick |
+| Main Page | Scanner |
 | :---: | :---: |
-| <img src="docs/images/scanner.png" width="400" alt="Scanner Screenshot" /> | <img src="docs/images/vestiq_pick.png" width="400" alt="Vestiq Pick Screenshot" /> |
-| **AI Report Summary** | **AI Pick** |
-| <img src="docs/images/ai_report.png" width="400" alt="AI Report Screenshot" /> | <img src="docs/images/ai_pick.png" width="400" alt="AI Pick Screenshot" /> |
-| **Stock Search** | **AI Portfolio** |
-| <img src="docs/images/stock_search.png" width="400" alt="Stock Search Screenshot" /> | <img src="docs/images/ai_portfolio.png" width="400" alt="AI Portfolio Screenshot" /> |
-| **Galaxy Market Lab (Insight)** | **13F Guru Holdings** |
-| <img src="docs/images/galaxy_insight.png" width="400" alt="Galaxy Insight Screenshot" /> | <img src="docs/images/13f_holdings.png" width="400" alt="13F Screenshot" /> |
+| <img src="docs/images/MainPage.png" width="400" alt="Main Page" /> | <img src="docs/images/scanner.png" width="400" alt="Scanner" /> |
+| **Vestiq Pick** | **Scanner AI Report** |
+| <img src="docs/images/vestiq_pick.png" width="400" alt="Vestiq Pick" /> | <img src="docs/images/scanner_ai_report.png" width="400" alt="Scanner AI Report" /> |
+| **Search Ticker** | **Chart Analysis** |
+| <img src="docs/images/search_ticker.png" width="400" alt="Search Ticker" /> | <img src="docs/images/chart_analysis.png" width="400" alt="Chart Analysis" /> |
+| **AI Portfolio Input** | **AI Portfolio Result** |
+| <img src="docs/images/AI_Portfolio.png" width="400" alt="AI Portfolio Input" /> | <img src="docs/images/AI_Portfolio_result.png" width="400" alt="AI Portfolio Result" /> |
+| **Trading Journal** | |
+| <img src="docs/images/Trading_journal.png" width="400" alt="Trading Journal" /> | |
 
 ### ✨ Key Features
 - **🤖 AI-Powered Trading Recommendations**: Utilizes Google Gemini API to analyze market weather, technical indicators, and news, generating concrete Buy/Hold/Avoid recommendations with dynamic stop-loss/take-profit targets. Built-in fallback mechanisms handle API rate limits gracefully.
@@ -97,15 +99,17 @@ graph LR
 ### 📸 스크린샷
 *(docs/images 폴더에 직접 캡처한 이미지를 넣어주세요)*
 
-| 스캐너 (Scanner) | Vestiq Pick |
+| 메인 페이지 (Main Page) | 스캐너 (Scanner) |
 | :---: | :---: |
-| <img src="docs/images/scanner.png" width="400" alt="스캐너" /> | <img src="docs/images/vestiq_pick.png" width="400" alt="Vestiq Pick" /> |
-| **AI 리포트 요약** | **AI Pick** |
-| <img src="docs/images/ai_report.png" width="400" alt="AI 리포트 요약" /> | <img src="docs/images/ai_pick.png" width="400" alt="AI Pick" /> |
-| **종목 검색** | **AI 포트폴리오** |
-| <img src="docs/images/stock_search.png" width="400" alt="종목 검색" /> | <img src="docs/images/ai_portfolio.png" width="400" alt="AI 포트폴리오" /> |
-| **Galaxy Market Lab (시각화)** | **13F 구루 포트폴리오 (SEC 연동)** |
-| <img src="docs/images/galaxy_insight.png" width="400" alt="마켓 랩" /> | <img src="docs/images/13f_holdings.png" width="400" alt="13F 분석" /> |
+| <img src="docs/images/MainPage.png" width="400" alt="메인 페이지" /> | <img src="docs/images/scanner.png" width="400" alt="스캐너" /> |
+| **Vestiq Pick** | **스캐너 AI 리포트** |
+| <img src="docs/images/vestiq_pick.png" width="400" alt="Vestiq Pick" /> | <img src="docs/images/scanner_ai_report.png" width="400" alt="스캐너 AI 리포트" /> |
+| **종목 검색 (Search Ticker)** | **차트 분석 (Chart Analysis)** |
+| <img src="docs/images/search_ticker.png" width="400" alt="종목 검색" /> | <img src="docs/images/chart_analysis.png" width="400" alt="차트 분석" /> |
+| **AI 포트폴리오 생성** | **AI 포트폴리오 결과** |
+| <img src="docs/images/AI_Portfolio.png" width="400" alt="AI 포트폴리오 생성" /> | <img src="docs/images/AI_Portfolio_result.png" width="400" alt="AI 포트폴리오 결과" /> |
+| **트레이딩 저널 (Trading Journal)** | |
+| <img src="docs/images/Trading_journal.png" width="400" alt="트레이딩 저널" /> | |
 
 ### ✨ 주요 기능
 - **🤖 AI 기반 투자 전략 및 요약 (Generative AI)**: Gemini API를 활용해 그날의 시장(Market Weather)을 요약하고, 기술적/기본적 지표를 종합하여 종목별 매수/보유/관망(Buy/Hold/Avoid) 의견 및 목표가를 자동 산출합니다. (503 Rate Limit 대비 다중 모델 Fallback 적용)
