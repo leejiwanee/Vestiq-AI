@@ -72,7 +72,7 @@ def _extract_pure_json(text: str) -> dict:
             
         # 3. 그 사이 문자열만 추출
         json_str = text[start_idx : end_idx + 1]
-        return json.loads(json_str)
+        return json.loads(json_str, strict=False)
     except Exception as e:
         print(f"[JSON Parse Error] {e}")
         return None

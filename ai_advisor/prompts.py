@@ -38,7 +38,7 @@ def get_portfolio_prompt(profile, market_context, schema, language='ko'):
             
             f"2) Portfolio (Specific Holdings) – 5-10 positions\\n"
             f"   - Must mix ETFs + individual stocks\\n"
-            f"   - Required fields for each: symbol, name, asset_class, weight\\n"
+            f"   - Required fields for each: ticker, name, asset_class, weight\\n"
             f"   - Weight total must be exactly 100%\\n"
             f"   - Selection criteria:\\n"
             f"       • ETFs for broad market/sector coverage\\n"
@@ -93,7 +93,7 @@ def get_portfolio_prompt(profile, market_context, schema, language='ko'):
             f"2) Portfolio (종목 구성)\\n"
             f"   - 반드시 ETF + 개별 종목을 섞어 총 5~10개를 추천하십시오.\\n"
             f"   - 각 종목은 다음 필드를 포함해야 합니다:\\n"
-            f"         symbol, name, asset_class, weight\\n"
+            f"         ticker, name, asset_class, weight\\n"
             f"   - weight 총합이 반드시 **100%**여야 합니다.\\n"
             f"   - 개별 종목 선정 기준:\\n"
             f"       • 안정적 실적, 시가총액 상위, 성장 모멘텀\\n"
